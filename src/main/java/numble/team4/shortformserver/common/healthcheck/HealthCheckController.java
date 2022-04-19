@@ -27,4 +27,9 @@ public class HealthCheckController {
     public CommonResponse<HealthCheckResponse> healthCheckException() {
         throw new HealthCheckException();
     }
+
+    @GetMapping("/require-auth")
+    public CommonResponse<Void> permitUrlTest() {
+        return CommonResponse.from("security permitAll test");
+    }
 }
