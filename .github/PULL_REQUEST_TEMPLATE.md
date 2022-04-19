@@ -1,12 +1,3 @@
----
-name: Pull request
-about: Create Pull Request
-title: "[PR]"
-labels: ''
-assignees: ''
-
----
-
 ###  :speech_balloon: Motivation
 * 무엇을 어떻게 개발했는지 설명해주세요.
 
