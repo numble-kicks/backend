@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.config.aws;
+package numble.team4.shortformserver.aws.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.config.aws.uploadTest;
+package numble.team4.shortformserver.aws.uploadTest;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;

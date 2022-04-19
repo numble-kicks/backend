@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.config.aws.uploadTest;
+package numble.team4.shortformserver.aws.uploadTest;
 
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
