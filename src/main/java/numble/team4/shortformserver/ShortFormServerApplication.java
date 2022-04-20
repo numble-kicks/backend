@@ -9,14 +9,8 @@ import org.springframework.context.annotation.PropertySource;
 @SpringBootApplication
 public class ShortFormServerApplication {
 
-	public static final String APPLICATION_LOCATIONS = "spring.config.location="
-		+ "classpath:application.yml,"
-		+ "classpath:aws.yml";
-
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(ShortFormServerApplication.class)
-			.properties(APPLICATION_LOCATIONS)
-			.run(args);
+		SpringApplication.run(ShortFormServerApplication.class, args);
 	}
 
 }
