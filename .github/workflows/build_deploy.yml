@@ -36,20 +36,21 @@ jobs:
         run: cp appspec.yml start.sh ./deploy/
 
       # create .env file
-        - name: Create .env file
-          run: |
-            touch .env
-            echo 'S3_ACCESS_KEY="${{secrets.S3_ACCESS_KEY}}"' >> .env
-            echo 'S3_SECRET_KEY="${{secrets.S3_SECRET_KEY}}"' >> .env
-            echo 'S3_BUCKET_NAME="${{secrets.S3_BUCKET_NAME}}"' >> .env
-            echo 'DB_URL="${{secrets.DB_URL}}"' >> .env
-            echo 'DB_USERNAME="${{secrets.DB_USERNAME}}"' >> .env
-            echo 'DB_PASSWORD="${{secrets.DB_PASSWORD}}"' >> .env
+      - name: Create .env file
+        run: 
+          touch .env
+          
+          echo 'S3_ACCESS_KEY="${{secrets.S3_ACCESS_KEY}}"' >> .env
+          echo 'S3_SECRET_KEY="${{secrets.S3_SECRET_KEY}}"' >> .env
+          echo 'S3_BUCKET_NAME="${{secrets.S3_BUCKET_NAME}}"' >> .env
+          echo 'DB_URL="${{secrets.DB_URL}}"' >> .env
+          echo 'DB_USERNAME="${{secrets.DB_USERNAME}}"' >> .env
+          echo 'DB_PASSWORD="${{secrets.DB_PASSWORD}}"' >> .env
             
 
       # copy .env file
-        - name: copy .env file
-          run: cp .env ./deploy/
+      - name: copy .env file
+        run: cp .env ./deploy/
 
       # 압축파일 형태로 전달
       - name: Make zip file
