@@ -35,6 +35,9 @@ out/
 
 ### user setting ###
 src/main/resources/**
+!src/main/resources/application-prod.yml
+!src/main/resources/application-s3.yml
+!src/main/resources/application-test.yml
 .gradle/
 .env
 .DS_Store
