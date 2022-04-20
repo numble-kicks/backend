@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+
+files:
+  - source: /
+    destination: /home/ubuntu/deploy # 배포 파일 도착 폴더
+    overwrite: yes 
+    
+permissions:
+  - object: /
+    pattern: "**" # 모든 파일의 권한 설정
+    owner: ubuntu
+    group: ubuntu
+
+hooks:
+  AfterInstall: # 파일이 도착 후 실행
+    - location: start.sh
+      timeout: 60 # 60 안에 실행, 60 뒤엔 배포 실패로 변경
+      runas: ubuntu
