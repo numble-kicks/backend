@@ -2,7 +2,7 @@
 echo "> build : short-form-server-0.0.1-SNAPSHOT.jar" >> /home/ubuntu/deploy.log
 
 echo "> current running process pid 확인" >> /home/ubuntu/deploy.log
-CURRENT_PID=$(pgrep -f Amattang-0.0.1-SNAPSHOT.jar)
+CURRENT_PID=$(pgrep -f short-form-server-0.0.1-SNAPSHOT.jar)
 
 if [ -z $CURRENT_PID ]
 then
