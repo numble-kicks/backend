@@ -2,17 +2,21 @@ package numble.team4.shortformserver.common.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import numble.team4.shortformserver.common.healthcheck.HealthCheckException;
+import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
+import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 @Getter
 @RequiredArgsConstructor
 public enum ExceptionType {
-    HEALTH_CHECK_EXCEPTION("예외 처리 정상 작동", INTERNAL_SERVER_ERROR, HealthCheckException.class);
+    NOT_EXIST_MEMBER("존재하지 않는 회원입니다.", BAD_REQUEST, NotExistMemberException.class),
+    NOT_EXIST_VIDEO("존재하지 않는 영상입니다.", BAD_REQUEST, NotExistVideoException.class),
+    WRONG_PASSWORD("비밀번호가 틀렸습니다.", BAD_REQUEST, WrongPasswordException.class);
 
     private final String message;
     private final HttpStatus status;
