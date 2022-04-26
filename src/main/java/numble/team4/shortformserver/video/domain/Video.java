@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
+import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -15,13 +16,14 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class Video {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
     private String title;
     private String description;
     private String thumbnailUrl;
     private String videoUrl;
     private Long viewCount;
+    private Long likeCount;
 
     @Embedded
     private Comments comments;
