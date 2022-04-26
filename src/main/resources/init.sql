@@ -7,7 +7,7 @@ CREATE TABLE comment
     member_id bigint NOT NULL,
     video_id bigint NOT NULL,
     PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE video
 (
@@ -19,7 +19,7 @@ CREATE TABLE video
     video_url     varchar(255),
     view_count    bigint,
     PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE like_video
 (
@@ -27,7 +27,7 @@ CREATE TABLE like_video
     member_id bigint NOT NULL,
     video_id bigint NOT NULL,
     PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE member
 (
@@ -40,7 +40,7 @@ CREATE TABLE member
     name              varchar(255),
     profile_image_url varchar(255),
     PRIMARY KEY (id)
-) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 ALTER TABLE comment ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
 
