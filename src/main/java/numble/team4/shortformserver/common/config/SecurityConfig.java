@@ -24,8 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/healthcheck/normal", "/healthcheck/exception").permitAll()
-                .anyRequest().authenticated();
+                .anyRequest().permitAll();
     }
 
     @Bean
