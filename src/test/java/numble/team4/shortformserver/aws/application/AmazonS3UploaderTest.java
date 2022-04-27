@@ -37,7 +37,7 @@ class AmazonS3UploaderTest {
             "test",
             "test.mov",
             "video/quicktime",
-            new FileInputStream("src/test/test.mov")
+            new FileInputStream("src/test/resources/test.mov")
         );
 
         S3UploadDto s3UploadDto = amazonS3Uploader.saveToS3(mockMultipartFile, "test");
