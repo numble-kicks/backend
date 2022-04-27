@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.aws.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
@@ -47,5 +48,19 @@ class AmazonS3UploaderTest {
 
         // 검증 후 오브젝트 삭제
         amazonS3Client.deleteObject(bucket, key);
+    }
+
+    @Test
+    @DisplayName("파일이 비어있을 경우 s3 업로드되지 않음")
+    public void s3UploadFail () {
+        // given
+        MockMultipartFile mockMultipartFile = new MockMultipartFile("test", new byte[]{});
+
+        // when
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+            () -> amazonS3Uploader.saveToS3(mockMultipartFile, "test"));
+
+        // then
+        assertThat(exception.getMessage()).isEqualTo("파일이 비어있음");
     }
 }
