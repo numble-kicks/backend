@@ -26,6 +26,8 @@ public class AmazonS3Uploader {
     private String bucket;
 
     public String saveToS3(MultipartFile file, String dirName) throws IOException {
+        validateFileExist(file);
+
         try {
             String key = dirName + "/" + UUID.randomUUID() + "_" + file.getName();
             return putS3(file, key);
@@ -49,5 +51,11 @@ public class AmazonS3Uploader {
         amazonS3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
 
         return amazonS3Client.getUrl(bucket, key).toString();
+    }
+
+    private void validateFileExist(MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("파일이 비어있음");
+        }
     }
 }
