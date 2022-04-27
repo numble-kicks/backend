@@ -1,5 +1,7 @@
 package numble.team4.shortformserver.member.member.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
@@ -15,7 +17,9 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@Builder
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor(access = PROTECTED)
 public class Member extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = IDENTITY)
