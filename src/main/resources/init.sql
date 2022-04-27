@@ -42,6 +42,15 @@ CREATE TABLE member
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE follow
+(
+    id bigint NOT NULL AUTO_INCREMENT,
+    from_member bigint NOT NULL,
+    to_member bigint NOT NULL,
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
+
+
 ALTER TABLE comment ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
 
 ALTER TABLE comment ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
@@ -49,3 +58,7 @@ ALTER TABLE comment ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
 ALTER TABLE like_video ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
 
 ALTER TABLE like_video ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
+
+ALTER TABLE follow ADD CONSTRAINT FOREIGN KEY (from_member) REFERENCES member (id);
+
+ALTER TABLE follow ADD CONSTRAINT FOREIGN KEY (to_member) REFERENCES member (id);
