@@ -11,6 +11,9 @@ import java.io.InputStream;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import numble.team4.shortformserver.aws.dto.S3UploadDto;
+import numble.team4.shortformserver.aws.exception.AmazonClientException;
+import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,21 +25,20 @@ public class AmazonS3Uploader {
 
     private final AmazonS3Client amazonS3Client;
 
+    @Value("${cloudfront.url}")
+    private String cloudfrontUrl;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public String saveToS3(MultipartFile file, String dirName) throws IOException {
+    public S3UploadDto saveToS3(MultipartFile file, String dirName) throws IOException {
         validateFileExist(file);
 
-        try {
-            String key = dirName + "/" + UUID.randomUUID() + "_" + file.getName();
-            return putS3(file, key);
-        } catch (IOException e) {
-            throw new IllegalArgumentException();
-        }
+        String key = dirName + "/" + UUID.randomUUID() + "_" + file.getName();
+        return putS3(file, key);
     }
 
-    private String putS3(MultipartFile file, String key) throws IOException {
+    private S3UploadDto putS3(MultipartFile file, String key) throws RuntimeException, IOException {
         InputStream inputStream = file.getInputStream();
 
         byte[] bytes = IOUtils.toByteArray(inputStream);
@@ -47,15 +49,19 @@ public class AmazonS3Uploader {
 
         ByteArrayInputStream uploadFile = new ByteArrayInputStream(bytes);
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, uploadFile, objectMetadata);
-        amazonS3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, uploadFile, objectMetadata);
+            amazonS3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (RuntimeException e) {
+            throw new AmazonClientException();
+        }
 
-        return amazonS3Client.getUrl(bucket, key).toString();
+        return new S3UploadDto(key, file.getOriginalFilename(), cloudfrontUrl + key);
     }
 
-    private void validateFileExist(MultipartFile file) {
+    private void validateFileExist(MultipartFile file) throws RuntimeException {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("파일이 비어있음");
+            throw new NotExistFileException();
         }
     }
 }

@@ -1,5 +1,6 @@
 package numble.team4.shortformserver.aws.application;
 
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_FILE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -7,6 +8,8 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
 import java.io.FileInputStream;
 import numble.team4.shortformserver.aws.config.AmazonS3Config;
+import numble.team4.shortformserver.aws.dto.S3UploadDto;
+import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,22 +35,22 @@ class AmazonS3UploaderTest {
         // given
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
             "test",
-            "test.MOV",
+            "test.mov",
             "video/quicktime",
-            new FileInputStream("src/test/test.MOV")
+            new FileInputStream("src/test/test.mov")
         );
 
-        String[] split = amazonS3Uploader.saveToS3(mockMultipartFile, "test").split("/");
+        S3UploadDto s3UploadDto = amazonS3Uploader.saveToS3(mockMultipartFile, "test");
+
         // when
-        String key = split[split.length - 2] + "/" + split[split.length - 1];
-        S3Object s3Object = amazonS3Client.getObject(bucket, key);
+        S3Object s3Object = amazonS3Client.getObject(bucket, s3UploadDto.getKey());
 
         // then
         assertThat(s3Object.getObjectMetadata().getContentType()).isEqualTo(mockMultipartFile.getContentType());
         assertThat(s3Object.getBucketName()).isEqualTo(bucket);
 
         // 검증 후 오브젝트 삭제
-        amazonS3Client.deleteObject(bucket, key);
+        amazonS3Client.deleteObject(bucket, s3UploadDto.getKey());
     }
 
     @Test
@@ -57,10 +60,10 @@ class AmazonS3UploaderTest {
         MockMultipartFile mockMultipartFile = new MockMultipartFile("test", new byte[]{});
 
         // when
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+        NotExistFileException exception = assertThrows(NotExistFileException.class,
             () -> amazonS3Uploader.saveToS3(mockMultipartFile, "test"));
 
         // then
-        assertThat(exception.getMessage()).isEqualTo("파일이 비어있음");
+        assertThat(exception.getMessage()).isEqualTo(NOT_EXIST_FILE.getMessage());
     }
 }
