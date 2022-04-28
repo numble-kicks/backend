@@ -50,8 +50,8 @@ class FollowRepositoryTest {
             //given
             Member from = makeTestFromUser();
             Member to = makeTestToUser();
-            Follow follow = Follow.builder()
-                    .fromMember(from).toMember(to).build();
+
+            Follow follow = Follow.fromMembers(from, to);
 
             //when
             followRepository.save(follow);
