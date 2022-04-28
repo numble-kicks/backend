@@ -56,7 +56,7 @@ public class AmazonS3Uploader {
             throw new AmazonClientException();
         }
 
-        return new S3UploadDto(key, file.getOriginalFilename(), cloudfrontUrl + key);
+        return new S3UploadDto(key, cloudfrontUrl + key);
     }
 
     private void validateFileExist(MultipartFile file) throws RuntimeException {

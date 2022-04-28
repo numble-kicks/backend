@@ -8,6 +8,5 @@ import lombok.Getter;
 public class S3UploadDto {
 
     private String key;
-    private String originalFileName;
     private String fileUrl;
 }
