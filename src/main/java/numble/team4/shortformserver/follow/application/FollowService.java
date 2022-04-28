@@ -23,8 +23,7 @@ public class FollowService {
             throw new AlreadyExistFollowException();
         }
 
-        Follow newFollow = Follow.builder()
-                .fromMember(member).toMember(toMember).build();
+        Follow newFollow = Follow.fromMembers(member, toMember);
         followRepository.save(newFollow);
     }
 }
