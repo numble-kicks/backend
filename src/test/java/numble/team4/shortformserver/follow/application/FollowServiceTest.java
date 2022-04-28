@@ -77,8 +77,7 @@ class FollowServiceTest {
 =======
             Member fromUser = makeTestFromUser();
             Member toUser = makeTestToUser();
-            Follow follow = Follow.builder()
-                    .fromMember(fromUser).toMember(toUser).build();
+            Follow follow = Follow.fromMembers(fromUser, toUser);
 
             when(memberRepository.findById(toUser.getId())).thenReturn(Optional.of(toUser));
             when(followRepository.existsByFromMember_IdAndToMember_Id(fromUser.getId(), toUser.getId()))
