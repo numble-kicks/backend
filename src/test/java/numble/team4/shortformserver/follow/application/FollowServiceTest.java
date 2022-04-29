@@ -7,6 +7,7 @@ import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -33,13 +34,14 @@ class FollowServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
-    Member makeTestToUser() {
-        return Member.builder()
-                .id(10L).emailVerified(true).build();
-    }
+    private static Member fromUser;
+    private static Member toUser;
 
-    Member makeTestFromUser() {
-        return Member.builder()
+    @BeforeAll
+    static void init() {
+        fromUser = Member.builder()
+                .id(10L).emailVerified(true).build();
+        toUser = Member.builder()
                 .id(11L).emailVerified(true).build();
     }
 
@@ -51,8 +53,6 @@ class FollowServiceTest {
         @DisplayName("[성공] 정상적인 팔로우 요청")
         void createFollow_notException_success() {
             //given
-            Member fromUser = makeTestFromUser();
-            Member toUser = makeTestToUser();
             Follow follow = Follow.fromMembers(fromUser, toUser);
 
             when(memberRepository.findById(toUser.getId())).thenReturn(Optional.of(toUser));
@@ -75,16 +75,13 @@ class FollowServiceTest {
 
             //when, then
             assertThrows(NotExistMemberException.class,
-                    () -> followService.createFollow(any(), 1L));
+                    () -> followService.createFollow(fromUser, toUser.getId()));
         }
 
         @Test
         @DisplayName("[실패] 이미 팔로우 한 사용자를 또 팔로우")
         void createFollow_AlreadyExistFollowException_fail() {
             //given
-            Member fromUser = makeTestFromUser();
-            Member toUser = makeTestToUser();
-
             when(memberRepository.findById(toUser.getId())).thenReturn(Optional.of(toUser));
             when(followRepository.existsByFromMember_IdAndToMember_Id(fromUser.getId(), toUser.getId()))
                     .thenReturn(true);
@@ -98,9 +95,6 @@ class FollowServiceTest {
         @Test
         @DisplayName("[실패] 본인을 팔로우하도록 요청")
         void createFollow_notSelfFollowableException_fail() {
-            //given
-            Member fromUser = makeTestFromUser();
-
             //when, then
             assertThrows(NotSelfFollowableException.class,
                     () -> followService.createFollow(fromUser, fromUser.getId())
