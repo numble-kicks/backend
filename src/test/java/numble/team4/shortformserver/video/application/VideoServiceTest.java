@@ -50,6 +50,8 @@ class VideoServiceTest {
             .builder()
             .title("title")
             .description("description")
+            .video(videos)
+            .thumbnail(thumbnail)
             .build();
         member = Member.builder()
             .id(10L)
@@ -78,12 +80,12 @@ class VideoServiceTest {
             .build();
 
         given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
-        given(amazonS3Uploader.saveToS3(videos, "video")).willReturn(videoDto);
-        given(amazonS3Uploader.saveToS3(thumbnail, "video/thumbnail")).willReturn(thumbnailDto);
+        given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willReturn(videoDto);
+        given(amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail")).willReturn(thumbnailDto);
         given(videoRepository.save(any())).willReturn(video);
 
         // when
-        Video uploadedVideo = videoService.upload(videoRequest, member, videos, thumbnail);
+        Video uploadedVideo = videoService.upload(videoRequest, member);
 
         // then
         assertThat(video).isEqualTo(uploadedVideo);
@@ -94,7 +96,7 @@ class VideoServiceTest {
     public void uploadVideo_notExistMember() throws Exception {
         // then
         assertThrows(NotExistMemberException.class,
-            () -> videoService.upload(videoRequest, member, videos, thumbnail));
+            () -> videoService.upload(videoRequest, member));
     }
 
     @Test
@@ -102,10 +104,10 @@ class VideoServiceTest {
     public void uploadVideo_notExistFile() throws Exception {
         // given
         given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
-        given(amazonS3Uploader.saveToS3(videos, "video")).willThrow(NotExistFileException.class);
+        given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willThrow(NotExistFileException.class);
 
         // then
         assertThrows(NotExistFileException.class,
-            () -> videoService.upload(videoRequest, member, videos, thumbnail));
+            () -> videoService.upload(videoRequest, member));
     }
 }
