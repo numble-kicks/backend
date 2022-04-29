@@ -1,7 +1,6 @@
 package numble.team4.shortformserver.common.exception;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.*;
 
 import java.util.Arrays;
 import lombok.Getter;
@@ -11,6 +10,7 @@ import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
+import numble.team4.shortformserver.video.exception.NotLoggedInException;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -20,7 +20,8 @@ public enum ExceptionType {
     NOT_EXIST_VIDEO("존재하지 않는 영상입니다.", BAD_REQUEST, NotExistVideoException.class),
     WRONG_PASSWORD("비밀번호가 틀렸습니다.", BAD_REQUEST, WrongPasswordException.class),
     NOT_EXIST_FILE("존재하지 않는 파일입니다.", BAD_REQUEST, NotExistFileException.class),
-    AMAZON_CLIENT_EXCEPTION("아마존 서버에 업로드하는 과정에서 오류가 발생하였습니다.", INTERNAL_SERVER_ERROR, AmazonClientException.class);
+    AMAZON_CLIENT_EXCEPTION("아마존 서버에 업로드하는 과정에서 오류가 발생하였습니다.", INTERNAL_SERVER_ERROR, AmazonClientException.class),
+    NOT_LOGGED_IN("로그인이 되어있지 않습니다.", UNAUTHORIZED, NotLoggedInException.class);
 
     private final String message;
     private final HttpStatus status;
