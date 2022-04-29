@@ -20,7 +20,7 @@ public enum ExceptionType {
     NOT_EXIST_VIDEO("존재하지 않는 영상입니다.", BAD_REQUEST, NotExistVideoException.class),
     WRONG_PASSWORD("비밀번호가 틀렸습니다.", BAD_REQUEST, WrongPasswordException.class),
     ALREADY_EXIST_FOLLOW("이미 팔로우가 되어있는 사용자입니다.", BAD_REQUEST, AlreadyExistFollowException.class),
-    NOT_SELF_FOLLOW_ABLE("자기 자신은 팔로우 할 수 없습니다.", BAD_REQUEST, NotSelfFollowableException.class);
+    NOT_SELF_FOLLOW_ABLE("본인은 팔로우 할 수 없습니다.", BAD_REQUEST, NotSelfFollowableException.class);
 
     private final String message;
     private final HttpStatus status;
