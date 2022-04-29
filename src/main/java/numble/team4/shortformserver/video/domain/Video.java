@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
 
 @Getter
@@ -24,7 +25,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 @Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
-public class Video {
+public class Video extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
