@@ -3,6 +3,7 @@ package numble.team4.shortformserver.follow.application;
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
+import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -136,5 +137,18 @@ class FollowServiceTest {
 >>>>>>> 143a669 (test: 요청된 팔로우 생성 service 테스트 추가)
             );
         }
+
+        @Test
+        @DisplayName("[실패] 본인을 팔로우하도록 요청")
+        void createFollow_notSelfFollowableException_fail() {
+            //given
+            Member fromUser = makeTestFromUser();
+
+            //when, then
+            assertThrows(NotSelfFollowableException.class,
+                    () -> followService.createFollow(fromUser, fromUser.getId())
+            );
+        }
+
     }
 }
