@@ -62,11 +62,14 @@ public class Video extends BaseTimeEntity {
         this.videoUrl = videoUrl;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
-        this.member = member;
 
         if (Objects.nonNull(member)) {
             setMember(member);
         }
+    }
+
+    public void addCommentToVideo(Comment comment) {
+        comments.addComment(comment);
     }
 
     public void setMember(Member member) {
@@ -79,7 +82,7 @@ public class Video extends BaseTimeEntity {
         this.description = video.getDescription();
     }
 
-    public void addCommentToVideo(Comment comment) {
-        comments.addComment(comment);
+    public boolean isAuthorOf(Member member) {
+        return this.member.equals(member);
     }
 }
