@@ -91,15 +91,5 @@ class FollowServiceTest {
                     () -> followService.createFollow(fromUser, toUser.getId())
             );
         }
-
-        @Test
-        @DisplayName("[실패] 본인을 팔로우하도록 요청")
-        void createFollow_notSelfFollowableException_fail() {
-            //when, then
-            assertThrows(NotSelfFollowableException.class,
-                    () -> followService.createFollow(fromUser, fromUser.getId())
-            );
-        }
-
     }
 }
