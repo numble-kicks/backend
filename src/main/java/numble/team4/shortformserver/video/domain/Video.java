@@ -74,6 +74,10 @@ public class Video extends BaseTimeEntity {
         member.getVideos().add(this);
     }
 
+    public void update(Video video) {
+        this.title = video.getTitle();
+        this.description = video.getDescription();
+    }
 
     public void addCommentToVideo(Comment comment) {
         comments.addComment(comment);
