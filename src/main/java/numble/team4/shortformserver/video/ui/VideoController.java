@@ -27,7 +27,7 @@ public class VideoController {
     @PostMapping
     public CommonResponse saveVideo(@ModelAttribute VideoRequest videoRequest,
         Member member) throws IOException {
-        videoService.upload(videoRequest, member);
+        videoService.uploadVideo(videoRequest, member);
         return CommonResponse.from(UPLOAD_VIDEO.getMessage());
     }
 }
