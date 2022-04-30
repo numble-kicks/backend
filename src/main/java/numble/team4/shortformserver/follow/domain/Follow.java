@@ -10,7 +10,6 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
-@Builder
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PROTECTED)
 public class Follow {
@@ -26,4 +25,8 @@ public class Follow {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "to_member", nullable = false)
     private Member toMember;
+
+    public static Follow fromMembers(Member fromMember, Member toMember) {
+        return new Follow(null, fromMember, toMember);
+    }
 }
