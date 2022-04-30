@@ -3,16 +3,16 @@ package numble.team4.shortformserver.video.ui;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
 import java.io.IOException;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoRequest;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -22,9 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class VideoController {
 
     private final VideoService videoService;
+    private final MemberRepository memberRepository;
 
     @PostMapping
-    public CommonResponse saveVideo(@RequestParam @Valid VideoRequest videoRequest,
+    public CommonResponse saveVideo(@ModelAttribute VideoRequest videoRequest,
         Member member) throws IOException {
         videoService.upload(videoRequest, member);
         return CommonResponse.from(UPLOAD_VIDEO.getMessage());
