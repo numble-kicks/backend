@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
+import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -29,4 +30,8 @@ public class Member extends BaseTimeEntity {
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
     private boolean emailVerified;
+
+    public boolean isEqualMember(Member member) {
+        return id.equals(member.id);
+    }
 }

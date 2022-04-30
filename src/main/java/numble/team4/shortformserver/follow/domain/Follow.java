@@ -1,6 +1,8 @@
 package numble.team4.shortformserver.follow.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.member.member.domain.Member;
 
@@ -28,7 +30,7 @@ public class Follow {
     private Member toMember;
 
     public static Follow fromMembers(Member fromMember, Member toMember) {
-        if (fromMember.getId().equals(toMember.getId())) {
+        if (fromMember.isEqualMember(toMember)) {
             throw new NotSelfFollowableException();
         }
         return new Follow(null, fromMember, toMember);
