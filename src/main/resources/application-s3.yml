@@ -11,4 +11,4 @@ cloud:
       auto: false
 
 cloudfront:
-  url: ${env.CLOUD_FRONT_URL}
+  url: https://d659rm6fgd091.cloudfront.net/
