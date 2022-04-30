@@ -11,16 +11,18 @@ CREATE TABLE comment
 
 CREATE TABLE video
 (
-    id            bigint       not null auto_increment,
+    id            bigint       NOT NULL AUTO_INCREMENT,
+    create_at     datetime(6)  DEFAULT NULL,
+    modified_at   datetime(6)  DEFAULT NULL,
     description   varchar(255),
     like_count    bigint,
-    thumbnail_url varchar(255) not null,
-    title         varchar(255) not null,
-    video_url     varchar(255) not null,
+    thumbnail_url varchar(255) NOT NULL,
+    title         varchar(255) NOT NULL,
+    video_url     varchar(255) NOT NULL,
     view_count    bigint,
     member_id     bigint,
-    primary key (id)
-) ENGINE=InnoDB
+    PRIMARY KEY (id)
+) ENGINE=InnoDB;
 
 CREATE TABLE like_video
 (
