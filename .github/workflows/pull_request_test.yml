@@ -55,11 +55,12 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Test with Gradle
-        run: SPRING_PROFILES_ACTIVE=test CLOUD_AWS_CREDENTIALS_ACCESSKEY=$ACCESS CLOUD_AWS_CREDENTIALS_SECRETKEY=$SECRET CLOUD_AWS_S3_BUCKET=$BUCKET CLOUD_AWS_REGION_STATIC="ap-northeast-2" CLOUD_AWS_STACK_AUTO=false ./gradlew --info test
+        run: SPRING_PROFILES_ACTIVE=test CLOUD_AWS_CREDENTIALS_ACCESSKEY=$ACCESS CLOUD_AWS_CREDENTIALS_SECRETKEY=$SECRET CLOUD_AWS_S3_BUCKET=$BUCKET CLOUD_AWS_REGION_STATIC="ap-northeast-2" CLOUD_AWS_STACK_AUTO=false CLOUDFRONT_URL=$CLOUD ./gradlew --info test
         env: 
           SECRET: ${{ secrets.S3_SECRET_KEY }}
           ACCESS: ${{ secrets.S3_ACCESS_KEY}}
           BUCKET: ${{ secrets.S3_BUCKET_NAME}}
+          CLOUD: ${{ secrets.CLOUDFRONT_URL }}
 
 
       - name: Publish Unit Test Results # test 후 result를 보기 위해 추가
