@@ -3,15 +3,11 @@ package numble.team4.shortformserver.follow.domain;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.util.List;
 
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
@@ -26,18 +22,19 @@ class FollowRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
 
-    Member makeTestToUser() {
-        Member testUser1 = Member.builder()
-                .emailVerified(true)
-                .build();
-        return memberRepository.save(testUser1);
-    }
+    private static Member fromUser;
+    private static Member toUser;
 
-    Member makeTestFromUser() {
-        Member testUser1 = Member.builder()
+    @BeforeEach
+    void init() {
+        fromUser = Member.builder()
                 .emailVerified(true)
                 .build();
-        return memberRepository.save(testUser1);
+        toUser = Member.builder()
+                .emailVerified(true)
+                .build();
+        memberRepository.save(fromUser);
+        memberRepository.save(toUser);
     }
 
     @Nested
@@ -48,10 +45,7 @@ class FollowRepositoryTest {
         @DisplayName("[성공] 정상적인 상태의 팔로우")
         void save_createFollow_success() {
             //given
-            Member from = makeTestFromUser();
-            Member to = makeTestToUser();
-
-            Follow follow = Follow.fromMembers(from, to);
+            Follow follow = Follow.fromMembers(fromUser, toUser);
 
             //when
             followRepository.save(follow);
