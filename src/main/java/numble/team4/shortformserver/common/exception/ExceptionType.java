@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.aws.exception.AmazonClientException;
 import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
+import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
-import numble.team4.shortformserver.video.exception.NotLoggedInException;
+import numble.team4.shortformserver.member.member.exception.NotLoggedInException;
 import org.springframework.http.HttpStatus;
 
 @Getter
@@ -21,7 +22,8 @@ public enum ExceptionType {
     WRONG_PASSWORD("비밀번호가 틀렸습니다.", BAD_REQUEST, WrongPasswordException.class),
     NOT_EXIST_FILE("존재하지 않는 파일입니다.", BAD_REQUEST, NotExistFileException.class),
     AMAZON_CLIENT_EXCEPTION("아마존 서버에 업로드하는 과정에서 오류가 발생하였습니다.", INTERNAL_SERVER_ERROR, AmazonClientException.class),
-    NOT_LOGGED_IN("로그인이 되어있지 않습니다.", UNAUTHORIZED, NotLoggedInException.class);
+    NOT_LOGGED_IN("로그인이 되어있지 않습니다.", UNAUTHORIZED, NotLoggedInException.class),
+    NOT_AUTHOR_EXCEPTION("작성자가 아니므로 권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class);
 
     private final String message;
     private final HttpStatus status;
