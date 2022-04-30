@@ -46,7 +46,8 @@ jobs:
           echo "DB_URL=${{secrets.DB_URL}}" >> .env
           echo "DB_USERNAME=${{secrets.DB_USERNAME}}" >> .env
           echo "DB_PASSWORD=${{secrets.DB_PASSWORD}}" >> .env
-            
+          echo "CLOUDFRONT_URL=${{secrets.CLOUDFRONT_URL}}" >> .env
+
 
       # copy .env file
       - name: copy .env file

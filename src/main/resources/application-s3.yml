@@ -9,3 +9,6 @@ cloud:
       static: ap-northeast-2
     stack:
       auto: false
+
+cloudfront:
+  url: https://d659rm6fgd091.cloudfront.net/
