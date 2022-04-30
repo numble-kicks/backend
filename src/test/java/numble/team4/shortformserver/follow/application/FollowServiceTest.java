@@ -3,7 +3,6 @@ package numble.team4.shortformserver.follow.application;
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
-import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -34,15 +33,18 @@ class FollowServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
+    private static final Long fromId = 10L;
+    private static final Long toId = 11L;
+
     private static Member fromUser;
     private static Member toUser;
 
     @BeforeAll
     static void init() {
         fromUser = Member.builder()
-                .id(10L).emailVerified(true).build();
+                .id(fromId).emailVerified(true).build();
         toUser = Member.builder()
-                .id(11L).emailVerified(true).build();
+                .id(toId).emailVerified(true).build();
     }
 
     @Nested
@@ -55,13 +57,13 @@ class FollowServiceTest {
             //given
             Follow follow = Follow.fromMembers(fromUser, toUser);
 
-            when(memberRepository.findById(toUser.getId())).thenReturn(Optional.of(toUser));
-            when(followRepository.existsByFromMember_IdAndToMember_Id(fromUser.getId(), toUser.getId()))
+            when(memberRepository.findById(toId)).thenReturn(Optional.of(toUser));
+            when(followRepository.existsByFromMember_IdAndToMember_Id(fromId, toId))
                     .thenReturn(false);
             when(followRepository.save(any())).thenReturn(follow);
 
             //when
-            followService.createFollow(fromUser, toUser.getId());
+            followService.createFollow(fromUser, toId);
 
             //then
             verify(followRepository, times(1)).save(any());
@@ -75,20 +77,20 @@ class FollowServiceTest {
 
             //when, then
             assertThrows(NotExistMemberException.class,
-                    () -> followService.createFollow(fromUser, toUser.getId()));
+                    () -> followService.createFollow(fromUser, toId));
         }
 
         @Test
         @DisplayName("[실패] 이미 팔로우 한 사용자를 또 팔로우")
         void createFollow_AlreadyExistFollowException_fail() {
             //given
-            when(memberRepository.findById(toUser.getId())).thenReturn(Optional.of(toUser));
-            when(followRepository.existsByFromMember_IdAndToMember_Id(fromUser.getId(), toUser.getId()))
+            when(memberRepository.findById(toId)).thenReturn(Optional.of(toUser));
+            when(followRepository.existsByFromMember_IdAndToMember_Id(fromId, toId))
                     .thenReturn(true);
 
             //when, then
             assertThrows(AlreadyExistFollowException.class,
-                    () -> followService.createFollow(fromUser, toUser.getId())
+                    () -> followService.createFollow(fromUser, toId)
             );
         }
     }
