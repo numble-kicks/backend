@@ -11,7 +11,7 @@ import numble.team4.shortformserver.video.domain.Video;
 import org.springframework.web.multipart.MultipartFile;
 
 @Getter
-@AllArgsConstructor(access = PRIVATE)
+@AllArgsConstructor(access = PUBLIC)
 @NoArgsConstructor(access = PROTECTED)
 @Builder
 public class VideoRequest {
