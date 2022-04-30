@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.follow.domain;
 
 import lombok.*;
+import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.member.member.domain.Member;
 
 import javax.persistence.*;
@@ -27,6 +28,9 @@ public class Follow {
     private Member toMember;
 
     public static Follow fromMembers(Member fromMember, Member toMember) {
+        if (fromMember.getId().equals(toMember.getId())) {
+            throw new NotSelfFollowableException();
+        }
         return new Follow(null, fromMember, toMember);
     }
 }

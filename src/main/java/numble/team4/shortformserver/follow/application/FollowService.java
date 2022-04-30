@@ -18,10 +18,6 @@ public class FollowService {
     private final MemberRepository memberRepository;
 
     public void createFollow(Member member, Long toMemberId) {
-        if (member.getId().equals(toMemberId)) {
-            throw new NotSelfFollowableException();
-        }
-
         Member toMember = memberRepository.findById(toMemberId).orElseThrow(NotExistMemberException::new);
 
         if (followRepository.existsByFromMember_IdAndToMember_Id(member.getId(), toMemberId)) {
