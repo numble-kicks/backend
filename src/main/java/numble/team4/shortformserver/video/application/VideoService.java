@@ -12,20 +12,24 @@ import numble.team4.shortformserver.member.member.exception.NotExistMemberExcept
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
+import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VideoService {
 
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
     private final AmazonS3Uploader amazonS3Uploader;
 
-    public Video uploadVideo(VideoRequest videoRequest, Member LoggedInMember)
+    @Transactional
+    public VideoResponse uploadVideo(VideoRequest videoRequest, Member LoggedInMember)
         throws IOException {
         Member member = findMember(LoggedInMember);
         
@@ -34,17 +38,18 @@ public class VideoService {
 
         Video video = videoRequest.toVideo(videoDto.getFileUrl(), thumbnailDto.getFileUrl(), member);
 
-        return videoRepository.save(video);
+        return VideoResponse.of(videoRepository.save(video));
     }
 
-    public Video updateVideo(VideoUpdateRequest videoUpdateRequest, Member LoggedInMember, Long videoId) {
+    @Transactional
+    public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Member LoggedInMember, Long videoId) {
         Video video = findVideo(videoId);
         Member member = findMember(LoggedInMember);
 
         validateAuthor(member, video);
 
         video.update(videoUpdateRequest.toVideo());
-        return video;
+        return VideoResponse.of(video);
     }
 
     private void validateAuthor(Member member, Video video) {
