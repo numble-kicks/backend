@@ -26,7 +26,7 @@ public class OauthClientFactory {
 
     private OauthProvider findMatchProvider(String providerName) {
         return Arrays.stream(OauthProvider.values())
-                .filter(provider -> provider.getProviderName().equals(providerName))
+                .filter(provider -> provider.isEqualProviderName(providerName))
                 .findAny()
                 .orElseThrow(NotExistProviderException::new);
     }
