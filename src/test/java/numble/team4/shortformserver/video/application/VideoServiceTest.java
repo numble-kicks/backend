@@ -17,6 +17,7 @@ import numble.team4.shortformserver.member.member.exception.NotExistMemberExcept
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
+import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
@@ -96,10 +97,10 @@ class VideoServiceTest {
         given(videoRepository.save(any())).willReturn(video);
 
         // when
-        Video uploadedVideo = videoService.uploadVideo(videoRequest, member);
+        VideoResponse savedVideo = videoService.uploadVideo(videoRequest, member);
 
         // then
-        assertThat(video).isEqualTo(uploadedVideo);
+        assertThat(VideoResponse.of(video)).isEqualTo(savedVideo);
     }
 
     @Test
@@ -136,12 +137,12 @@ class VideoServiceTest {
         given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
 
         // when
-        Video updatedVideo = videoService.updateVideo(videoUpdateRequest, member, this.video.getId());
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member, this.video.getId());
 
         // then
-        assertThat(updatedVideo.getId()).isEqualTo(video.getId());
-        assertThat(updatedVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
-        assertThat(updatedVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
+        assertThat(videoResponse.getId()).isEqualTo(video.getId());
+        assertThat(videoResponse.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
+        assertThat(videoResponse.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
     }
 
     @Test
