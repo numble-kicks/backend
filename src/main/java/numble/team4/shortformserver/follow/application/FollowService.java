@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
-import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
+import numble.team4.shortformserver.follow.exception.NotFollowingException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -26,6 +26,15 @@ public class FollowService {
 
         Follow newFollow = Follow.fromMembers(member, toMember);
         followRepository.save(newFollow);
+    }
+
+    public void deleteFollow(Member member, Long toMemberId) {
+        memberRepository.findById(toMemberId).orElseThrow(NotExistMemberException::new);
+
+        if (!followRepository.existsByFromMember_IdAndToMember_Id(member.getId(), toMemberId)) {
+            throw new NotFollowingException();
+        }
+        followRepository.deleteByFromMember_IdAndToMember_Id(member.getId(), toMemberId);
     }
 
 }
