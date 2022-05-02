@@ -11,7 +11,7 @@ import numble.team4.shortformserver.member.auth.exception.WrongPasswordException
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
-import numble.team4.shortformserver.member.member.exception.NotLoggedInException;
+import numble.team4.shortformserver.member.auth.exception.NotLoggedInException;
 import org.springframework.http.HttpStatus;
 
 @Getter
