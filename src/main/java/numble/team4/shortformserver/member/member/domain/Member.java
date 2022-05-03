@@ -33,6 +33,7 @@ public class Member extends BaseTimeEntity {
     private String profileImageUrl;
     private boolean emailVerified;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<Video> videos = new ArrayList<>();
 
