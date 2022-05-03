@@ -3,6 +3,7 @@ package numble.team4.shortformserver.video.ui;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -71,7 +72,11 @@ class VideoControllerTest {
             .id(10L)
             .title("title")
             .description("description")
+            .videoUrl("test url")
+            .thumbnailUrl("test url")
             .member(member)
+            .viewCount(0L)
+            .likeCount(0L)
             .build();
     }
 
@@ -87,10 +92,11 @@ class VideoControllerTest {
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
         given(videoRepository.findById(anyLong())).willReturn(Optional.ofNullable(video));
-        given(videoService.updateVideo(videoUpdateRequest, member.getId(), video.getId())).willReturn(
-            VideoResponse.of(video));
 
         // when
+        when(videoService.updateVideo(videoUpdateRequest, member.getId(), video.getId()))
+            .thenReturn(VideoResponse.of(video));
+
         ResultActions res = mockMvc.perform(
             MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
                 .contentType(APPLICATION_JSON)
