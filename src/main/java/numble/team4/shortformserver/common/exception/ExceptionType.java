@@ -27,9 +27,7 @@ public enum ExceptionType {
     NOT_EXIST_FILE("존재하지 않는 파일입니다.", BAD_REQUEST, NotExistFileException.class),
     AMAZON_CLIENT_EXCEPTION("아마존 서버에 업로드하는 과정에서 오류가 발생하였습니다.", INTERNAL_SERVER_ERROR, AmazonClientException.class),
     NOT_LOGGED_IN("로그인이 되어있지 않습니다.", UNAUTHORIZED, NotLoggedInException.class),
-    NOT_AUTHOR_EXCEPTION("작성자가 아니므로 권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class);
-
-
+    NOT_AUTHOR_EXCEPTION("접근권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class);
 
     private final String message;
     private final HttpStatus status;
