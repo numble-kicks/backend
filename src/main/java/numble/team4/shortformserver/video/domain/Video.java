@@ -5,7 +5,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -52,29 +51,17 @@ public class Video extends BaseTimeEntity {
     @Embedded
     private Comments comments;
 
-    @Builder
-    public Video(String title, String description, String thumbnailUrl, String videoUrl,
-        Long viewCount, Long likeCount,
-        Member member) {
-        this.title = title;
-        this.description = description;
-        this.thumbnailUrl = thumbnailUrl;
-        this.videoUrl = videoUrl;
-        this.viewCount = viewCount;
-        this.likeCount = likeCount;
-
-        if (Objects.nonNull(member)) {
-            setMember(member);
-        }
-    }
-
     public void addCommentToVideo(Comment comment) {
         comments.addComment(comment);
     }
 
-    public void setMember(Member member) {
+    public void addVideoToMember(Member member) {
         this.member = member;
         member.getVideos().add(this);
+    }
+
+    public void removeVideoToMember(Member member) {
+        member.getVideos().remove(this);
     }
 
     public void update(Video video) {
@@ -84,5 +71,10 @@ public class Video extends BaseTimeEntity {
 
     public boolean isAuthorOf(Member member) {
         return this.member.equals(member);
+    }
+
+    public void increaseViewCount() {
+        this.viewCount += 1;
+
     }
 }
