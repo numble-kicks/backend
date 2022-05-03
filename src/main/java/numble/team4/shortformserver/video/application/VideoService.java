@@ -38,7 +38,9 @@ public class VideoService {
 
         Video video = videoRequest.toVideo(videoDto.getFileUrl(), thumbnailDto.getFileUrl(), member);
 
-        return VideoResponse.of(videoRepository.save(video));
+        Video saveVideo = videoRepository.save(video);
+        saveVideo.addVideoToComment(member);
+        return VideoResponse.of(saveVideo);
     }
 
     @Transactional
