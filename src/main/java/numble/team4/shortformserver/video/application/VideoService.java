@@ -24,32 +24,49 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class VideoService {
 
+
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
     private final AmazonS3Uploader amazonS3Uploader;
 
     @Transactional
-    public VideoResponse uploadVideo(VideoRequest videoRequest, Member LoggedInMember)
+    public VideoResponse uploadVideo(VideoRequest videoRequest, Long memberId)
         throws IOException {
-        Member member = findMember(LoggedInMember);
-        
+        Member member = findMember(memberId);
+
         S3UploadDto videoDto = amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video");
         S3UploadDto thumbnailDto = amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail");
 
         Video video = videoRequest.toVideo(videoDto.getFileUrl(), thumbnailDto.getFileUrl(), member);
 
-        return VideoResponse.of(videoRepository.save(video));
+        Video saveVideo = videoRepository.save(video);
+        saveVideo.addVideoToMember(member);
+
+        return VideoResponse.of(saveVideo);
     }
 
     @Transactional
-    public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Member LoggedInMember, Long videoId) {
+    public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Long memberId, Long videoId) {
         Video video = findVideo(videoId);
-        Member member = findMember(LoggedInMember);
+        Member member = findMember(memberId);
 
         validateAuthor(member, video);
 
         video.update(videoUpdateRequest.toVideo());
         return VideoResponse.of(video);
+    }
+
+    @Transactional
+    public void deleteVideo(Long videoId, Long memberId) {
+        Video video = findVideo(videoId);
+        Member member = findMember(memberId);
+
+        validateAuthor(member, video);
+
+        amazonS3Uploader.deleteToS3(video.getVideoUrl());
+        amazonS3Uploader.deleteToS3(video.getThumbnailUrl());
+
+        videoRepository.delete(video);
     }
 
     private void validateAuthor(Member member, Video video) {
@@ -62,8 +79,8 @@ public class VideoService {
         return videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
     }
 
-    private Member findMember(Member member) {
-        return memberRepository.findById(member.getId())
+    private Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
             .orElseThrow(NotExistMemberException::new);
     }
 
