@@ -12,6 +12,8 @@ CREATE TABLE comment
 CREATE TABLE video
 (
     id bigint NOT NULL AUTO_INCREMENT,
+    create_at     datetime(6)  DEFAULT NULL,
+    modified_at   datetime(6)  DEFAULT NULL,
     description   varchar(255),
     like_count    bigint,
     thumbnail_url varchar(255),
