@@ -1,8 +1,11 @@
 package numble.team4.shortformserver.video.ui;
 
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_AUTHOR_EXCEPTION;
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -10,17 +13,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Optional;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
+import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -80,32 +85,89 @@ class VideoControllerTest {
             .build();
     }
 
-    //== video 수정 테스트 ==//
-    @Test
-    @DisplayName("video 수정 - 성공")
-    void updateVideo_success() throws Exception {
-        // given
-        VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
-            .title("update title")
-            .description("description")
-            .build();
+    @Nested
+    @DisplayName("Video 수정 테스트")
+    class updateVideo {
+        @Test
+        @DisplayName("video 수정 - 성공")
+        void updateVideo_success() throws Exception {
+            // given
+            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
+                .title("update title")
+                .description("description")
+                .build();
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
-        given(videoRepository.findById(anyLong())).willReturn(Optional.ofNullable(video));
+            VideoResponse videoResponse = VideoResponse.of(video);
 
-        // when
-        when(videoService.updateVideo(videoUpdateRequest, member.getId(), video.getId()))
-            .thenReturn(VideoResponse.of(video));
+            // when
+            when(
+                videoService.updateVideo(any(VideoUpdateRequest.class),anyLong(), anyLong())).thenReturn(
+                videoResponse);
 
-        ResultActions res = mockMvc.perform(
-            MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(videoUpdateRequest))
-                .queryParam("memberId", String.format("%s", member.getId())));
+            ResultActions res = mockMvc.perform(
+                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(videoUpdateRequest))
+                    .queryParam("memberId", String.valueOf(member.getId()))
+            );
 
-        // then
-        res.andExpect(status().isOk())
-            .andExpect(jsonPath("$.message").value(UPDATE_VIDEO.getMessage()))
-            .andDo(print());
+            // then
+            res.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(video.getId()))
+                .andExpect(jsonPath("$.message").value(UPDATE_VIDEO.getMessage()))
+                .andDo(print());
+        }
+
+        @Test
+        @DisplayName("Video 수정 - 실패, 존재하지 않는 영상일 경우")
+        void updateVideo_notExistVideo() throws Exception {
+            // given
+            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
+                .title("update title")
+                .description("description")
+                .build();
+
+            // when
+            doThrow(new NotExistVideoException()).when(videoService)
+                .updateVideo(any(VideoUpdateRequest.class), anyLong(), anyLong());
+
+            ResultActions res = mockMvc.perform(
+                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(videoUpdateRequest))
+                    .queryParam("memberId", String.valueOf(member.getId()))
+            );
+
+            // then
+            res.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(NOT_EXIST_VIDEO.getMessage()))
+                .andDo(print());
+        }
+
+        @Test
+        @DisplayName("Video 수정 - 실패, 접근 권한이 없는 경우")
+        void updateVideo_notAuthor() throws Exception {
+            // given
+            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
+                .title("update title")
+                .description("description")
+                .build();
+
+            // when
+            doThrow(new NotAuthorException()).when(videoService)
+                .updateVideo(any(VideoUpdateRequest.class), anyLong(), anyLong());
+
+            ResultActions res = mockMvc.perform(
+                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                    .contentType(APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(videoUpdateRequest))
+                    .queryParam("memberId", String.valueOf(member.getId()))
+            );
+
+            // then
+            res.andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
+                .andDo(print());
+        }
     }
 }
