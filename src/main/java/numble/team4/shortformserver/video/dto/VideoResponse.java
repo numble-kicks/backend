@@ -8,8 +8,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.video.domain.Comments;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -38,11 +36,6 @@ public class VideoResponse {
 
     @NonNull
     private Long likeCount;
-
-    @NonNull
-    private Member member;
-
-    private Comments comments;
 
     public static VideoResponse of(Video video) {
         return VideoResponse.builder()
