@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -39,9 +40,10 @@ public class VideoController {
     @PutMapping("/{videoId}")
     public CommonResponse<VideoResponse> updateVideo(
         @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
+        @RequestParam Long memberId,
         Member loggedInMember,
         @PathVariable Long videoId) {
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember.getId(),
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, memberId,
             videoId);
         return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
     }
