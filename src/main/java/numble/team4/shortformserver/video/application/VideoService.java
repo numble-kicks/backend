@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class VideoService {
 
-
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
     private final AmazonS3Uploader amazonS3Uploader;
@@ -33,7 +32,7 @@ public class VideoService {
     public VideoResponse uploadVideo(VideoRequest videoRequest, Long memberId)
         throws IOException {
         Member member = findMember(memberId);
-
+        
         S3UploadDto videoDto = amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video");
         S3UploadDto thumbnailDto = amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail");
 

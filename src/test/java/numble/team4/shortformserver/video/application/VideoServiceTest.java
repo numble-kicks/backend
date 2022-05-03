@@ -137,7 +137,7 @@ class VideoServiceTest {
         given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
 
         // when
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member.getId(), video.getId());
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member.getId(), this.video.getId());
 
         // then
         assertThat(videoResponse.getId()).isEqualTo(video.getId());
@@ -165,6 +165,7 @@ class VideoServiceTest {
     @DisplayName("video 수정 - 실패, 저장한 영상이 존재하지 않을 경우")
     void updateVideo_notExistVideo() throws Exception {
         assertThrows(NotExistVideoException.class,
+            () -> videoService.updateVideo(any(), member.getId(), 1L));
             () -> videoService.updateVideo(any(), member.getId(), 1L));
     }
 

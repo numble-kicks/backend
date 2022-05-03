@@ -27,5 +27,4 @@ public class FollowService {
         Follow newFollow = Follow.fromMembers(member, toMember);
         followRepository.save(newFollow);
     }
-
 }

@@ -1,11 +1,5 @@
 package numble.team4.shortformserver.member.member.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import numble.team4.shortformserver.common.domain.BaseTimeEntity;
-import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -38,7 +32,8 @@ public class Member extends BaseTimeEntity {
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
     private boolean emailVerified;
- 
+
+    @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<Video> videos = new ArrayList<>();
 
