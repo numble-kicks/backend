@@ -2,10 +2,12 @@ package numble.team4.shortformserver.video.dto;
 
 import static lombok.AccessLevel.*;
 
+import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,12 +16,18 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor(access = PUBLIC)
 @NoArgsConstructor(access = PROTECTED)
 @Builder
+@Valid
 public class VideoRequest {
 
+    @NonNull
     private MultipartFile video;
+    @NonNull
     private MultipartFile thumbnail;
-    private String category;
+
+    @NonNull
     private String title;
+
+    private String category;
     private String description;
 
     public Video toVideo(String videoUrl, String thumbnailUrl, Member member) {
