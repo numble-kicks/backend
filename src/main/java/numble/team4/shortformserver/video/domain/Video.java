@@ -18,10 +18,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @Entity
 @Builder
+@DynamicUpdate
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PRIVATE)
 public class Video extends BaseTimeEntity {
