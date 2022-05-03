@@ -19,8 +19,10 @@ CREATE TABLE video
     video_url     varchar(255) not null,
     view_count    bigint,
     member_id     bigint,
+    create_at   datetime(6) DEFAULT NULL,
+    modified_at datetime(6) DEFAULT NULL,
     primary key (id)
-) ENGINE=InnoDB
+) ENGINE=InnoDB;
 
 CREATE TABLE like_video
 (
