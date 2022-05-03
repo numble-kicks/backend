@@ -87,7 +87,7 @@ class VideoControllerTest {
 
         given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
         given(videoRepository.findById(anyLong())).willReturn(Optional.ofNullable(video));
-        given(videoService.updateVideo(videoUpdateRequest, member, video.getId())).willReturn(
+        given(videoService.updateVideo(videoUpdateRequest, member.getId(), video.getId())).willReturn(
             VideoResponse.of(video));
 
         // when
