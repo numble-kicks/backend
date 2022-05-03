@@ -162,7 +162,7 @@ class VideoServiceTest {
     }
 
     @Test
-    @DisplayName("video 수정 - 실패, 저장한 영상이 존재하지 않을 경우")
+    @DisplayName("video 수정 - 실패, 존재하지 않는 영상을 수정할 경우")
     void updateVideo_notExistVideo() throws Exception {
         assertThrows(NotExistVideoException.class,
             () -> videoService.updateVideo(any(), member.getId(), 1L));
