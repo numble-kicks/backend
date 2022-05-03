@@ -97,10 +97,10 @@ class VideoServiceTest {
         given(videoRepository.save(any())).willReturn(video);
 
         // when
-        VideoResponse savedVideo = videoService.uploadVideo(videoRequest, member);
+        VideoResponse savedVideo = videoService.uploadVideo(videoRequest, member.getId());
 
         // then
-        assertThat(VideoResponse.of(video)).isEqualTo(savedVideo);
+        assertThat(VideoResponse.of(video).getId()).isEqualTo(savedVideo.getId());
     }
 
     @Test
@@ -108,7 +108,7 @@ class VideoServiceTest {
     public void uploadVideo_notExistMember() throws Exception {
         // then
         assertThrows(NotExistMemberException.class,
-            () -> videoService.uploadVideo(videoRequest, member));
+            () -> videoService.uploadVideo(videoRequest, member.getId()));
     }
 
     @Test
@@ -120,7 +120,7 @@ class VideoServiceTest {
 
         // then
         assertThrows(NotExistFileException.class,
-            () -> videoService.uploadVideo(videoRequest, member));
+            () -> videoService.uploadVideo(videoRequest, member.getId()));
     }
 
     //== video 수정 테스트 ==//
@@ -137,7 +137,7 @@ class VideoServiceTest {
         given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
 
         // when
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member, this.video.getId());
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member.getId(), this.video.getId());
 
         // then
         assertThat(videoResponse.getId()).isEqualTo(video.getId());
@@ -158,13 +158,13 @@ class VideoServiceTest {
 
         // when, then
         assertThrows(NotAuthorException.class,
-            () -> videoService.updateVideo(any(), notAuthor, video.getId()));
+            () -> videoService.updateVideo(any(), notAuthor.getId(), video.getId()));
     }
 
     @Test
     @DisplayName("video 수정 - 실패, 저장한 영상이 존재하지 않을 경우")
     void updateVideo_notExistVideo() throws Exception {
         assertThrows(NotExistVideoException.class,
-            () -> videoService.updateVideo(any(), member, 1L));
+            () -> videoService.updateVideo(any(), member.getId(), 1L));
     }
 }

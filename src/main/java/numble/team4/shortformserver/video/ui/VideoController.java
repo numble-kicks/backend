@@ -32,7 +32,7 @@ public class VideoController {
     @PostMapping
     public CommonResponse<VideoResponse> saveVideo(@ModelAttribute VideoRequest videoRequest,
         Member loggedInMember) throws IOException {
-        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember);
+        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember.getId());
         return CommonResponse.of(videoResponse, UPLOAD_VIDEO.getMessage());
     }
 
@@ -41,7 +41,7 @@ public class VideoController {
         @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
         Member loggedInMember,
         @PathVariable Long videoId) {
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember,
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember.getId(),
             videoId);
         return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
     }
