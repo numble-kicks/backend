@@ -9,14 +9,17 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
 
+    @Transactional
     public void createFollow(Member member, Long toMemberId) {
         Member toMember = memberRepository.findById(toMemberId).orElseThrow(NotExistMemberException::new);
 
@@ -28,6 +31,7 @@ public class FollowService {
         followRepository.save(newFollow);
     }
 
+    @Transactional
     public void deleteFollow(Member member, Long toMemberId) {
         memberRepository.findById(toMemberId).orElseThrow(NotExistMemberException::new);
 
