@@ -1,5 +1,6 @@
 package numble.team4.shortformserver.video.ui;
 
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
@@ -13,6 +14,7 @@ import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +34,7 @@ public class VideoController {
     @PostMapping
     public CommonResponse<VideoResponse> saveVideo(@ModelAttribute VideoRequest videoRequest,
         Member loggedInMember) throws IOException {
-        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember);
+        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember.getId());
         return CommonResponse.of(videoResponse, UPLOAD_VIDEO.getMessage());
     }
 
@@ -41,8 +43,15 @@ public class VideoController {
         @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
         Member loggedInMember,
         @PathVariable Long videoId) {
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember,
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember.getId(),
             videoId);
         return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
+    }
+
+    @DeleteMapping("/{videoId}")
+    public CommonResponse<VideoResponse> deleteVideo(@PathVariable Long videoId, Member loggedInMember) {
+        videoService.deleteVideo(videoId, loggedInMember.getId());
+
+        return CommonResponse.from(DELETE_VIDEO.getMessage());
     }
 }
