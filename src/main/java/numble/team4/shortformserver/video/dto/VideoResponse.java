@@ -2,7 +2,6 @@ package numble.team4.shortformserver.video.dto;
 
 import static lombok.AccessLevel.PROTECTED;
 
-import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,7 +11,6 @@ import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
 @Builder
-@Valid
 @AllArgsConstructor
 @NoArgsConstructor(access = PROTECTED)
 public class VideoResponse {
