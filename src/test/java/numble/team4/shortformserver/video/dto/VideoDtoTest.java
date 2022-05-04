@@ -36,7 +36,7 @@ class VideoDtoTest {
             videoUpdateRequest);
 
         // then
-        assertThat(violations.size()).isEqualTo(2);
+        assertThat(violations.size()).isEqualTo(1);
     }
 
     @Test
@@ -53,6 +53,6 @@ class VideoDtoTest {
         Set<ConstraintViolation<VideoRequest>> violations = validator.validate(videoRequest);
 
         // then
-        assertThat(violations.size()).isEqualTo(4);
+        assertThat(violations.size()).isEqualTo(3);
     }
 }

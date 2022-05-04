@@ -4,7 +4,6 @@ import static lombok.AccessLevel.PROTECTED;
 import static lombok.AccessLevel.PUBLIC;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +25,7 @@ public class VideoRequest {
     @NotNull(message = "썸네일은 null 일 수 없습니다.")
     private MultipartFile thumbnail;
 
-    @NotEmpty(message = "title은 비어있을 수 없습니다.")
-    @NotBlank(message = "공백만 입력할 수 없습니다.")
+    @NotBlank(message = "제목은 비어있을 수 없습니다.")
     private String title;
 
     private String category;

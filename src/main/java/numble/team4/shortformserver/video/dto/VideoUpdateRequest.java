@@ -3,7 +3,6 @@ package numble.team4.shortformserver.video.dto;
 import static lombok.AccessLevel.PROTECTED;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,8 +17,7 @@ public class VideoUpdateRequest {
 
     private String category;
 
-    @NotEmpty(message = "제목은 비어있을 수 없습니다.")
-    @NotBlank(message = "공백만 입력할 수 없습니다.")
+    @NotBlank(message = "제목은 비어있을 수 없습니다.")
     private String title;
 
     private String description;
