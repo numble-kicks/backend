@@ -1,13 +1,14 @@
 package numble.team4.shortformserver.video.dto;
 
-import static lombok.AccessLevel.*;
+import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PUBLIC;
 
-import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,15 +17,15 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor(access = PUBLIC)
 @NoArgsConstructor(access = PROTECTED)
 @Builder
-@Valid
 public class VideoRequest {
 
-    @NonNull
+    @NotNull(message = "영상은 null 일 수 없습니다.")
     private MultipartFile video;
-    @NonNull
+
+    @NotNull(message = "썸네일은 null 일 수 없습니다.")
     private MultipartFile thumbnail;
 
-    @NonNull
+    @NotEmpty(message = "title은 비어있을 수 없습니다.")
     private String title;
 
     private String category;
