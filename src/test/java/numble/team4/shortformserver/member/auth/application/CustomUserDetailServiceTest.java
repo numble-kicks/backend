@@ -35,7 +35,7 @@ class CustomUserDetailServiceTest {
         given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
         UserDetails userDetails = userDetailService.loadUserByUsername(String.valueOf(1L));
-        Assertions.assertThat(userDetails.getUsername()).isEqualTo("numble@numble.com");
+        Assertions.assertThat(userDetails.getUsername()).isEqualTo("1");
     }
 
     @DisplayName("유저 이메일이 없으면 예외 발생")
