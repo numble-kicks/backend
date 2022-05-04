@@ -32,19 +32,19 @@ public class KakaoClient implements OauthClient {
     private static final String BEARER = "Bearer %s";
     private static final String CODE = "code";
 
-    @Value("${social.kakao.clientId}")
+    @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String clientId;
 
-    @Value("${social.kakao.getAccessTokenUrl}")
+    @Value("${spring.security.oauth2.client.provider.kakao.token_uri}")
     private String getAccessTokenUrl;
 
-    @Value("${social.kakao.getUserProfileUrl}")
+    @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String getUserProfileUrl;
 
-    @Value("${social.kakao.redirectUri}")
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
 
-    @Value("${social.kakao.redirectUrl}")
+    @Value("${spring.security.oauth2.client.registration.kakao.redirect-url}")
     private String redirectUrl;
 
     private final RestTemplate restTemplate;
