@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -46,7 +47,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(getUserIdFromAccessToken(token).toString());
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
     public String createToken(Member member, String encodingKey, long validTime) {
@@ -78,9 +79,8 @@ public class JwtTokenProvider {
 
     public String extractToken(HttpServletRequest request) {
         String header = request.getHeader(AUTHORIZATION);
-
-        if (header == null || !header.startsWith(BEARER)) {
-            return null;
+        if (!StringUtils.hasText(header) || !header.startsWith(BEARER)) {
+            return header;
         }
 
         return header.split(TOKEN_DELIMITER)[1].trim();
