@@ -31,7 +31,7 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping
-    public CommonResponse<VideoResponse> saveVideo(@ModelAttribute VideoRequest videoRequest,
+    public CommonResponse<VideoResponse> saveVideo(@ModelAttribute @Valid VideoRequest videoRequest,
         Member loggedInMember) throws IOException {
         VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember.getId());
         return CommonResponse.of(videoResponse, UPLOAD_VIDEO.getMessage());
