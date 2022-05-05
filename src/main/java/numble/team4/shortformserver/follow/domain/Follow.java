@@ -11,7 +11,6 @@ import javax.persistence.*;
 import static javax.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
-@Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PROTECTED)
@@ -35,4 +34,9 @@ public class Follow {
         }
         return new Follow(null, fromMember, toMember);
     }
+
+    public boolean isAuthor(Member fromMember) {
+        return fromMember.isEqualMember(this.fromMember);
+    }
+
 }

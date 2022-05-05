@@ -26,10 +26,10 @@ public class FollowController {
         return CommonResponse.from(CREATE_FOLLOW.getMessage());
     }
 
-    @DeleteMapping("/{toUserId}")
-    public CommonResponse deleteFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable("toUserId") Long toMemberId) {
+    @DeleteMapping("/{followId}")
+    public CommonResponse deleteFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable("followId") Long followId) {
         Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
-        followService.deleteFollow(fromMember, toMemberId);
+        followService.deleteFollow(fromMember, followId);
         return CommonResponse.from(DELETE_FOLLOW.getMessage());
     }
 }
