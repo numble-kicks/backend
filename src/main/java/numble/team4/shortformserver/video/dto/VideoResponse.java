@@ -35,7 +35,7 @@ public class VideoResponse {
     @NonNull
     private Long likeCount;
 
-    public static VideoResponse of(Video video) {
+    public static VideoResponse from(Video video) {
         return VideoResponse.builder()
             .id(video.getId())
             .title(video.getTitle())
