@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class VideoController {
 
     private final VideoService videoService;
+    private final MemberRepository memberRepository;
 
     @PostMapping
     public CommonResponse<VideoResponse> saveVideo(@Valid VideoRequest videoRequest,
@@ -39,8 +42,9 @@ public class VideoController {
     public CommonResponse<VideoResponse> updateVideo(
         @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
         @RequestParam Long memberId,
-        Member loggedInMember,
         @PathVariable Long videoId) {
+        Member loggedInMember = memberRepository.findById(memberId).orElseThrow(
+            NotExistMemberException::new);
         VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember,
             videoId);
         return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
