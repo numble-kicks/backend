@@ -2,7 +2,7 @@ package numble.team4.shortformserver.follow.integration;
 
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
-import numble.team4.shortformserver.follow.exception.NotFollowingException;
+import numble.team4.shortformserver.follow.exception.NotExistFollowException;
 import numble.team4.shortformserver.follow.ui.FollowController;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
@@ -74,7 +74,7 @@ public class FollowIntegrationTest {
         void deleteFollow_notFollowingException_fail() {
             //when, then
             assertThrows(
-                    NotFollowingException.class,
+                    NotExistFollowException.class,
                     () -> followController.deleteFollow(fromMember.getId(), toMember.getId())
             );
         }

@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.Arrays;
 
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_MEMBER;
-import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_FOLLOWING;
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_FOLLOW;
 import static numble.team4.shortformserver.follow.ui.FollowResponseMessage.DELETE_FOLLOW;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -88,7 +88,7 @@ public class FollowingBaseAcceptanceTest extends BaseAcceptanceTest {
 
             //then
             res.andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.message").value(NOT_FOLLOWING.getMessage()));
+                    .andExpect(jsonPath("$.message").value(NOT_EXIST_FOLLOW.getMessage()));
         }
     }
 }
