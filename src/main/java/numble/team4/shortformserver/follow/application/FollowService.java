@@ -5,7 +5,7 @@ import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotExistFollowException;
-import numble.team4.shortformserver.follow.exception.NotFollowerException;
+import numble.team4.shortformserver.follow.exception.NotFollowingException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -37,8 +37,8 @@ public class FollowService {
         Follow follow = followRepository.findById(followId)
                 .orElseThrow(NotExistFollowException::new);
 
-        if (!follow.isAuthor(member)) {
-            throw new NotFollowerException();
+        if (!follow.isFollowing(member)) {
+            throw new NotFollowingException();
         }
         followRepository.delete(follow);
     }
