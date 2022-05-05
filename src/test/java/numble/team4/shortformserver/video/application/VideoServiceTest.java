@@ -3,6 +3,7 @@ package numble.team4.shortformserver.video.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
@@ -65,6 +66,7 @@ class VideoServiceTest {
 
         member = Member.builder()
             .id(10L)
+            .email("author@test.com")
             .build();
 
         video = Video.builder()
@@ -140,14 +142,15 @@ class VideoServiceTest {
             // given
             Member notAuthor = Member.builder()
                 .id(100L)
+                .email("notAuthor@test.com")
                 .build();
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder().title("t").description("").build();
 
-            given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
+            given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
             // when, then
             assertThrows(NotAuthorException.class,
-                () -> videoService.updateVideo(videoUpdateRequest, notAuthor, VideoServiceTest.this.video.getId()));
+                () -> videoService.updateVideo(videoUpdateRequest, notAuthor, anyLong()));
         }
 
         @Test
