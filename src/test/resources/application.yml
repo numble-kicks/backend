@@ -1,6 +1,6 @@
 spring:
   profiles:
-가    include: "test, s3, oauth"
+    include: "test, s3, oauth"
   jpa:
     hibernate:
       ddl-auto: create
