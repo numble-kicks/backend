@@ -55,12 +55,31 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Test with Gradle
-        run: SPRING_PROFILES_ACTIVE=test CLOUD_AWS_CREDENTIALS_ACCESSKEY=$ACCESS CLOUD_AWS_CREDENTIALS_SECRETKEY=$SECRET CLOUD_AWS_S3_BUCKET=$BUCKET CLOUD_AWS_REGION_STATIC="ap-northeast-2" CLOUD_AWS_STACK_AUTO=false CLOUDFRONT_URL=$CLOUD ./gradlew --info test
+      
+        run: > 
+          SPRING_PROFILES_ACTIVE=test 
+          CLOUD_AWS_CREDENTIALS_ACCESSKEY=$ACCESS 
+          CLOUD_AWS_CREDENTIALS_SECRETKEY=$SECRET 
+          CLOUD_AWS_S3_BUCKET=$BUCKET 
+          CLOUD_AWS_REGION_STATIC="ap-northeast-2" 
+          CLOUD_AWS_STACK_AUTO=false 
+          CLOUDFRONT_URL=$CLOUD 
+          JWT_SECRET_KEY=$JWT_SECRET_KEY 
+          JWT_REFRESH_KEY=$JWT_REFRESH_KEY 
+          KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID 
+          KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI 
+          KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL 
+          ./gradlew --info test
         env: 
           SECRET: ${{ secrets.S3_SECRET_KEY }}
           ACCESS: ${{ secrets.S3_ACCESS_KEY}}
           BUCKET: ${{ secrets.S3_BUCKET_NAME}}
           CLOUD: ${{ secrets.CLOUDFRONT_URL }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          KAKAO_REDIRECT_URL: ${{ secrets.KAKAO_REDIRECT_URL }}
 
 
       - name: Publish Unit Test Results # test 후 result를 보기 위해 추가
