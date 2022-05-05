@@ -3,7 +3,6 @@ package numble.team4.shortformserver.video.ui;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
-import java.io.IOException;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +12,6 @@ import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,9 +29,9 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping
-    public CommonResponse<VideoResponse> saveVideo(@ModelAttribute @Valid VideoRequest videoRequest,
-        Member loggedInMember) throws IOException {
-        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember.getId());
+    public CommonResponse<VideoResponse> saveVideo(@Valid VideoRequest videoRequest,
+        Member loggedInMember) {
+        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember);
         return CommonResponse.of(videoResponse, UPLOAD_VIDEO.getMessage());
     }
 
@@ -43,7 +41,7 @@ public class VideoController {
         @RequestParam Long memberId,
         Member loggedInMember,
         @PathVariable Long videoId) {
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, memberId,
+        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember,
             videoId);
         return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
     }
