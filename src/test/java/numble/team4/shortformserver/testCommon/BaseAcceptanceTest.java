@@ -14,7 +14,7 @@ import javax.transaction.Transactional;
 @Disabled
 @Transactional
 @ActiveProfiles("local")
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class BaseAcceptanceTest {
 
