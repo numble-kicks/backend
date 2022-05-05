@@ -14,8 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
 
-import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_MEMBER;
-import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_FOLLOW;
+import static numble.team4.shortformserver.common.exception.ExceptionType.*;
 import static numble.team4.shortformserver.follow.ui.FollowResponseMessage.DELETE_FOLLOW;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -23,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class FollowingBaseAcceptanceTest extends BaseAcceptanceTest {
+public class FollowingAcceptanceTest extends BaseAcceptanceTest {
 
     private static final String baseUri = "/v1/users/following";
 
@@ -51,10 +50,10 @@ public class FollowingBaseAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("[성공] 1. 본인이 아닌 다른 사용자를 팔로우한 상태에서 취소 요청")
         void deleteFollow_isok_success () throws Exception {
             //given
-            followRepository.save(Follow.fromMembers(user1, user2));
+            Follow follow = followRepository.save(Follow.fromMembers(user1, user2));
 
             //when
-            ResultActions res = mockMvc.perform(delete(baseUri + "/{toUserId}", user2.getId())
+            ResultActions res = mockMvc.perform(delete(baseUri + "/{followId}", follow.getId())
                     .queryParam("from_member", String.valueOf(user1.getId()))
             );
 
@@ -66,29 +65,32 @@ public class FollowingBaseAcceptanceTest extends BaseAcceptanceTest {
         }
 
         @Test
-        @DisplayName("[실패] 1. 존재하지 않는 사용자에 대해 팔로우 취소 요청")
+        @DisplayName("[실패] 1. 존재하지 않는 팔로우에 대해 팔로우 취소 요청")
         void deleteFollow_notExistMemberException_fail() throws Exception {
             //when
-            ResultActions res = mockMvc.perform(delete(baseUri + "/{toUserId}", 999)
-                    .queryParam("from_member", String.valueOf(user1.getId()))
-            );
-
-            //then
-            res.andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.message").value(NOT_EXIST_MEMBER.getMessage()));
-        }
-
-        @Test
-        @DisplayName("[실패] 2. 팔로우하지 않는 사용자에 대해 팔로우 취소 요청")
-        void deleteFollow_notFollowingException_fail() throws Exception {
-            //when
-            ResultActions res = mockMvc.perform(delete(baseUri + "/{toUserId}", user2.getId())
+            ResultActions res = mockMvc.perform(delete(baseUri + "/{followId}", 999)
                     .queryParam("from_member", String.valueOf(user1.getId()))
             );
 
             //then
             res.andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message").value(NOT_EXIST_FOLLOW.getMessage()));
+        }
+
+        @Test
+        @DisplayName("[실패] 2. 본인이 생성하지 않은 팔로우에 대해 취소 요청")
+        void deleteFollow_notFollowingException_fail() throws Exception {
+            //given
+            Follow follow = followRepository.save(Follow.fromMembers(user1, user2));
+
+            //when
+            ResultActions res = mockMvc.perform(delete(baseUri + "/{followId}", follow.getId())
+                    .queryParam("from_member", String.valueOf(user2.getId()))
+            );
+
+            //then
+            res.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value(NOT_FOLLOWING.getMessage()));
         }
     }
 }
