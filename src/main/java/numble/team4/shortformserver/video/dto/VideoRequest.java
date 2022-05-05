@@ -6,7 +6,6 @@ import static lombok.AccessLevel.PUBLIC;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.member.member.domain.Member;
@@ -16,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @AllArgsConstructor(access = PUBLIC)
 @NoArgsConstructor(access = PROTECTED)
-@Builder
 public class VideoRequest {
 
     @NotNull(message = "영상은 null 일 수 없습니다.")
