@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -59,12 +60,17 @@ public class Video extends BaseTimeEntity {
 
     public void addVideoToMember(Member member) {
         this.member = member;
-        member.getVideos().add(this);
+        member.saveNewVideo(this);
     }
 
-    public void update(Video video) {
-        this.title = video.getTitle();
-        this.description = video.getDescription();
+    public void update(String title, String description, Member member) {
+        this.title = title;
+        this.description = description;
+
+        if (!isAuthorOf(member)) {
+            throw new NotAuthorException();
+        }
+
     }
 
     public boolean isAuthorOf(Member member) {
