@@ -64,13 +64,11 @@ public class Video extends BaseTimeEntity {
     }
 
     public void update(String title, String description, Member member) {
-        this.title = title;
-        this.description = description;
-
         if (!isAuthorOf(member)) {
             throw new NotAuthorException();
         }
-
+        this.title = title;
+        this.description = description;
     }
 
     public boolean isAuthorOf(Member member) {
