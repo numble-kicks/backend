@@ -7,6 +7,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 import java.util.ArrayList;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -96,16 +97,16 @@ class VideoRepositoryTest {
         Video savedVideo = videoRepository.save(video);
         Video findVideo = videoRepository.findById(savedVideo.getId()).orElseThrow(NotExistVideoException::new);
 
-        Video updateVideo = Video.builder()
+        VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
             .title("Title update")
             .description("description updated")
             .build();
 
         // when
-        findVideo.update(updateVideo);
+        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), member);
 
         // then
-        assertThat(findVideo.getTitle()).isEqualTo(updateVideo.getTitle());
-        assertThat(findVideo.getDescription()).isEqualTo(updateVideo.getDescription());
+        assertThat(findVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
+        assertThat(findVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
     }
 }

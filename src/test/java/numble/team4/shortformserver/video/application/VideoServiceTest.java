@@ -3,7 +3,6 @@ package numble.team4.shortformserver.video.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Optional;
@@ -13,7 +12,6 @@ import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
-import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -63,13 +61,7 @@ class VideoServiceTest {
         MockMultipartFile videos = new MockMultipartFile("test", new byte[]{});
         MockMultipartFile thumbnail = new MockMultipartFile("test", new byte[]{});
 
-        videoRequest = VideoRequest
-            .builder()
-            .title("title")
-            .description("description")
-            .video(videos)
-            .thumbnail(thumbnail)
-            .build();
+        videoRequest = new VideoRequest(videos, thumbnail, "title", "category", "description");
 
         member = Member.builder()
             .id(10L)
@@ -95,36 +87,26 @@ class VideoServiceTest {
         @DisplayName("video 저장 - 성공")
         public void uploadVideo_success() throws Exception {
             // given
-            given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
             given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willReturn(videoDto);
             given(amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail")).willReturn(thumbnailDto);
-            given(videoRepository.save(any())).willReturn(video);
+            given(videoRepository.save(any(Video.class))).willReturn(video);
 
             // when
-            VideoResponse savedVideo = videoService.uploadVideo(videoRequest, member.getId());
+            VideoResponse savedVideo = videoService.uploadVideo(videoRequest, member);
 
             // then
-            assertThat(VideoResponse.of(video).getId()).isEqualTo(savedVideo.getId());
-        }
-
-        @Test
-        @DisplayName("video 저장 - 실패, 회원이 존재하지 않을 경우")
-        public void uploadVideo_notExistMember() throws Exception {
-            // then
-            assertThrows(NotExistMemberException.class,
-                () -> videoService.uploadVideo(videoRequest, member.getId()));
+            assertThat(VideoResponse.from(video).getId()).isEqualTo(savedVideo.getId());
         }
 
         @Test
         @DisplayName("video 저장 - 실패, 파일이 존재하지 않을 경우")
         public void uploadVideo_notExistFile() throws Exception {
             // given
-            given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
             given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willThrow(NotExistFileException.class);
 
             // then
             assertThrows(NotExistFileException.class,
-                () -> videoService.uploadVideo(videoRequest, member.getId()));
+                () -> videoService.uploadVideo(videoRequest, member));
         }
     }
 
@@ -141,11 +123,10 @@ class VideoServiceTest {
                 .description("")
                 .build();
 
-            given(memberRepository.findById(member.getId())).willReturn(Optional.of(member));
             given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
 
             // when
-            VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member.getId(), video.getId());
+            VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member, video.getId());
 
             // then
             assertThat(videoResponse.getId()).isEqualTo(video.getId());
@@ -160,20 +141,20 @@ class VideoServiceTest {
             Member notAuthor = Member.builder()
                 .id(100L)
                 .build();
+            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder().title("t").description("").build();
 
-            given(memberRepository.findById(anyLong())).willReturn(Optional.of(notAuthor));
             given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
 
             // when, then
             assertThrows(NotAuthorException.class,
-                () -> videoService.updateVideo(any(), notAuthor.getId(), video.getId()));
+                () -> videoService.updateVideo(videoUpdateRequest, notAuthor, VideoServiceTest.this.video.getId()));
         }
 
         @Test
         @DisplayName("video 수정 - 실패, 존재하지 않는 영상을 수정할 경우")
         void updateVideo_notExistVideo() throws Exception {
             assertThrows(NotExistVideoException.class,
-                () -> videoService.updateVideo(any(), member.getId(), 1L));
+                () -> videoService.updateVideo(any(), member, 1L));
         }
     }
 }

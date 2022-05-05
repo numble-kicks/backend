@@ -97,11 +97,11 @@ class VideoControllerTest {
                 .description("description")
                 .build();
 
-            VideoResponse videoResponse = VideoResponse.of(video);
+            VideoResponse videoResponse = VideoResponse.from(video);
 
             // when
             when(
-                videoService.updateVideo(any(VideoUpdateRequest.class),anyLong(), anyLong())).thenReturn(
+                videoService.updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong())).thenReturn(
                 videoResponse);
 
             ResultActions res = mockMvc.perform(
@@ -129,7 +129,7 @@ class VideoControllerTest {
 
             // when
             doThrow(new NotExistVideoException()).when(videoService)
-                .updateVideo(any(VideoUpdateRequest.class), anyLong(), anyLong());
+                .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
                 MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
@@ -155,7 +155,7 @@ class VideoControllerTest {
 
             // when
             doThrow(new NotAuthorException()).when(videoService)
-                .updateVideo(any(VideoUpdateRequest.class), anyLong(), anyLong());
+                .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
                 MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
