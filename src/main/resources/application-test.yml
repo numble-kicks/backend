@@ -4,6 +4,7 @@ spring:
     url: jdbc:mysql://localhost:3306/testdb?useSSL=false&useUnicode=true$serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: test
     password: 1234
+    
   jpa:
     defer-datasource-initialization: true
     hibernate:
@@ -17,3 +18,7 @@ spring:
     init:
       mode: always
       schema-locations: classpath:init.sql
+
+jwt:
+  secretKey: ${env.JWT_SECRET_KEY}
+  refreshKey: ${env.JWT_REFRESH_KEY}
