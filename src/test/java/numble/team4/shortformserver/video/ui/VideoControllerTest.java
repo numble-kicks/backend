@@ -5,14 +5,19 @@ import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EX
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
+import numble.team4.shortformserver.common.config.SecurityConfig;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
@@ -32,14 +37,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(controllers = VideoController.class)
+@WebMvcTest(controllers = VideoController.class,
+    excludeFilters = {
+        @ComponentScan.Filter(type = ASSIGNABLE_TYPE, classes = SecurityConfig.class)
+    }
+)
 @MockBean(JpaMetamodelMappingContext.class)
 class VideoControllerTest {
 
@@ -71,6 +82,8 @@ class VideoControllerTest {
     void setUp() {
         member = Member.builder()
             .id(10L)
+            .email("test@test.com")
+            .emailVerified(true)
             .build();
 
         video = Video.builder()
@@ -86,8 +99,10 @@ class VideoControllerTest {
     }
 
     @Nested
+    @WithMockUser(roles = "USER")
     @DisplayName("Video 수정 테스트")
     class updateVideo {
+
         @Test
         @DisplayName("video 수정 - 성공")
         void updateVideo_success() throws Exception {
@@ -99,13 +114,17 @@ class VideoControllerTest {
 
             VideoResponse videoResponse = VideoResponse.from(video);
 
+            when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
+
             // when
             when(
-                videoService.updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong())).thenReturn(
+                videoService.updateVideo(any(VideoUpdateRequest.class), any(Member.class),
+                    anyLong())).thenReturn(
                 videoResponse);
 
             ResultActions res = mockMvc.perform(
                 MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                    .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
                     .queryParam("memberId", String.valueOf(member.getId()))
@@ -122,6 +141,7 @@ class VideoControllerTest {
         @DisplayName("Video 수정 - 실패, 존재하지 않는 영상일 경우")
         void updateVideo_notExistVideo() throws Exception {
             // given
+            given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
@@ -133,6 +153,7 @@ class VideoControllerTest {
 
             ResultActions res = mockMvc.perform(
                 MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                    .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
                     .queryParam("memberId", String.valueOf(member.getId()))
@@ -148,6 +169,7 @@ class VideoControllerTest {
         @DisplayName("Video 수정 - 실패, 접근 권한이 없는 경우")
         void updateVideo_notAuthor() throws Exception {
             // given
+            given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
@@ -159,6 +181,7 @@ class VideoControllerTest {
 
             ResultActions res = mockMvc.perform(
                 MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                    .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
                     .queryParam("memberId", String.valueOf(member.getId()))
