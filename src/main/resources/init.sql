@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS comment;
+DROP TABLE IF EXISTS like_video;
+DROP TABLE IF EXISTS video;
+DROP TABLE IF EXISTS follow;
+DROP TABLE IF EXISTS member;
+
 CREATE TABLE comment
 (
     id          bigint NOT NULL AUTO_INCREMENT,
@@ -46,9 +52,6 @@ CREATE TABLE member
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
-
-ALTER TABLE comment ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
-
 CREATE TABLE follow
 (
     id bigint NOT NULL AUTO_INCREMENT,
@@ -64,12 +67,11 @@ ALTER TABLE comment
 ALTER TABLE comment
     ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
 
+ALTER TABLE like_video
+    ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
 
-ALTER TABLE comment ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
-
-ALTER TABLE like_video ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
-
-ALTER TABLE like_video ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
+ALTER TABLE like_video
+    ADD CONSTRAINT FOREIGN KEY (video_id) REFERENCES video (id);
 
 ALTER TABLE follow ADD CONSTRAINT FOREIGN KEY (from_member) REFERENCES member (id);
 
