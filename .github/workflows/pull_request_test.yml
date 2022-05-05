@@ -58,15 +58,15 @@ jobs:
       
         run: > 
           SPRING_PROFILES_ACTIVE=test SPRING_PROFILES_INCLUDE="oauth, s3" 
-          env.S3_ACCESS_KEY=$ACCESS 
-          env.S3_SECRET_KEY=$SECRET 
-          env.S3_BUCKET_NAME=$BUCKET 
-          env.CLOUDFRONT_URL=$CLOUD 
-          env.JWT_SECRET_KEY=$JWT_SECRET_KEY 
-          env.JWT_REFRESH_KEY=$JWT_REFRESH_KEY 
-          env.KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID 
-          env.KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI 
-          env.KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL 
+          env_S3_ACCESS_KEY=$ACCESS 
+          env_S3_SECRET_KEY=$SECRET 
+          env_S3_BUCKET_NAME=$BUCKET 
+          env_CLOUDFRONT_URL=$CLOUD 
+          env_JWT_SECRET_KEY=$JWT_SECRET_KEY 
+          env_JWT_REFRESH_KEY=$JWT_REFRESH_KEY 
+          env_KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID 
+          env_KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI 
+          env_KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL 
           ./gradlew --info test
         env: 
           SECRET: ${{ secrets.S3_SECRET_KEY }}
