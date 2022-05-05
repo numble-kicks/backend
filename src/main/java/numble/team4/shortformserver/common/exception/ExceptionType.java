@@ -1,20 +1,25 @@
 package numble.team4.shortformserver.common.exception;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import numble.team4.shortformserver.member.auth.exception.*;
+import numble.team4.shortformserver.aws.exception.AmazonClientException;
+import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotFollowingException;
 import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
-import numble.team4.shortformserver.aws.exception.AmazonClientException;
-import numble.team4.shortformserver.aws.exception.NotExistFileException;
+import numble.team4.shortformserver.member.auth.exception.EmailEmptyException;
+import numble.team4.shortformserver.member.auth.exception.JsonParsingException;
+import numble.team4.shortformserver.member.auth.exception.JwtTokenExpiredException;
+import numble.team4.shortformserver.member.auth.exception.KakaoLoginFailException;
+import numble.team4.shortformserver.member.auth.exception.NotExistProviderException;
 import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
-
+import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import numble.team4.shortformserver.video.exception.NotLoggedInException;
@@ -38,7 +43,6 @@ public enum ExceptionType {
     NOT_LOGGED_IN("로그인이 되어있지 않습니다.", UNAUTHORIZED, NotLoggedInException.class),
     NOT_EXIST_FOLLOW("존재하지 않는 팔로우입니다.", BAD_REQUEST, NotExistFollowException.class),
     NOT_FOLLOWING("본인의 팔로우만 삭제할 수 있습니다.", BAD_REQUEST, NotFollowingException.class),
-    NOT_LOGGED_IN("로그인이 되어있지 않습니다.", UNAUTHORIZED, NotLoggedInException.class),
     NOT_AUTHOR_EXCEPTION("접근권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class);
 
     private final String message;
