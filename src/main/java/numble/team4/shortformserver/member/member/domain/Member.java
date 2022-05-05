@@ -40,4 +40,8 @@ public class Member extends BaseTimeEntity {
     public boolean isEqualMember(Member member) {
         return id.equals(member.id);
     }
+
+    public void saveNewVideo(Video video) {
+        this.videos.add(video);
+    }
 }
