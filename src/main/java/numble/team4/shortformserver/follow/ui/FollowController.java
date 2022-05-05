@@ -9,6 +9,7 @@ import numble.team4.shortformserver.member.member.exception.NotExistMemberExcept
 import org.springframework.web.bind.annotation.*;
 
 import static numble.team4.shortformserver.follow.ui.FollowResponseMessage.CREATE_FOLLOW;
+import static numble.team4.shortformserver.follow.ui.FollowResponseMessage.DELETE_FOLLOW;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +24,12 @@ public class FollowController {
         Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
         followService.createFollow(fromMember, toMemberId);
         return CommonResponse.from(CREATE_FOLLOW.getMessage());
+    }
+
+    @DeleteMapping("/{followId}")
+    public CommonResponse deleteFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable("followId") Long followId) {
+        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
+        followService.deleteFollow(fromMember, followId);
+        return CommonResponse.from(DELETE_FOLLOW.getMessage());
     }
 }

@@ -35,4 +35,9 @@ public class Follow {
         }
         return new Follow(null, fromMember, toMember);
     }
+
+    public boolean isFollowing(Member fromMember) {
+        return fromMember.isEqualMember(this.fromMember);
+    }
+
 }

@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS comment;
+DROP TABLE IF EXISTS like_video;
+DROP TABLE IF EXISTS video;
+DROP TABLE IF EXISTS follow;
+DROP TABLE IF EXISTS member;
+
 CREATE TABLE comment
 (
     id          bigint NOT NULL AUTO_INCREMENT,
@@ -19,8 +25,10 @@ CREATE TABLE video
     video_url     varchar(255) not null,
     view_count    bigint,
     member_id     bigint,
+    create_at   datetime(6) DEFAULT NULL,
+    modified_at datetime(6) DEFAULT NULL,
     primary key (id)
-) ENGINE=InnoDB
+) ENGINE=InnoDB;
 
 CREATE TABLE like_video
 (
@@ -40,6 +48,7 @@ CREATE TABLE member
     last_login_date   datetime(6),
     name              varchar(255),
     profile_image_url varchar(255),
+    role              varchar(30) DEFAULT "ROLE_USER",
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
