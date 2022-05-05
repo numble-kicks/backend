@@ -43,11 +43,7 @@ class VideoDtoTest {
     @DisplayName("VideoRequest DTO 테스트")
     void videoRequestValidateTest() throws Exception {
         // given
-        VideoRequest videoRequest = VideoRequest.builder()
-            .video(null)
-            .thumbnail(null)
-            .title(null)
-            .build();
+        VideoRequest videoRequest = new VideoRequest(null, null, null, null, null);
 
         // when
         Set<ConstraintViolation<VideoRequest>> violations = validator.validate(videoRequest);
