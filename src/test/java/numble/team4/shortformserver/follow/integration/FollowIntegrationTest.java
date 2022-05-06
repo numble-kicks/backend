@@ -7,6 +7,7 @@ import numble.team4.shortformserver.follow.exception.NotFollowingException;
 import numble.team4.shortformserver.follow.ui.FollowController;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +37,8 @@ public class FollowIntegrationTest {
 
     @BeforeEach
     void init() {
-        fromMember = Member.builder().name("from").build();
-        toMember = Member.builder().name("to").build();
+        fromMember = Member.builder().name("from").role(Role.ROLE_MEMBER).build();
+        toMember = Member.builder().name("to").role(Role.ROLE_MEMBER).build();
 
         memberRepository.saveAll(Arrays.asList(fromMember, toMember));
     }

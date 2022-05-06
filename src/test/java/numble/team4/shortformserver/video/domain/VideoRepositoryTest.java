@@ -6,6 +6,7 @@ import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTest
 import java.util.ArrayList;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.domain.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ class VideoRepositoryTest {
     @BeforeEach
     void setUp() {
         member = Member.builder()
+                .role(Role.ROLE_MEMBER)
             .videos(new ArrayList<>())
             .build();
     }

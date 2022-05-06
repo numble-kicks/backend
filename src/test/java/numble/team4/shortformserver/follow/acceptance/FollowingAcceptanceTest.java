@@ -4,6 +4,7 @@ import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,8 +38,8 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void 초기_설정_user1_user2_생성() {
-        user1 = Member.builder().name("user1").build();
-        user2 = Member.builder().name("user2").build();
+        user1 = Member.builder().name("user1").role(Role.ROLE_MEMBER).build();
+        user2 = Member.builder().name("user2").role(Role.ROLE_MEMBER).build();
         memberRepository.saveAll(Arrays.asList(user1, user2));
     }
 
