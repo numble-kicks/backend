@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
@@ -67,6 +68,7 @@ class VideoServiceTest {
         member = Member.builder()
             .id(10L)
             .email("author@test.com")
+            .videos(new ArrayList<>())
             .build();
 
         video = Video.builder()
@@ -128,12 +130,14 @@ class VideoServiceTest {
             given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
 
             // when
-            VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member, video.getId());
+            VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, member,
+                video.getId());
 
             // then
             assertThat(videoResponse.getId()).isEqualTo(video.getId());
             assertThat(videoResponse.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
-            assertThat(videoResponse.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
+            assertThat(videoResponse.getDescription()).isEqualTo(
+                videoUpdateRequest.getDescription());
         }
 
         @Test
@@ -144,7 +148,8 @@ class VideoServiceTest {
                 .id(100L)
                 .email("notAuthor@test.com")
                 .build();
-            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder().title("t").description("").build();
+            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder().title("t")
+                .description("").build();
 
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
@@ -159,28 +164,47 @@ class VideoServiceTest {
             assertThrows(NotExistVideoException.class,
                 () -> videoService.updateVideo(any(), member, 1L));
         }
-    @Test
-    @DisplayName("video 수정 - 실패, 저장한 영상이 존재하지 않을 경우")
-    void updateVideo_notExistVideo() throws Exception {
-        assertThrows(NotExistVideoException.class,
-            () -> videoService.updateVideo(any(), member.getId(), 1L));
-            () -> videoService.updateVideo(any(), member.getId(), 1L));
     }
 
-    //== Video 삭제 테스트 ==//
-    @Test
-    @DisplayName("Video 삭제 - 실패, 작성자가 아닌 다른 유저가 삭제를 시도할 경우")
-    void deleteVideo_notAuthor() throws Exception {
-        // given
-        Member otherMember = Member.builder()
-            .id(100L)
-            .build();
+    @Nested
+    @DisplayName("Video 삭제 테스트")
+    class DeleteVideo {
 
-        given(memberRepository.findById(anyLong())).willReturn(Optional.of(otherMember));
-        given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
+        @Test
+        @DisplayName("Video 삭제 - 성공")
+        void deleteVideo_success() throws Exception {
+            // given
+            given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
+            member.saveNewVideo(video);
 
-        // when, then
-        assertThrows(NotAuthorException.class,
-            () -> videoService.deleteVideo(video.getId(), otherMember.getId()));
+            // when
+            videoService.deleteVideo(video.getId(), member);
+
+            // then
+            assertThat(member.getVideos()).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Video 삭제 - 실패, 작성자가 아닌 다른 유저가 삭제를 시도할 경우")
+        void deleteVideo_notAuthor() throws Exception {
+            // given
+            Member otherMember = Member.builder()
+                .id(100L)
+                .email("otherMember@test.com")
+                .build();
+
+            given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
+
+            // when, then
+            assertThrows(NotAuthorException.class,
+                () -> videoService.deleteVideo(video.getId(), otherMember));
+        }
+
+        @Test
+        @DisplayName("Video 삭제 - 실패, 존재하지 않는 영상을 삭제할 때")
+        void deleteVideo_notExistVideo() throws Exception {
+            assertThrows(NotExistVideoException.class,
+                () -> videoService.deleteVideo(100L, member));
+        }
     }
 }
