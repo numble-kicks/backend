@@ -1,23 +1,20 @@
 package numble.team4.shortformserver.video.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
-
-import java.util.ArrayList;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.testCommon.BaseDataJpaTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("local")
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = NONE)
+import java.util.ArrayList;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+
+@BaseDataJpaTest
 class VideoRepositoryTest {
 
     @Autowired
