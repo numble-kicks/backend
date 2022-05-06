@@ -48,7 +48,7 @@ CREATE TABLE member
     last_login_date   datetime(6),
     name              varchar(255),
     profile_image_url varchar(255),
-    role              varchar(30) DEFAULT "ROLE_USER",
+    role              varchar(30) NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE=InnoDB;
 
