@@ -53,8 +53,10 @@ public class VideoController {
     }
 
     @DeleteMapping("/{videoId}")
-    public CommonResponse<VideoResponse> deleteVideo(@PathVariable Long videoId, Member loggedInMember) {
-        videoService.deleteVideo(videoId, loggedInMember.getId());
+    public CommonResponse<VideoResponse> deleteVideo(@PathVariable Long videoId, @RequestParam Long loggedInMemberId) {
+        Member loggedInMember = memberRepository.findById(loggedInMemberId)
+            .orElseThrow(NotExistMemberException::new);
+        videoService.deleteVideo(videoId, loggedInMember);
 
         return CommonResponse.from(DELETE_VIDEO.getMessage());
     }
