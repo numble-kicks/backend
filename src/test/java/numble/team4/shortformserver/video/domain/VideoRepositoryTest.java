@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("local")
@@ -27,6 +28,9 @@ class VideoRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private TestEntityManager testEntityManager;
 
     private Member member;
     private Video video;
@@ -52,6 +56,7 @@ class VideoRepositoryTest {
             .build();
     }
 
+    //== video 저장 ==//
     @Test
     @DisplayName("video 저장 - 성공")
     public void saveVideo() throws Exception {
@@ -65,6 +70,25 @@ class VideoRepositoryTest {
         assertThat(savedVideo.getModifiedAt()).isNotNull();
     }
 
+    @Test
+    @DisplayName("Member와 Video 연관관계 매핑 테스트")
+    void saveVideoAndMember() throws Exception {
+        // given
+        Video savedVideo = videoRepository.save(video);
+        savedVideo.addVideoToMember(member);
+
+        // when
+        Video findVideo = videoRepository.findById(savedVideo.getId())
+            .orElseThrow(NotExistVideoException::new);
+        Member findMember = memberRepository.findById(findVideo.getMember()
+            .getId()).orElseThrow(NotExistMemberException::new);
+
+        // then
+        assertThat(findVideo.getMember()).isEqualTo(this.member);
+        assertThat(findMember.getVideos().get(0)).isEqualTo(findVideo);
+    }
+
+    //== video 조희 ==//
     @Test
     @DisplayName("Video id로 조회 - 성공")
     void findById_success() throws Exception {
@@ -90,11 +114,13 @@ class VideoRepositoryTest {
             () -> videoRepository.findById(mockVideo.getId()).orElseThrow(NotExistVideoException::new));
     }
 
+    //== video 수정 ==//
     @Test
     @DisplayName("Video 수정 - 성공")
     void updateVideo_success() throws Exception {
         // given
         Video savedVideo = videoRepository.save(video);
+        savedVideo.addVideoToMember(member);
         Video findVideo = videoRepository.findById(savedVideo.getId()).orElseThrow(NotExistVideoException::new);
 
         VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
@@ -103,9 +129,43 @@ class VideoRepositoryTest {
             .build();
 
         // when
+        findVideo.update(updateVideo);
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        Member findMember = memberRepository.findById(findVideo.getMember().getId())
+            .orElseThrow(NotExistMemberException::new);
         findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), member);
 
         // then
+        assertThat(findVideo.getTitle()).isEqualTo(updateVideo.getTitle());
+        assertThat(findVideo.getDescription()).isEqualTo(updateVideo.getDescription());
+        assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(findVideo.getTitle());
+    }
+
+    //== video 삭제 ==//
+    @Test
+    @DisplayName("Video 삭제 - 성공")
+    void deleteVideo_success() throws Exception {
+        // given
+        Video savedVideo = videoRepository.save(video);
+        savedVideo.addVideoToMember(member);
+
+        Video findVideo = videoRepository.findById(savedVideo.getId()).orElseThrow(NotExistVideoException::new);
+
+        // when
+        videoRepository.delete(findVideo);
+        testEntityManager.flush();
+        testEntityManager.clear();
+
+        Member findMember = memberRepository.findById(findVideo.getMember().getId())
+            .orElseThrow(NotExistMemberException::new);
+
+        // then
+        assertThat(findMember.getVideos()).hasSize(0);
+
+        assertThrows(NotExistVideoException.class,
+            () -> videoRepository.findById(findVideo.getId()).orElseThrow(NotExistVideoException::new));
         assertThat(findVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
         assertThat(findVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
     }

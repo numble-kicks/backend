@@ -42,6 +42,23 @@ public class VideoService {
         return VideoResponse.from(video);
     }
 
+    @Transactional
+    public void deleteVideo(Long videoId, Member loggedMember) {
+        Video video = findVideo(videoId);
+
+        validateAuthor(loggedMember, video);
+
+        amazonS3Uploader.deleteToS3(video.getVideoUrl());
+        amazonS3Uploader.deleteToS3(video.getThumbnailUrl());
+
+        videoRepository.delete(video);
+    }
+
+    private void validateAuthor(Member member, Video video) {
+        if (!video.isAuthorOf(member)) {
+            throw new NotAuthorException();
+        }
+    }
 
     private Video findVideo(Long videoId) {
         return videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);

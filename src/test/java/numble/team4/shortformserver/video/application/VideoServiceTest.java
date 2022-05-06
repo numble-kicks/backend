@@ -159,5 +159,28 @@ class VideoServiceTest {
             assertThrows(NotExistVideoException.class,
                 () -> videoService.updateVideo(any(), member, 1L));
         }
+    @Test
+    @DisplayName("video 수정 - 실패, 저장한 영상이 존재하지 않을 경우")
+    void updateVideo_notExistVideo() throws Exception {
+        assertThrows(NotExistVideoException.class,
+            () -> videoService.updateVideo(any(), member.getId(), 1L));
+            () -> videoService.updateVideo(any(), member.getId(), 1L));
+    }
+
+    //== Video 삭제 테스트 ==//
+    @Test
+    @DisplayName("Video 삭제 - 실패, 작성자가 아닌 다른 유저가 삭제를 시도할 경우")
+    void deleteVideo_notAuthor() throws Exception {
+        // given
+        Member otherMember = Member.builder()
+            .id(100L)
+            .build();
+
+        given(memberRepository.findById(anyLong())).willReturn(Optional.of(otherMember));
+        given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
+
+        // when, then
+        assertThrows(NotAuthorException.class,
+            () -> videoService.deleteVideo(video.getId(), otherMember.getId()));
     }
 }
