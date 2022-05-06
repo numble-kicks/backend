@@ -16,7 +16,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository{
     private final JPAQueryFactory factory;
 
     @Override
-    public List<FollowResponse> getFollowingsByMemberId(Long id) {
+    public List<FollowResponse> getFollowersByMemberId(Long id) {
         return factory.select(
                         new QFollowResponse(follow.id,
                                 new QFollowResponse_MemberDto(
@@ -32,7 +32,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository{
     }
 
     @Override
-    public List<FollowResponse> getFollowersByMemberId(Long id) {
+    public List<FollowResponse> getFollowingsByMemberId(Long id) {
         return factory.select(
                         new QFollowResponse(follow.id,
                                 new QFollowResponse_MemberDto(

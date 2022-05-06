@@ -1,6 +1,5 @@
 package numble.team4.shortformserver.follow.infrastructure;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import numble.team4.shortformserver.common.config.TestQueryDslConfig;
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
@@ -59,7 +58,7 @@ class FollowCustomRepositoryTest {
         Follow follow = followRepository.save(Follow.fromMembers(fromUser, toUser));
 
         //when
-        List<FollowResponse> followings = followRepository.getFollowingsByMemberId(toUser.getId());
+        List<FollowResponse> followings = followRepository.getFollowingsByMemberId(fromUser.getId());
 
         //then
         assertThat(followings).hasSize(1);
@@ -74,7 +73,7 @@ class FollowCustomRepositoryTest {
         Follow follow = followRepository.save(Follow.fromMembers(fromUser, toUser));
 
         //when
-        List<FollowResponse> followers = followRepository.getFollowersByMemberId(fromUser.getId());
+        List<FollowResponse> followers = followRepository.getFollowersByMemberId(toUser.getId());
 
         //then
         assertThat(followers).hasSize(1);
