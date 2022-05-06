@@ -59,7 +59,6 @@ class FollowControllerTest {
     @Nested
     @WithMockUser(roles = "USER")
     @DisplayName("팔로우 생성 api 테스트")
-    @WithMockUser(roles = "USER")
     class createFollowTest {
 
         @Test
