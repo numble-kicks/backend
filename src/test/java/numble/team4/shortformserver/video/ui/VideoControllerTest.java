@@ -12,6 +12,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +46,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = VideoController.class,
@@ -124,7 +125,7 @@ class VideoControllerTest {
                 videoResponse);
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
@@ -153,7 +154,7 @@ class VideoControllerTest {
                 .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
@@ -181,7 +182,7 @@ class VideoControllerTest {
                 .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
@@ -208,7 +209,7 @@ class VideoControllerTest {
 
             // when
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.delete(VIDEO_URI + VIDEO_ID, video.getId())
+                delete(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .queryParam("loggedInMemberId", String.valueOf(member.getId()))
             );
@@ -234,7 +235,7 @@ class VideoControllerTest {
             doThrow(new NotAuthorException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.delete(VIDEO_URI + VIDEO_ID, video.getId())
+                delete(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .queryParam("loggedInMemberId", String.valueOf(notAuthor.getId()))
             );
@@ -255,7 +256,7 @@ class VideoControllerTest {
 
             // when
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.delete(VIDEO_URI + VIDEO_ID, video.getId())
+                delete(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .queryParam("loggedInMemberId", String.valueOf(member.getId()))
             );
@@ -264,7 +265,6 @@ class VideoControllerTest {
             res.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(NOT_EXIST_VIDEO.getMessage()))
                 .andDo(print());
-
         }
     }
 }
