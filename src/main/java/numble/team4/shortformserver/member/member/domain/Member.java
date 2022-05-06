@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
+import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -69,5 +70,12 @@ public class Member extends BaseTimeEntity {
 
     public void saveNewVideo(Video video) {
         this.videos.add(video);
+    }
+
+    public void removeVideo(Video video) {
+        if (!video.isAuthorOf(this)) {
+            throw new NotAuthorException();
+        }
+        this.videos.remove(video);
     }
 }
