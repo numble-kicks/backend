@@ -1,12 +1,13 @@
 package numble.team4.shortformserver.video.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 import java.util.ArrayList;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,7 +130,7 @@ class VideoRepositoryTest {
             .build();
 
         // when
-        findVideo.update(updateVideo);
+        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), member);
         testEntityManager.flush();
         testEntityManager.clear();
 
@@ -138,8 +139,8 @@ class VideoRepositoryTest {
         findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), member);
 
         // then
-        assertThat(findVideo.getTitle()).isEqualTo(updateVideo.getTitle());
-        assertThat(findVideo.getDescription()).isEqualTo(updateVideo.getDescription());
+        assertThat(findVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
+        assertThat(findVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
         assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(findVideo.getTitle());
     }
 
@@ -166,7 +167,5 @@ class VideoRepositoryTest {
 
         assertThrows(NotExistVideoException.class,
             () -> videoRepository.findById(findVideo.getId()).orElseThrow(NotExistVideoException::new));
-        assertThat(findVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
-        assertThat(findVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
     }
 }
