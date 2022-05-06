@@ -2,48 +2,33 @@ package numble.team4.shortformserver.follow.ui.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import lombok.AllArgsConstructor;
+import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
-import numble.team4.shortformserver.follow.domain.Follow;
-import numble.team4.shortformserver.member.member.domain.Member;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
-@AllArgsConstructor
 public class FollowResponse {
 
-    private Long id;
-    private MemberDto member;
+    private final Long id;
+    private final MemberDto member;
 
-    public static List<FollowResponse> from(List<Follow> followList) {
-        return followList.stream()
-                .map(FollowResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    private static FollowResponse from(Follow follow) {
-        return new FollowResponse(
-                follow.getId(),
-                MemberDto.from(follow.getFromMember())
-        );
+    @QueryProjection
+    public FollowResponse(Long id, MemberDto member) {
+        this.id = id;
+        this.member = member;
     }
 
     @Data
-    @AllArgsConstructor
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     static class MemberDto {
-        private Long id;
-        private String name;
-        private String profileImageUrl;
+        private final Long id;
+        private final String name;
+        private final String profileImageUrl;
 
-        public static MemberDto from(Member member) {
-            return new MemberDto(
-                    member.getId(),
-                    member.getName(),
-                    member.getProfileImageUrl()
-            );
+        @QueryProjection
+        public MemberDto(Long id, String name, String profileImageUrl) {
+            this.id = id;
+            this.name = name;
+            this.profileImageUrl = profileImageUrl;
         }
     }
 }
