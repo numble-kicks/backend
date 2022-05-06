@@ -19,7 +19,7 @@ public class FollowResponse {
 
     @Data
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    static class MemberDto {
+    public static class MemberDto {
         private final Long id;
         private final String name;
         private final String profileImageUrl;
