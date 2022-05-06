@@ -13,15 +13,13 @@ import static lombok.AccessLevel.PROTECTED;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
-import javax.persistence.OneToMany;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,6 +39,8 @@ public class Member extends BaseTimeEntity {
     private Long id;
     private String email;
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
