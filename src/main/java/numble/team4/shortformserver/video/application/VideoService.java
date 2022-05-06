@@ -36,25 +36,21 @@ public class VideoService {
 
     @Transactional
     public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Member loggedInMember, Long videoId) {
-        Video video = findVideo(videoId);
+        Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
 
-        video.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), loggedInMember);
-        return VideoResponse.from(video);
+        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), loggedInMember);
+        return VideoResponse.from(findVideo);
     }
 
     @Transactional
     public void deleteVideo(Long videoId, Member loggedMember) {
-        Video video = findVideo(videoId);
+        Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
 
-        loggedMember.removeVideo(video);
+        loggedMember.removeVideo(findVideo);
 
-        amazonS3Uploader.deleteToS3(video.getVideoUrl());
-        amazonS3Uploader.deleteToS3(video.getThumbnailUrl());
+        amazonS3Uploader.deleteToS3(findVideo.getVideoUrl());
+        amazonS3Uploader.deleteToS3(findVideo.getThumbnailUrl());
 
-        videoRepository.delete(video);
-    }
-
-    private Video findVideo(Long videoId) {
-        return videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
+        videoRepository.delete(findVideo);
     }
 }
