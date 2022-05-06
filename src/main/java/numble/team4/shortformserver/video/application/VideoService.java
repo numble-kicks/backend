@@ -46,18 +46,12 @@ public class VideoService {
     public void deleteVideo(Long videoId, Member loggedMember) {
         Video video = findVideo(videoId);
 
-        validateAuthor(loggedMember, video);
+        loggedMember.removeVideo(video);
 
         amazonS3Uploader.deleteToS3(video.getVideoUrl());
         amazonS3Uploader.deleteToS3(video.getThumbnailUrl());
 
         videoRepository.delete(video);
-    }
-
-    private void validateAuthor(Member member, Video video) {
-        if (!video.isAuthorOf(member)) {
-            throw new NotAuthorException();
-        }
     }
 
     private Video findVideo(Long videoId) {
