@@ -58,40 +58,4 @@ class FollowRepositoryTest {
         }
 
     }
-
-    @Nested
-    @DisplayName("팔로우 조회 테스트")
-    class GetFollowTest {
-
-        @Test
-        @DisplayName("[성공] 팔로잉 조회 테스트")
-        void findByFromMember_Id_getFollowIsEqualFromMember_success() {
-            //given
-            Follow follow = Follow.fromMembers(fromUser, toUser);
-            followRepository.save(follow);
-
-            //when
-            List<Follow> followings = followRepository.findByFromMember_Id(fromUser.getId());
-
-            //then
-            assertThat(followings).hasSize(1);
-        }
-
-        @Test
-        @DisplayName("[성공] 팔로워 조회 테스트")
-        void findByFromMember_Id_getFollowIsEqualToMember_success() {
-            //given
-            Follow follow = Follow.fromMembers(fromUser, toUser);
-            followRepository.save(follow);
-
-            //when
-            List<Follow> followings = followRepository.findByToMember_Id(toUser.getId());
-
-            //then
-            assertThat(followings).hasSize(1);
-        }
-
-
-    }
-
 }
