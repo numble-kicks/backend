@@ -79,4 +79,3 @@ ALTER TABLE follow ADD CONSTRAINT FOREIGN KEY (to_member) REFERENCES member (id)
 
 ALTER TABLE video
     ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id)
-

@@ -1,12 +1,5 @@
 package numble.team4.shortformserver.member.member.domain;
 
-import lombok.AllArgsConstructor;
-
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import numble.team4.shortformserver.common.domain.BaseTimeEntity;
-import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -16,11 +9,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static javax.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -69,11 +59,15 @@ public class Member extends BaseTimeEntity {
     public int hashCode() {
         return Objects.hash(email);
     }
- 
+
     @OneToMany(mappedBy = "member")
     private List<Video> videos = new ArrayList<>();
 
     public boolean isEqualMember(Member member) {
         return id.equals(member.id);
+    }
+
+    public void saveNewVideo(Video video) {
+        this.videos.add(video);
     }
 }
