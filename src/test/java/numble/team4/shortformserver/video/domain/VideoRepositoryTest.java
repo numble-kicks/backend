@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
-import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -124,23 +123,18 @@ class VideoRepositoryTest {
         savedVideo.addVideoToMember(member);
         Video findVideo = videoRepository.findById(savedVideo.getId()).orElseThrow(NotExistVideoException::new);
 
-        VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
-            .title("Title update")
-            .description("description updated")
-            .build();
-
         // when
-        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), member);
+        findVideo.update("제목 수정", "설명 수정", member);
         testEntityManager.flush();
         testEntityManager.clear();
 
         Member findMember = memberRepository.findById(findVideo.getMember().getId())
             .orElseThrow(NotExistMemberException::new);
-        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), member);
+        findVideo.update("제목 수정", "설명 수정", member);
 
         // then
-        assertThat(findVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
-        assertThat(findVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
+        assertThat(findVideo.getTitle()).isEqualTo("제목 수정");
+        assertThat(findVideo.getDescription()).isEqualTo("설명 수정");
         assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(findVideo.getTitle());
     }
 
