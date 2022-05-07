@@ -21,7 +21,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @BaseDataJpaTest
-@Import(TestQueryDslConfig.class)
 class FollowCustomRepositoryTest {
 
     private Logger logger = LoggerFactory.getLogger(FollowCustomRepositoryTest.class);

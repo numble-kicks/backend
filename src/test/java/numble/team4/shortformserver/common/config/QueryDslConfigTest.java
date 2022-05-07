@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 
 @BaseDataJpaTest
-@Import(TestQueryDslConfig.class)
 class QueryDslConfigTest {
 
     @Autowired
