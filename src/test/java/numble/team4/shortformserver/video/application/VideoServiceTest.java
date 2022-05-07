@@ -175,7 +175,6 @@ class VideoServiceTest {
         void deleteVideo_success() throws Exception {
             // given
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
-            member.saveNewVideo(video);
 
             // when
             videoService.deleteVideo(video.getId(), member);
@@ -207,4 +206,6 @@ class VideoServiceTest {
                 () -> videoService.deleteVideo(100L, member));
         }
     }
+
+
 }
