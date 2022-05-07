@@ -9,7 +9,6 @@ import java.util.List;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
-import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -176,7 +175,7 @@ class VideoRepositoryTest {
         }
 
         @Test
-        @DisplayName("특정 사용자의 영상 목록 조회")
+        @DisplayName("특정 사용자의 영상 목록 조회, id 값이 null일 때")
         void findAllByMember() throws Exception {
             // given
             Member someMember = Member.builder()
@@ -188,13 +187,34 @@ class VideoRepositoryTest {
             videoRepository.saveAll(mockVideos);
 
             // when
-            List<Video> videos = videoRepository.findAllByMember(tester, PageRequest.of(0, 10));
+            List<Video> videos = videoRepository.findAllVideosOfMember(tester, PageRequest.of(0, 3));
 
             // then
             assertThat(videos)
                 .extracting("member")
                 .extracting("name")
-                .containsExactly("tester", "tester", "tester", "tester", "tester");
+                .containsExactly("tester", "tester", "tester");
+        }
+
+        @Test
+        @DisplayName("특정 사용자의 영상 목록 조회, id 값이 존재할 때")
+        void findAllByMember_cursorBasedPaging() throws Exception {
+            // given
+            Member someMember = Member.builder()
+                .name("tester")
+                .build();
+            Member tester = memberRepository.save(someMember);
+
+            List<Video> mockVideos = makeMockVideoList(tester);
+            videoRepository.saveAll(mockVideos);
+
+            // when
+            List<Video> videos = videoRepository.findAllVideosOfMember(5L, tester, PageRequest.of(0, 3));
+
+            // then
+            assertThat(videos)
+                .extracting("id")
+                .containsExactly(4L, 3L, 2L);
         }
 
         private List<Video> makeMockVideoList(Member member) {
@@ -203,7 +223,7 @@ class VideoRepositoryTest {
             Long viewCount = 100L;
             for (int i = 0; i < 5; i++) {
                 ret.add(Video.builder()
-                    .title("제목")
+                    .title(String.valueOf(i + 1))
                     .videoUrl("영상")
                     .thumbnailUrl("썸네일")
                     .member(member)
@@ -231,25 +251,21 @@ class VideoRepositoryTest {
             Video findVideo = videoRepository.findById(savedVideo.getId())
                 .orElseThrow(NotExistVideoException::new);
 
-            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
-                .title("Title update")
-                .description("description updated")
-                .build();
 
             // when
-            findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(),
+            findVideo.update("제목 수정", "설명 수정",
                 member);
             testEntityManager.flush();
             testEntityManager.clear();
 
             Member findMember = memberRepository.findById(findVideo.getMember().getId())
                 .orElseThrow(NotExistMemberException::new);
-            findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(),
+            findVideo.update("제목 수정", "설명 수정",
                 member);
 
             // then
-            assertThat(findVideo.getTitle()).isEqualTo(videoUpdateRequest.getTitle());
-            assertThat(findVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
+            assertThat(findVideo.getTitle()).isEqualTo("제목 수정");
+            assertThat(findVideo.getDescription()).isEqualTo("설명 수정");
             assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(findVideo.getTitle());
         }
 
