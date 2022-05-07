@@ -28,25 +28,33 @@ public class VideoService {
         S3UploadDto videoDto = amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video");
         S3UploadDto thumbnailDto = amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail");
 
-        Video video = videoRequest.toVideo(videoDto.getFileUrl(), thumbnailDto.getFileUrl(), loggedInMember);
+        Video video = videoRequest.toVideo(
+            videoDto.getFileUrl(),
+            thumbnailDto.getFileUrl(),
+            loggedInMember
+        );
 
         Video saveVideo = videoRepository.save(video);
         return VideoResponse.from(saveVideo);
     }
 
     @Transactional
-    public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Member loggedInMember, Long videoId) {
-        Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
+    public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Member loggedInMember,
+        Long videoId) {
+        Video findVideo = videoRepository.findById(videoId)
+            .orElseThrow(NotExistVideoException::new);
 
-        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), loggedInMember);
+        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(),
+            loggedInMember);
         return VideoResponse.from(findVideo);
     }
 
     @Transactional
     public void deleteVideo(Long videoId, Member loggedMember) {
-        Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
+        Video findVideo = videoRepository.findById(videoId)
+            .orElseThrow(NotExistVideoException::new);
 
-        loggedMember.removeVideo(findVideo);
+        findVideo.validateAuthor(loggedMember);
 
         amazonS3Uploader.deleteToS3(findVideo.getVideoUrl());
         amazonS3Uploader.deleteToS3(findVideo.getThumbnailUrl());
