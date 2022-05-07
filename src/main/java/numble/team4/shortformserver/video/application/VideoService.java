@@ -1,16 +1,22 @@
 package numble.team4.shortformserver.video.application;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class VideoService {
 
     private final VideoRepository videoRepository;
+    private final MemberRepository memberRepository;
     private final AmazonS3Uploader amazonS3Uploader;
 
     @Transactional
@@ -52,5 +59,21 @@ public class VideoService {
         amazonS3Uploader.deleteToS3(findVideo.getThumbnailUrl());
 
         videoRepository.delete(findVideo);
+    }
+
+    public List<VideoResponse> findAllVideoOfMember(Long memberId, Long videoId, Pageable pageable) {
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(NotExistMemberException::new);
+
+        List<Video> videos;
+        if (Objects.isNull(videoId)) {
+            videos = videoRepository.findAllVideosOfMember(member, pageable);
+        } else {
+            videos = videoRepository.findAllVideosOfMember(videoId, member, pageable);
+        }
+
+        return videos.stream()
+            .map(VideoResponse::from)
+            .collect(Collectors.toList());
     }
 }
