@@ -3,6 +3,7 @@ package numble.team4.shortformserver.likevideo.application;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
+import numble.team4.shortformserver.likevideo.exception.AlreadyExistLikeVideoException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -19,6 +20,10 @@ public class LikeVideoService {
     public void saveLikeVideo(Member member, Long videoId) {
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(NotExistVideoException::new);
+
+        if (likeVideoRepository.existsByMember_IdAndVideo_Id(member.getId(), videoId)) {
+            throw new AlreadyExistLikeVideoException();
+        }
 
         LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
         likeVideoRepository.save(likeVideo);
