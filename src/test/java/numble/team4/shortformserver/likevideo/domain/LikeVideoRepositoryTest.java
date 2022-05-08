@@ -27,7 +27,7 @@ class LikeVideoRepositoryTest {
     void save_LikeVideoListSizeOne_success() {
         //given
         Member member = Member.builder()
-                .role(Role.ROLE_MEMBER)
+                .role(Role.MEMBER)
                 .emailVerified(true)
                 .build();
         entityManager.persist(member);

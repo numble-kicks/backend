@@ -44,8 +44,8 @@ public class FollowIntegrationTest {
 
     @BeforeEach
     void init() {
-        fromMember = Member.builder().name("from").role(Role.ROLE_MEMBER).build();
-        toMember = Member.builder().name("to").role(Role.ROLE_MEMBER).build();
+        fromMember = Member.builder().name("from").role(Role.MEMBER).build();
+        toMember = Member.builder().name("to").role(Role.MEMBER).build();
 
         memberRepository.saveAll(Arrays.asList(fromMember, toMember));
     }

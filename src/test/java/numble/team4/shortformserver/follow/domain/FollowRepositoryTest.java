@@ -10,8 +10,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @BaseDataJpaTest
@@ -29,11 +27,11 @@ class FollowRepositoryTest {
     @BeforeEach
     void init() {
         fromUser = Member.builder()
-                .role(Role.ROLE_MEMBER)
+                .role(Role.MEMBER)
                 .emailVerified(true)
                 .build();
         toUser = Member.builder()
-                .role(Role.ROLE_MEMBER)
+                .role(Role.MEMBER)
                 .emailVerified(true)
                 .build();
         memberRepository.save(fromUser);

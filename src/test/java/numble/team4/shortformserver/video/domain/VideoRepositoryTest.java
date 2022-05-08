@@ -31,7 +31,7 @@ class VideoRepositoryTest {
     @BeforeEach
     void setUp() {
         member = Member.builder()
-                .role(Role.ROLE_MEMBER)
+                .role(Role.MEMBER)
             .videos(new ArrayList<>())
             .build();
     }
