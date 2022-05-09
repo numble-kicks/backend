@@ -3,7 +3,6 @@ package numble.team4.shortformserver.likevideo.acceptance;
 
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
-import numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
@@ -57,7 +55,37 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
     }
 
     @Nested
-    @Rollback(false)
+    @WithMockCustomUser
+    @DisplayName("동영상 좋아요 등록 여부 확인 테스트")
+    class GetExistLikeVideoTest {
+
+        @Test
+        @DisplayName("[성공] 등록x")
+        void existLikeVideo_false_isok_success() throws Exception {
+            //when
+            ResultActions res = mockMvc.perform(get("/v1/videos/{videoId}/likes", 1098902L));
+
+            //then
+            res.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.exist_like_video").value(false));
+        }
+        @Test
+        @DisplayName("[성공] 등록")
+        void existLikeVideo_true_isok_success() throws Exception {
+            //given
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            likeVideoRepository.save(likeVideo);
+
+            //when
+            ResultActions res = mockMvc.perform(get("/v1/videos/{videoId}/likes", likeVideo.getId()));
+
+            //then
+            res.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data.exist_like_video").value(false));
+        }
+    }
+
+    @Nested
     @WithMockCustomUser
     @DisplayName("동영상 좋아요 등록 테스트")
     class SaveLikeVideoTest {
