@@ -36,7 +36,7 @@ public class LikeVideoService {
         LikeVideo likeVideo = likeVideoRepository.findById(likesId)
                 .orElseThrow(NotExistLikeVideoException::new);
 
-        if (likeVideo.isMemberOf(member)) {
+        if (!likeVideo.isMemberOf(member)) {
             throw new NotMemberOfLikeVideoException();
         }
 
