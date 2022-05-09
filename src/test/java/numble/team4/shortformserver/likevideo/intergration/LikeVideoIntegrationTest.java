@@ -61,7 +61,7 @@ public class LikeVideoIntegrationTest {
         @DisplayName("[성공] 좋아요 목록에 없는 동영상에 좋아요 등록 요청")
         void saveVideo_likeVideoFindAllHasOne_success() {
             //when
-            likeVideoController.saveVideo(member, video.getId());
+            likeVideoController.saveLikeVideo(member, video.getId());
 
             //then
             assertThat(likeVideoRepository.count()).isEqualTo(1);
@@ -73,7 +73,7 @@ public class LikeVideoIntegrationTest {
             //when, then
             assertThrows(
                     NotExistVideoException.class,
-                    () -> likeVideoController.saveVideo(member, 33333L)
+                    () -> likeVideoController.saveLikeVideo(member, 33333L)
             );
         }
 
@@ -87,7 +87,7 @@ public class LikeVideoIntegrationTest {
             //when,then
             assertThrows(
                     AlreadyExistLikeVideoException.class,
-                    () -> likeVideoController.saveVideo(member, video.getId())
+                    () -> likeVideoController.saveLikeVideo(member, video.getId())
             );
         }
     }
