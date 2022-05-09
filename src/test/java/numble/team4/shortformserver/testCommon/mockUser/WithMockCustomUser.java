@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.testCommon;
+package numble.team4.shortformserver.testCommon.mockUser;
 
 import numble.team4.shortformserver.member.member.domain.Role;
 import org.springframework.security.test.context.support.WithSecurityContext;

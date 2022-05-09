@@ -1,8 +1,9 @@
-package numble.team4.shortformserver.testCommon;
+package numble.team4.shortformserver.testCommon.mockUser;
 
 import numble.team4.shortformserver.member.auth.domain.MemberAdapter;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.testCommon.BaseDataJpaTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

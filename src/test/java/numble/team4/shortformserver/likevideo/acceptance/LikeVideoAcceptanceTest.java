@@ -4,7 +4,7 @@ package numble.team4.shortformserver.likevideo.acceptance;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
-import numble.team4.shortformserver.testCommon.WithMockCustomUser;
+import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.domain.Video;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
