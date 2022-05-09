@@ -9,11 +9,11 @@ import lombok.Getter;
 @Getter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikeVideoExistsResponse {
+public class LikeVideoExistResponse {
 
-    private boolean isExistLikeVideo;
+    private boolean existLikeVideo;
 
-    public static LikeVideoExistsResponse from(boolean likeVideoExists) {
-        return new LikeVideoExistsResponse(likeVideoExists);
+    public static LikeVideoExistResponse from(boolean likeVideoExists) {
+        return new LikeVideoExistResponse(likeVideoExists);
     }
 }

@@ -3,7 +3,7 @@ package numble.team4.shortformserver.likevideo.ui;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.likevideo.application.LikeVideoService;
-import numble.team4.shortformserver.likevideo.ui.dto.LikeVideoExistsResponse;
+import numble.team4.shortformserver.likevideo.ui.dto.LikeVideoExistResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +18,8 @@ public class LikeVideoController {
     private final LikeVideoService likeVideoService;
 
     @GetMapping("/{videoId}/likes")
-    public CommonResponse isExistLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
-        LikeVideoExistsResponse existLikeVideo = likeVideoService.isExistLikeVideo(member, videoId);
+    public CommonResponse existLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
+        LikeVideoExistResponse existLikeVideo = likeVideoService.existLikeVideo(member, videoId);
         return CommonResponse.of(existLikeVideo, GET_IS_EXIST_LIKE_VIDEO.getMessage());
     }
 
