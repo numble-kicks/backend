@@ -82,7 +82,7 @@ class VideoRepositoryTest {
         void saveVideoAndMember() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addVideoToMember(member);
+            savedVideo.addToMember(member);
 
             // when
             Video findVideo = videoRepository.findById(savedVideo.getId())
@@ -247,7 +247,7 @@ class VideoRepositoryTest {
         void updateVideo_success() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addVideoToMember(member);
+            savedVideo.addToMember(member);
             Video findVideo = videoRepository.findById(savedVideo.getId())
                 .orElseThrow(NotExistVideoException::new);
 
@@ -294,7 +294,7 @@ class VideoRepositoryTest {
         void deleteVideo_success() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addVideoToMember(member);
+            savedVideo.addToMember(member);
 
             Video findVideo = videoRepository.findById(savedVideo.getId())
                 .orElseThrow(NotExistVideoException::new);
