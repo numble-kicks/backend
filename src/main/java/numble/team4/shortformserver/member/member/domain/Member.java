@@ -53,7 +53,7 @@ public class Member extends BaseTimeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return Objects.equals(email, member.email);
+        return Objects.equals(id, member.id);
     }
 
     @Override
@@ -62,6 +62,7 @@ public class Member extends BaseTimeEntity {
     }
 
     @OneToMany(mappedBy = "member")
+    @Builder.Default
     private List<Video> videos = new ArrayList<>();
 
     public boolean isEqualMember(Member member) {
