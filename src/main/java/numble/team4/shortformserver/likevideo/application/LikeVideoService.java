@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
 import numble.team4.shortformserver.likevideo.exception.AlreadyExistLikeVideoException;
+import numble.team4.shortformserver.likevideo.exception.NotExistLikeVideoException;
+import numble.team4.shortformserver.likevideo.exception.NotMemberOfLikeVideoException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -28,4 +30,17 @@ public class LikeVideoService {
         LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
         likeVideoRepository.save(likeVideo);
     }
+
+
+    public void deleteLikeVideo(Member member, Long likesId) {
+        LikeVideo likeVideo = likeVideoRepository.findById(likesId)
+                .orElseThrow(NotExistLikeVideoException::new);
+
+        if (likeVideo.isMemberOf(member)) {
+            throw new NotMemberOfLikeVideoException();
+        }
+
+        likeVideoRepository.delete(likeVideo);
+    }
+
 }
