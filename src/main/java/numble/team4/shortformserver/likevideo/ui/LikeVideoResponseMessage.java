@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum LikeVideoResponseMessage {
 
-    SAVE_LIKE_VIDEO("동영상에 좋아요 추가 성공"),
-    DELETE_LIKE_VIDEO("동영상에 좋아요 삭제 성공");
+    SAVE_LIKE_VIDEO("동영상에 좋아요 등록 성공"),
+    DELETE_LIKE_VIDEO("동영상에 등록한 좋아요 삭제 성공");
 
     private final String message;
 }
