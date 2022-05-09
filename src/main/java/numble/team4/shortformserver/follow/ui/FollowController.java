@@ -33,15 +33,15 @@ public class FollowController {
         return CommonResponse.of(followers, GET_FOLLOWERS.getMessage());
     }
 
-    @GetMapping("/{toUserId}")
-    public CommonResponse createFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable("toUserId") Long toMemberId) {
+    @GetMapping("/{toMemberId}")
+    public CommonResponse createFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable Long toMemberId) {
         Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
         followService.createFollow(fromMember, toMemberId);
         return CommonResponse.from(CREATE_FOLLOW.getMessage());
     }
 
     @DeleteMapping("/{followId}")
-    public CommonResponse deleteFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable("followId") Long followId) {
+    public CommonResponse deleteFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable Long followId) {
         Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
         followService.deleteFollow(fromMember, followId);
         return CommonResponse.from(DELETE_FOLLOW.getMessage());
