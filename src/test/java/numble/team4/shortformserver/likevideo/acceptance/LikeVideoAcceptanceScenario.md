@@ -35,7 +35,8 @@
 2. 이미 좋아요를 누른 동영상에 좋아요 등록 요청  
     * given  
         user1, video1을 생성  
-        user1 -> video1 좋아요 등록
+        user1의 토큰으로 요청  
+        video_id를 video1의 아이디로 하여 좋아요 등록 요청
     * when  
         user1의 토큰으로 요청  
         video_id를 video1의 아이디로 하여 좋아요 등록 요청
