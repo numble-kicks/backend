@@ -6,6 +6,7 @@ import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
 import numble.team4.shortformserver.likevideo.exception.AlreadyExistLikeVideoException;
 import numble.team4.shortformserver.likevideo.exception.NotExistLikeVideoException;
 import numble.team4.shortformserver.likevideo.exception.NotMemberOfLikeVideoException;
+import numble.team4.shortformserver.likevideo.ui.dto.LikeVideoExistsResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -18,6 +19,11 @@ public class LikeVideoService {
 
     private final LikeVideoRepository likeVideoRepository;
     private final VideoRepository videoRepository;
+
+    public LikeVideoExistsResponse isExistLikeVideo(Member member, Long videoId) {
+        boolean exists = likeVideoRepository.existsByMember_IdAndVideo_Id(member.getId(), videoId);
+        return LikeVideoExistsResponse.from(exists);
+    }
 
     public void saveLikeVideo(Member member, Long videoId) {
         Video video = videoRepository.findById(videoId)
