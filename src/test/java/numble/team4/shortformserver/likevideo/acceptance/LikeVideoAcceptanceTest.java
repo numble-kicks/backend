@@ -1,6 +1,9 @@
 package numble.team4.shortformserver.likevideo.acceptance;
 
 
+import numble.team4.shortformserver.likevideo.domain.LikeVideo;
+import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
+import numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
@@ -16,8 +19,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 
-import static numble.team4.shortformserver.common.exception.ExceptionType.ALREADY_EXIST_LIKE_VIDEO;
-import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
+import static numble.team4.shortformserver.common.exception.ExceptionType.*;
+import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.DELETE_LIKE_VIDEO;
+import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.SAVE_LIKE_VIDEO;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -27,6 +32,9 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private LikeVideoRepository likeVideoRepository;
 
     private Video video;
     private Member member;
@@ -65,6 +73,7 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
 
             //then
             res.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(SAVE_LIKE_VIDEO.getMessage()))
                     .andDo(print());
         }
 
@@ -97,6 +106,52 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
             //then
             res.andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.message").value(ALREADY_EXIST_LIKE_VIDEO.getMessage()));
+        }
+    }
+
+    @Nested
+    @WithMockCustomUser
+    @DisplayName("동영상 좋아요 삭제 테스트")
+    class DeleteLikeVideoTest {
+
+        @Test
+        @DisplayName("[성공] 본인이 생성한 좋아요 삭제 요청")
+        void deleteLikeVideo_isok_success() throws Exception {
+            //given
+            mockMvc.perform(get("/v1/videos/{videoId}/likes", video.getId()));
+            LikeVideo likeVideo = likeVideoRepository.findAll().get(0);
+
+            //when
+            ResultActions res = mockMvc.perform(delete("/v1/videos/likes/{likesId}", likeVideo.getId()));
+
+            //then
+            res.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(DELETE_LIKE_VIDEO.getMessage()));
+        }
+
+        @Test
+        @DisplayName("[실패] 존재하지 않는 좋아요 삭제 요청")
+        void deleteLikeVideo_notExistLikeVideoException_fail() throws Exception {
+            //when
+            ResultActions res = mockMvc.perform(delete("/v1/videos/likes/{likesId}", 3924802L));
+
+            //then
+            res.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value(NOT_EXIST_LIKE_VIDEO.getMessage()));
+        }
+
+        @Test
+        @DisplayName("[실패] 본인이 생성하지 않은 좋아요 삭제 요청")
+        void deleteLikeVideo_notMemberOfLikeVideoException_fail() throws Exception {
+            //given
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            likeVideoRepository.save(likeVideo);
+            //when
+            ResultActions res = mockMvc.perform(delete("/v1/videos/likes/{likesId}", likeVideo.getId()));
+
+            //then
+            res.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value(NOT_MEMBER_OF_LIKE_VIDEO.getMessage()));
         }
     }
 }

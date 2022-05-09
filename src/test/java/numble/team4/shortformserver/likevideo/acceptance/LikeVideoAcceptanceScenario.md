@@ -16,7 +16,7 @@
         user1의 토큰으로 요청  
         video_id를 video1의 아이디로 하여 좋아요 등록 요청  
    * then
-        likevideo의 수가 1
+        좋아요가 등록되었다는 메시지와 함께 성공 (status: 200)
 
 <br>
 
@@ -59,7 +59,7 @@
         user1의 토큰으로 요청  
         video_id를 video1의 아이디로 하여 좋아요 삭제 요청
     * then
-        likevideo 수가 0
+        좋아요가 삭제되었다는 메시지와 함께 성공 (status: 200)
 
 #### 실패
 1. 존재하지 않는 좋아요 삭제 요청
