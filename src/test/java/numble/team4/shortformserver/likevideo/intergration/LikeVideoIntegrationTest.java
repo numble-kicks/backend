@@ -136,7 +136,7 @@ public class LikeVideoIntegrationTest {
             //when, then
             assertThrows(
                     NotMemberOfLikeVideoException.class,
-                    () -> likeVideoController.deleteLikeVideo(testMember, video.getId())
+                    () -> likeVideoController.deleteLikeVideo(testMember, likeVideo.getId())
             );
         }
     }

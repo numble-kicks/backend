@@ -22,8 +22,7 @@ import javax.persistence.EntityManager;
 import static numble.team4.shortformserver.common.exception.ExceptionType.*;
 import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.DELETE_LIKE_VIDEO;
 import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.SAVE_LIKE_VIDEO;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,7 +67,7 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         void saveLikeVideo_isok_success() throws Exception {
             //when
             ResultActions res = mockMvc.perform(
-                    get("/v1/videos/{videoId}/likes", video.getId())
+                    post("/v1/videos/{videoId}/likes", video.getId())
             );
 
             //then
@@ -82,7 +81,7 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         void saveLikeVideo_notExistLikeVideoException_fail() throws Exception {
             //when
             ResultActions res = mockMvc.perform(
-                    get("/v1/videos/{videoId}/likes", 39842109L)
+                    post("/v1/videos/{videoId}/likes", 39842109L)
             );
 
             //then
@@ -95,12 +94,12 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         void saveLikeVideo_alreadyExistLikeVideoExceiption_fail() throws Exception {
             //given
             mockMvc.perform(
-                    get("/v1/videos/{videoId}/likes", video.getId())
+                    post("/v1/videos/{videoId}/likes", video.getId())
             );
 
             //when
             ResultActions res = mockMvc.perform(
-                    get("/v1/videos/{videoId}/likes", video.getId())
+                    post("/v1/videos/{videoId}/likes", video.getId())
             );
 
             //then
@@ -118,7 +117,7 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("[성공] 본인이 생성한 좋아요 삭제 요청")
         void deleteLikeVideo_isok_success() throws Exception {
             //given
-            mockMvc.perform(get("/v1/videos/{videoId}/likes", video.getId()));
+            mockMvc.perform(post("/v1/videos/{videoId}/likes", video.getId()));
             LikeVideo likeVideo = likeVideoRepository.findAll().get(0);
 
             //when
