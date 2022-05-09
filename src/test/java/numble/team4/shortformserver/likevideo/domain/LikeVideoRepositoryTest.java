@@ -61,6 +61,15 @@ class LikeVideoRepositoryTest {
     @Test
     @DisplayName("[성공] likeVideo 삭제 테스트")
     void delete_LikeVideoListSizeZero_success() {
+        //given
+        LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+        likeVideoRepository.save(likeVideo);
 
+        //when
+        likeVideoRepository.delete(likeVideo);
+
+        //then
+        List<LikeVideo> list = likeVideoRepository.findAll();
+        assertThat(list).hasSize(0);
     }
 }
