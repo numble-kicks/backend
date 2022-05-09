@@ -1,12 +1,14 @@
 package numble.team4.shortformserver.video.dto;
 
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -15,25 +17,28 @@ import numble.team4.shortformserver.video.domain.Video;
 @NoArgsConstructor(access = PROTECTED)
 public class VideoResponse {
 
-    @NonNull
+    @NotNull
     private Long id;
 
-    @NonNull
+    @NotBlank
     private String title;
 
     private String description;
 
-    @NonNull
+    @NotBlank
     private String videoUrl;
 
-    @NonNull
+    @NotBlank
     private String thumbnailUrl;
 
-    @NonNull
+    @NotNull
     private Long viewCount;
 
-    @NonNull
+    @NotNull
     private Long likeCount;
+
+    @NotNull
+    private MemberDto member;
 
     public static VideoResponse from(Video video) {
         return VideoResponse.builder()
@@ -44,6 +49,16 @@ public class VideoResponse {
             .thumbnailUrl(video.getThumbnailUrl())
             .viewCount(video.getViewCount())
             .likeCount(video.getLikeCount())
+            .member(MemberDto.from(video.getMember().getName()))
             .build();
+    }
+
+    @AllArgsConstructor(access = PRIVATE)
+    static class MemberDto {
+        private String name;
+
+        private static MemberDto from(String name) {
+            return new MemberDto(name);
+        }
     }
 }
