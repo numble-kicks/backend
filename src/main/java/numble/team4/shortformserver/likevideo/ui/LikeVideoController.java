@@ -11,14 +11,20 @@ import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/videos/{videoId}/likes")
+@RequestMapping("/v1/videos")
 public class LikeVideoController {
 
     private final LikeVideoService likeVideoService;
 
-    @GetMapping
+    @GetMapping("/{videoId}/likes")
     public CommonResponse saveVideo(@LoginUser Member member, @PathVariable("videoId") Long videoId) {
         likeVideoService.saveLikeVideo(member, videoId);
         return CommonResponse.from(SAVE_LIKE_VIDEO.getMessage());
+    }
+
+    @DeleteMapping("/likes/{likesId}")
+    public CommonResponse deleteLikeVideo() {
+
+        return null;
     }
 }
