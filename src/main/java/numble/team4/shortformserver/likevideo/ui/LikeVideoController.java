@@ -17,7 +17,7 @@ public class LikeVideoController {
 
     private final LikeVideoService likeVideoService;
 
-    @GetMapping("/{videoId}/likes")
+    @PostMapping("/{videoId}/likes")
     public CommonResponse saveLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
         likeVideoService.saveLikeVideo(member, videoId);
         return CommonResponse.from(SAVE_LIKE_VIDEO.getMessage());
