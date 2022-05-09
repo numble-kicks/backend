@@ -7,6 +7,7 @@ import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import org.springframework.web.bind.annotation.*;
 
+import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.DELETE_LIKE_VIDEO;
 import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.SAVE_LIKE_VIDEO;
 
 @RestController
@@ -17,14 +18,14 @@ public class LikeVideoController {
     private final LikeVideoService likeVideoService;
 
     @GetMapping("/{videoId}/likes")
-    public CommonResponse saveLikeVideo(@LoginUser Member member, @PathVariable("videoId") Long videoId) {
+    public CommonResponse saveLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
         likeVideoService.saveLikeVideo(member, videoId);
         return CommonResponse.from(SAVE_LIKE_VIDEO.getMessage());
     }
 
     @DeleteMapping("/likes/{likesId}")
-    public CommonResponse deleteLikeVideo() {
-
-        return null;
+    public CommonResponse deleteLikeVideo(@LoginUser Member member, @PathVariable Long likesId) {
+        likeVideoService.deleteLikeVideo(member, likesId);
+        return CommonResponse.from(DELETE_LIKE_VIDEO.getMessage());
     }
 }
