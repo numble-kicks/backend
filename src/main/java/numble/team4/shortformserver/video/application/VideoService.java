@@ -88,7 +88,9 @@ public class VideoService {
         if (Objects.isNull(videoId)) {
             videos = videoRepository.findAllSortByLikeCount(pageable).map(VideoResponse::from);
         } else {
-            videos = videoRepository.findAllSortByLikeCount(videoId, pageable).map(VideoResponse::from);
+            Long likes = videoRepository.findById(videoId)
+                .orElseThrow(NotExistVideoException::new).getLikeCount();
+            videos = videoRepository.findAllSortByLikeCount(likes, pageable).map(VideoResponse::from);
         }
 
         return videos;
@@ -100,7 +102,9 @@ public class VideoService {
         if (Objects.isNull(videoId)) {
             videos = videoRepository.findAllSortByViewCount(pageable).map(VideoResponse::from);
         } else {
-            videos = videoRepository.findAllSortByViewCount(videoId, pageable).map(VideoResponse::from);
+            Long hits = videoRepository.findById(videoId)
+                .orElseThrow(NotExistVideoException::new).getViewCount();
+            videos = videoRepository.findAllSortByViewCount(hits, pageable).map(VideoResponse::from);
         }
 
         return videos;
