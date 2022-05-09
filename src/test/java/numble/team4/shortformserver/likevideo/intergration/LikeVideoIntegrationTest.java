@@ -3,6 +3,8 @@ package numble.team4.shortformserver.likevideo.intergration;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
 import numble.team4.shortformserver.likevideo.exception.AlreadyExistLikeVideoException;
+import numble.team4.shortformserver.likevideo.exception.NotExistLikeVideoException;
+import numble.team4.shortformserver.likevideo.exception.NotMemberOfLikeVideoException;
 import numble.team4.shortformserver.likevideo.ui.LikeVideoController;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
@@ -88,6 +90,53 @@ public class LikeVideoIntegrationTest {
             assertThrows(
                     AlreadyExistLikeVideoException.class,
                     () -> likeVideoController.saveLikeVideo(member, video.getId())
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("동영상 좋아요 삭제 테스트")
+    class DeleteLikeVideoTest {
+
+        @Test
+        @DisplayName("[성공] 본인이 생성한 좋아요 삭제 요청")
+        void deleteLikeVideo_likeVideoFindAllHasZero_success() {
+            //given
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            likeVideoRepository.save(likeVideo);
+
+            //when
+            likeVideoController.deleteLikeVideo(member, likeVideo.getId());
+
+            //then
+            assertThat(likeVideoRepository.findAll()).hasSize(0);
+        }
+
+        @Test
+        @DisplayName("[실패] 존재하지 않는 좋아요 삭제 요청")
+        void deleteLikeVideo_notExistLikeVideoException_success() {
+            //when, then
+            assertThrows(
+                    NotExistLikeVideoException.class,
+                    () -> likeVideoController.deleteLikeVideo(member, 19329283L)
+            );
+        }
+
+        @Test
+        @DisplayName("[실패] 본인이 생성하지 않은 좋아요 삭제 요청")
+        void deleteLikeVideo_notMemberOfLikeVideoException_success() {
+            //when
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            likeVideoRepository.save(likeVideo);
+
+            Member testMember = Member.builder()
+                    .role(Role.MEMBER).name("테스트유저").emailVerified(true)
+                    .build();
+
+            //when, then
+            assertThrows(
+                    NotMemberOfLikeVideoException.class,
+                    () -> likeVideoController.deleteLikeVideo(testMember, video.getId())
             );
         }
     }

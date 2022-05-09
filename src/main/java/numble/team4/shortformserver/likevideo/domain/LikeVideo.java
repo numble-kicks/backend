@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.likevideo.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
@@ -12,6 +13,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
+@Getter
 @AllArgsConstructor(access = PROTECTED)
 @NoArgsConstructor(access = PROTECTED)
 public class LikeVideo {
