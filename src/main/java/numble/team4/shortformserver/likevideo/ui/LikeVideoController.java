@@ -3,12 +3,12 @@ package numble.team4.shortformserver.likevideo.ui;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.likevideo.application.LikeVideoService;
+import numble.team4.shortformserver.likevideo.ui.dto.LikeVideoExistsResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import org.springframework.web.bind.annotation.*;
 
-import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.DELETE_LIKE_VIDEO;
-import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.SAVE_LIKE_VIDEO;
+import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,6 +16,12 @@ import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage
 public class LikeVideoController {
 
     private final LikeVideoService likeVideoService;
+
+    @GetMapping("/{videoId}/likes")
+    public CommonResponse isExistLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
+        LikeVideoExistsResponse existLikeVideo = likeVideoService.isExistLikeVideo(member, videoId);
+        return CommonResponse.of(existLikeVideo, GET_IS_EXIST_LIKE_VIDEO.getMessage());
+    }
 
     @PostMapping("/{videoId}/likes")
     public CommonResponse saveLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
