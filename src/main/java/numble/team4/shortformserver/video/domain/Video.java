@@ -58,24 +58,30 @@ public class Video extends BaseTimeEntity {
         comments.addComment(comment);
     }
 
-    public void addVideoToMember(Member member) {
+    public void addToMember(Member member) {
         this.member = member;
         member.saveNewVideo(this);
     }
 
     public void update(String title, String description, Member member) {
-        if (!isAuthorOf(member)) {
-            throw new NotAuthorException();
-        }
+        validateAuthor(member);
+
         this.title = title;
         this.description = description;
     }
 
-    public boolean isAuthorOf(Member member) {
-        return this.member.equals(member);
+    public void delete(Member member) {
+        validateAuthor(member);
+        member.removeVideo(this);
     }
 
     public void increaseViewCount() {
         this.viewCount += 1;
+    }
+
+    private void validateAuthor(Member member) {
+        if (!this.member.equals(member)) {
+            throw new NotAuthorException();
+        }
     }
 }
