@@ -84,6 +84,7 @@ class VideoControllerTest {
     void setUp() {
         member = Member.builder()
             .id(10L)
+            .name("tester")
             .email("test@test.com")
             .emailVerified(true)
             .build();
@@ -103,7 +104,7 @@ class VideoControllerTest {
     @Nested
     @WithMockUser(roles = "USER")
     @DisplayName("Video 수정 테스트")
-    class UpdateVideo {
+    class UpdateVideoTest {
 
         @Test
         @DisplayName("video 수정 - 성공")
@@ -121,15 +122,14 @@ class VideoControllerTest {
             // when
             when(
                 videoService.updateVideo(any(VideoUpdateRequest.class), any(Member.class),
-                    anyLong())).thenReturn(
-                videoResponse);
+                    anyLong())).thenReturn(videoResponse);
 
             ResultActions res = mockMvc.perform(
                 put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
-                    .queryParam("memberId", String.valueOf(member.getId()))
+                    .queryParam("memberId", String.valueOf(VideoControllerTest.this.member.getId()))
             );
 
             // then
@@ -199,7 +199,7 @@ class VideoControllerTest {
     @Nested
     @WithMockUser(roles = "USER")
     @DisplayName("Video 삭제 테스트")
-    class DeleteVideo {
+    class DeleteVideoTest {
 
         @Test
         @DisplayName("Video 삭제 - 성공")
