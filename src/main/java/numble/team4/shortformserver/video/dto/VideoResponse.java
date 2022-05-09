@@ -54,6 +54,7 @@ public class VideoResponse {
     }
 
     @AllArgsConstructor(access = PRIVATE)
+    @Getter
     static class MemberDto {
         private String name;
 
