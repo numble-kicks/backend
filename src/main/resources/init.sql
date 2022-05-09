@@ -19,11 +19,11 @@ CREATE TABLE video
 (
     id            bigint       not null auto_increment,
     description   varchar(255),
-    like_count    bigint,
+    like_count    bigint DEFAULT 0,
     thumbnail_url varchar(255) not null,
     title         varchar(255) not null,
     video_url     varchar(255) not null,
-    view_count    bigint,
+    view_count    bigint DEFAULT 0,
     member_id     bigint,
     create_at   datetime(6) DEFAULT NULL,
     modified_at datetime(6) DEFAULT NULL,
