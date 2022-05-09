@@ -149,7 +149,7 @@ class VideoRepositoryTest {
 
             videoRepository.saveAll(mockVideos);
             // when
-            List<Video> videos = videoRepository.findAllSortByLikeCount(PageRequest.of(0, 10));
+            List<Video> videos = videoRepository.findAllSortByLikeCount(PageRequest.of(0, 10)).getContent();
 
             // then
             assertThat(videos.get(0).getLikeCount()).isEqualTo(500L);
@@ -165,7 +165,7 @@ class VideoRepositoryTest {
 
             videoRepository.saveAll(mockVideos);
             // when
-            List<Video> videos = videoRepository.findAllSortByViewCount(PageRequest.of(0, 10));
+            List<Video> videos = videoRepository.findAllSortByViewCount(PageRequest.of(0, 10)).getContent();
 
 
             // then
@@ -187,7 +187,7 @@ class VideoRepositoryTest {
             videoRepository.saveAll(mockVideos);
 
             // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(tester, PageRequest.of(0, 3));
+            List<Video> videos = videoRepository.findAllVideosOfMember(tester, PageRequest.of(0, 3)).getContent();
 
             // then
             assertThat(videos)
@@ -209,7 +209,7 @@ class VideoRepositoryTest {
             videoRepository.saveAll(mockVideos);
 
             // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(5L, tester, PageRequest.of(0, 3));
+            List<Video> videos = videoRepository.findAllVideosOfMember(5L, tester, PageRequest.of(0, 3)).getContent();
 
             // then
             assertThat(videos)
