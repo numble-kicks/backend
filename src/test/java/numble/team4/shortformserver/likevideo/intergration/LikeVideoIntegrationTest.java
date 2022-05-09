@@ -1,11 +1,13 @@
 package numble.team4.shortformserver.likevideo.intergration;
 
+import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
 import numble.team4.shortformserver.likevideo.exception.AlreadyExistLikeVideoException;
 import numble.team4.shortformserver.likevideo.exception.NotExistLikeVideoException;
 import numble.team4.shortformserver.likevideo.exception.NotMemberOfLikeVideoException;
 import numble.team4.shortformserver.likevideo.ui.LikeVideoController;
+import numble.team4.shortformserver.likevideo.ui.dto.LikeVideoExistResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
@@ -53,6 +55,36 @@ public class LikeVideoIntegrationTest {
                 .description("description")
                 .build();
         entityManager.persist(video);
+    }
+
+    @Nested
+    @DisplayName("동영상 좋아요 등록 여부 확인 테스트")
+    class GetExistLikeVideoTest {
+
+        @Test
+        @DisplayName("[성공] 좋아요를 등록하지 않트은 영상에 대해 테스트")
+        void existLikeVideo_likeVideoExistsFalse_success() {
+            //when
+            CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, 19823012L);
+
+            //then
+            assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(false);
+        }
+
+        @Test
+        @DisplayName("[성공] 좋아요를 등록한 영상에 대해 테스트")
+        void existLikeVideo_likeVideoExistsTrue_success() {
+            //given
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            likeVideoRepository.save(likeVideo);
+
+            //when
+            CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, video.getId());
+
+            //then
+            assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(true);
+        }
+
     }
 
     @Nested
