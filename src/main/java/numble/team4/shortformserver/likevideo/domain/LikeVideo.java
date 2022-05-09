@@ -30,4 +30,8 @@ public class LikeVideo {
     public static LikeVideo fromMemberAndVideo(Member member, Video video) {
         return new LikeVideo(null, member, video);
     }
+
+    public boolean isMemberOf(Member member) {
+        return this.member.equals(member);
+    }
 }
