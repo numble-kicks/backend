@@ -62,7 +62,7 @@ class VideoRepositoryTest {
 
     @Nested
     @DisplayName("Video 저장 테스트")
-    class SaveVideo {
+    class SaveVideoTest {
 
         @Test
         @DisplayName("Video를 저장한다.")
@@ -99,7 +99,7 @@ class VideoRepositoryTest {
 
     @Nested
     @DisplayName("Video 조회 테스트")
-    class InquiryVideo {
+    class InquiryVideoTest {
 
         @Test
         @DisplayName("Video id로 조회(특정 영상 조회)")
@@ -206,15 +206,17 @@ class VideoRepositoryTest {
             Member tester = memberRepository.save(someMember);
 
             List<Video> mockVideos = makeMockVideoList(tester);
-            videoRepository.saveAll(mockVideos);
+            List<Video> all = videoRepository.saveAll(mockVideos);
 
+            Long id = all.get(4).getId();
             // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(5L, tester, PageRequest.of(0, 3)).getContent();
+            List<Video> videos = videoRepository.findAllVideosOfMember(id, tester, PageRequest.of(0, 3)).getContent();
 
             // then
+            assertThat(videos).hasSize(3);
             assertThat(videos)
                 .extracting("id")
-                .containsExactly(4L, 3L, 2L);
+                .containsExactly(id - 1, id - 2, id - 3);
         }
 
         private List<Video> makeMockVideoList(Member member) {
@@ -240,7 +242,7 @@ class VideoRepositoryTest {
 
     @Nested
     @DisplayName("Video 수정")
-    class UpdateVideo {
+    class UpdateVideoTest {
 
         @Test
         @DisplayName("Video 수정 - 성공")
@@ -287,7 +289,7 @@ class VideoRepositoryTest {
 
     @Nested
     @DisplayName("Video 삭제 테스트")
-    class DeleteVideo {
+    class DeleteVideoTest {
 
         @Test
         @DisplayName("Video 삭제 - 성공")
