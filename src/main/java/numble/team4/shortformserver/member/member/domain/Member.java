@@ -6,18 +6,16 @@ import static lombok.AccessLevel.PROTECTED;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Objects;
-
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -74,9 +72,6 @@ public class Member extends BaseTimeEntity {
     }
 
     public void removeVideo(Video video) {
-        if (!video.isAuthorOf(this)) {
-            throw new NotAuthorException();
-        }
         this.videos.remove(video);
     }
 }
