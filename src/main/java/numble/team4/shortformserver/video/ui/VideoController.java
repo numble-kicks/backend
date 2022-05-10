@@ -2,23 +2,34 @@ package numble.team4.shortformserver.video.ui;
 
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
 
-import numble.team4.shortformserver.video.dto.*;
-import org.springframework.web.bind.annotation.*;
-import numble.team4.shortformserver.common.dto.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import numble.team4.shortformserver.common.dto.CommonResponse;
+import numble.team4.shortformserver.common.dto.PageInfo;
+import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
-import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.application.VideoService;
+import numble.team4.shortformserver.video.dto.VideoRequest;
+import numble.team4.shortformserver.video.dto.VideoResponse;
+import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -34,7 +45,7 @@ public class VideoController {
 
     @PostMapping
     public CommonResponse<VideoResponse> saveVideo(@Valid VideoRequest videoRequest,
-        Member loggedInMember) {
+        @LoginUser Member loggedInMember) {
         VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember);
         return CommonResponse.of(videoResponse, UPLOAD_VIDEO.getMessage());
     }
@@ -42,10 +53,8 @@ public class VideoController {
     @PutMapping("/{videoId}")
     public CommonResponse<VideoResponse> updateVideo(
         @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
-        @RequestParam Long memberId,
+        @LoginUser Member loggedInMember,
         @PathVariable Long videoId) {
-        Member loggedInMember = memberRepository.findById(memberId).orElseThrow(
-            NotExistMemberException::new);
         VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember,
             videoId);
         return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
@@ -53,9 +62,7 @@ public class VideoController {
 
     @DeleteMapping("/{videoId}")
     public CommonResponse<VideoResponse> deleteVideo(@PathVariable Long videoId,
-        @RequestParam Long loggedInMemberId) {
-        Member loggedInMember = memberRepository.findById(loggedInMemberId)
-            .orElseThrow(NotExistMemberException::new);
+        @LoginUser Member loggedInMember) {
         videoService.deleteVideo(videoId, loggedInMember);
 
         return CommonResponse.from(DELETE_VIDEO.getMessage());
@@ -71,7 +78,7 @@ public class VideoController {
     @GetMapping
     public CommonResponse<List<VideoResponse>> findAllVideos(
         @RequestParam String sortBy,
-        @RequestParam Long videoId,
+        @Nullable @RequestParam Long videoId,
         @PageableDefault Pageable pageable
     ) {
         Page<VideoResponse> videos = new PageImpl<>(new ArrayList<>(), pageable,
@@ -88,10 +95,11 @@ public class VideoController {
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ALL_VIDEOS.getMessage());
     }
 
-    @GetMapping("/{memberId}")
+    // 멤버 컨트롤러로 이동해야 됨
+    @GetMapping("/v1/users/{memberId}/videos")
     public CommonResponse<List<VideoResponse>> findAllVideosOfMember(
         @PathVariable Long memberId,
-        @RequestParam Long videoId,
+        @Nullable @RequestParam Long videoId,
         @PageableDefault Pageable pageable
         ) {
         Page<VideoResponse> videos = videoService.findAllVideosOfMember(memberId, videoId,
