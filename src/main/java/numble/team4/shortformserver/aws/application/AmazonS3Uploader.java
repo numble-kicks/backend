@@ -31,35 +31,47 @@ public class AmazonS3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public S3UploadDto saveToS3(MultipartFile file, String dirName) throws IOException {
+    public void deleteToS3(String url) {
+        String key = url.substring(cloudfrontUrl.length());
+
+        amazonS3Client.deleteObject(bucket, key);
+    }
+
+    public S3UploadDto saveToS3(MultipartFile file, String dirName) {
         validateFileExist(file);
 
         String key = dirName + "/" + UUID.randomUUID() + "_" + file.getName();
         return putS3(file, key);
     }
 
-    private S3UploadDto putS3(MultipartFile file, String key) throws RuntimeException, IOException {
-        InputStream inputStream = file.getInputStream();
-
-        byte[] bytes = IOUtils.toByteArray(inputStream);
-
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentLength(bytes.length);
-        objectMetadata.setContentType(file.getContentType());
-
-        ByteArrayInputStream uploadFile = new ByteArrayInputStream(bytes);
-
+    private S3UploadDto putS3(MultipartFile file, String key) throws RuntimeException {
         try {
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, uploadFile, objectMetadata);
-            amazonS3Client.putObject(putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
-        } catch (RuntimeException e) {
-            throw new AmazonClientException();
-        }
+            InputStream inputStream = file.getInputStream();
 
-        return new S3UploadDto(key, cloudfrontUrl + key);
+            byte[] bytes = IOUtils.toByteArray(inputStream);
+
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(bytes.length);
+            objectMetadata.setContentType(file.getContentType());
+
+            ByteArrayInputStream uploadFile = new ByteArrayInputStream(bytes);
+
+            try {
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, uploadFile,
+                    objectMetadata);
+                amazonS3Client.putObject(
+                    putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
+            } catch (RuntimeException e) {
+                throw new AmazonClientException();
+            }
+
+            return new S3UploadDto(key, cloudfrontUrl + key);
+        } catch (IOException e){
+            throw new NotExistFileException();
+        }
     }
 
-    private void validateFileExist(MultipartFile file) throws RuntimeException {
+    private void validateFileExist(MultipartFile file) {
         if (file.isEmpty()) {
             throw new NotExistFileException();
         }

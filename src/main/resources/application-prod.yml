@@ -6,3 +6,8 @@ spring:
     password: ${env.DB_PASSWORD}
     hikari:
       maximum-pool-size: 20
+
+  servlet:
+    multipart:
+      max-request-size: 200MB
+      max-file-size: 200MB
