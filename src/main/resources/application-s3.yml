@@ -1,0 +1,14 @@
+cloud:
+  aws:
+    credentials:
+      accessKey: ${env.S3_ACCESS_KEY}
+      secretKey: ${env.S3_SECRET_KEY}
+    s3:
+      bucket: ${env.S3_BUCKET_NAME}
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+cloudfront:
+  url: https://d659rm6fgd091.cloudfront.net/
