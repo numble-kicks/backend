@@ -37,7 +37,7 @@ jobs:
 
       # create .env file
       - name: Create .env file
-        run: 
+        run: |
           touch .env
           
           echo "S3_ACCESS_KEY=${{secrets.S3_ACCESS_KEY}}" >> .env
@@ -47,6 +47,11 @@ jobs:
           echo "DB_USERNAME=${{secrets.DB_USERNAME}}" >> .env
           echo "DB_PASSWORD=${{secrets.DB_PASSWORD}}" >> .env
           echo "CLOUDFRONT_URL=${{secrets.CLOUDFRONT_URL}}" >> .env
+          echo "JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}" >> .env
+          echo "JWT_REFRESH_KEY=${{secrets.JWT_REFRESH_KEY}}" >> .env
+          echo "KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}" >> .env
+          echo "KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}" >> .env
+          echo "KAKAO_REDIRECT_URL=${{secrets.KAKAO_REDIRECT_URL}}" >> .env
 
 
       # copy .env file
