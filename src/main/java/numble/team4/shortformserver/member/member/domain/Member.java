@@ -6,11 +6,12 @@ import static lombok.AccessLevel.PROTECTED;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.util.Objects;
-
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,10 @@ public class Member extends BaseTimeEntity {
     private String profileImageUrl;
     private boolean emailVerified;
 
+    @OneToMany(mappedBy = "member")
+    @Builder.Default
+    private List<Video> videos = new ArrayList<>();
+
     public Member(String email, String name, Role role, boolean emailVerified) {
         this.email = email;
         this.name = name;
@@ -47,6 +52,12 @@ public class Member extends BaseTimeEntity {
 
     public boolean hasNotEmail() {
         return !emailVerified;
+    }
+
+    public void saveNewVideo(Video video) { this.videos.add(video); }
+
+    public void removeVideo(Video video) {
+        this.videos.remove(video);
     }
 
     @Override
@@ -60,18 +71,5 @@ public class Member extends BaseTimeEntity {
     @Override
     public int hashCode() {
         return Objects.hash(email);
-    }
-
-    @OneToMany(mappedBy = "member")
-    @Builder.Default
-    private List<Video> videos = new ArrayList<>();
-
-    public boolean isEqualMember(Member member) {
-        return id.equals(member.id);
-    }
-
-
-    public void removeVideo(Video video) {
-        this.videos.remove(video);
     }
 }
