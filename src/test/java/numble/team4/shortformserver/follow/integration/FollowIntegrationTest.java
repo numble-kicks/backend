@@ -2,8 +2,10 @@ package numble.team4.shortformserver.follow.integration;
 
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
+import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotFollowingException;
+import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.follow.ui.FollowController;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @BaseIntegrationTest
@@ -42,6 +45,45 @@ public class FollowIntegrationTest {
         toMember = Member.builder().name("to").role(Role.MEMBER).build();
 
         memberRepository.saveAll(Arrays.asList(fromMember, toMember));
+    }
+
+    @Nested
+    @DisplayName("팔로우 생성 테스트")
+    class SaveFollowTest {
+
+        @Test
+        @DisplayName("[성공] 본인이 팔로우 하지 않은 사용자에 팔로우 요청")
+        void createFollow_followRepositoryFindAllHasSizeOne_success() {
+            //when
+            followController.createFollow(fromMember, toMember.getId());
+
+            //then
+            assertThat(followRepository.count()).isEqualTo(1L);
+        }
+
+        @Test
+        @DisplayName("[실패] 본인을 팔로우하도록 요청")
+        void createFollow_notSelfFollowableException_fail() {
+            //when, then
+            assertThrows(
+                    NotSelfFollowableException.class,
+                    () -> followController.createFollow(fromMember, fromMember.getId())
+            );
+        }
+
+        @Test
+        @DisplayName("[실패] 이미 팔로우한 사용자에 대해 팔로우 요청")
+        void createFollow_alreadyExistFollowException_fail () {
+            //given
+            Follow follow = Follow.fromMembers(fromMember, toMember);
+            followRepository.save(follow);
+
+            //when, then
+            assertThrows(
+                    AlreadyExistFollowException.class,
+                    () -> followController.createFollow(fromMember, toMember.getId())
+            );
+        }
     }
 
     @Nested
