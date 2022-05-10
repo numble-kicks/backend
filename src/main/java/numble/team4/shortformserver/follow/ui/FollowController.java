@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.follow.application.FollowService;
 import numble.team4.shortformserver.follow.ui.dto.FollowResponse;
+import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -34,16 +35,14 @@ public class FollowController {
     }
 
     @GetMapping("/{toMemberId}")
-    public CommonResponse createFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable Long toMemberId) {
-        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
-        followService.createFollow(fromMember, toMemberId);
+    public CommonResponse createFollow(@LoginUser Member member, @PathVariable Long toMemberId) {
+        followService.createFollow(member, toMemberId);
         return CommonResponse.from(CREATE_FOLLOW.getMessage());
     }
 
     @DeleteMapping("/{followId}")
-    public CommonResponse deleteFollow(@RequestParam("from_member") Long fromMemberId, @PathVariable Long followId) {
-        Member fromMember = memberRepository.findById(fromMemberId).orElseThrow(NotExistMemberException::new);
-        followService.deleteFollow(fromMember, followId);
+    public CommonResponse deleteFollow(@LoginUser Member member, @PathVariable Long followId) {
+        followService.deleteFollow(member, followId);
         return CommonResponse.from(DELETE_FOLLOW.getMessage());
     }
 }

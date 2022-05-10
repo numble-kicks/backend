@@ -55,7 +55,7 @@ public class FollowIntegrationTest {
             Follow follow = followRepository.save(Follow.fromMembers(fromMember, toMember));
 
             //when
-            followController.deleteFollow(fromMember.getId() , follow.getId());
+            followController.deleteFollow(fromMember , follow.getId());
 
             //then
             assertThat(followRepository.count()).isEqualTo(0);
@@ -67,7 +67,7 @@ public class FollowIntegrationTest {
             //when, then
             assertThrows(
                     NotExistFollowException.class,
-                    () -> followController.deleteFollow(fromMember.getId(), 9999L)
+                    () -> followController.deleteFollow(fromMember, 9999L)
             );
         }
 
@@ -80,7 +80,7 @@ public class FollowIntegrationTest {
             //when, then
             assertThrows(
                     NotFollowingException.class,
-                    () -> followController.deleteFollow(toMember.getId(), follow.getId())
+                    () -> followController.deleteFollow(toMember, follow.getId())
             );
         }
     }
