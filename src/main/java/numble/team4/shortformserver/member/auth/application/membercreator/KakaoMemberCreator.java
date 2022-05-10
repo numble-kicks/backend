@@ -28,7 +28,7 @@ public class KakaoMemberCreator implements MemberCreatorFromSocialInfo {
         String email = extractEmailFromResponse(response);
         String name = extractNameFromResponse(response);
         if (checkEmptyEmail(email))
-            return memberRepository.save(new Member(email, name, ROLE_MEMBER, false));
+            return memberRepository.save(new Member(email, name, MEMBER, false));
         return memberRepository.findByEmail(email)
                 .orElseGet(() -> memberRepository.save(new Member(email, name, MEMBER, checkEmptyEmail(email))));
     }
