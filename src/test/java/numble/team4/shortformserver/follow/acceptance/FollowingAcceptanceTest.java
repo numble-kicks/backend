@@ -2,6 +2,7 @@ package numble.team4.shortformserver.follow.acceptance;
 
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
+import numble.team4.shortformserver.member.auth.domain.MemberAdapter;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Arrays;
@@ -60,6 +62,19 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
             //then
             res.andExpect(status().isOk())
                     .andExpect(jsonPath("$.message").value(CREATE_FOLLOW.getMessage()))
+                    .andDo(print());
+        }
+
+        @Test
+        @DisplayName("[실패] 1. 본인을 팔로우 요청")
+        void createFollow_notSelfFollowableException_success() throws Exception {
+            //when
+            Member loginUser = ((MemberAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getMember();
+            ResultActions res = mockMvc.perform(get("/v1/users/following/{toMemberId}", loginUser.getId()));
+
+            //then
+            res.andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value(NOT_SELF_FOLLOW_ABLE.getMessage()))
                     .andDo(print());
         }
 
