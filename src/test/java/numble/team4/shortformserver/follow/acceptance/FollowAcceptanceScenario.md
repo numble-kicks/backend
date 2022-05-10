@@ -22,6 +22,7 @@
 <hr>
 
 1. 본인을 팔로우 요청
+    => withmockcustomuser의 정보를 받아올 수 없어 테스트 방법을 찾고 있음
     * given
         user1을 생성
     * when
