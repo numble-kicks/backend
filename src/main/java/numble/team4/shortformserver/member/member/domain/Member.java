@@ -58,8 +58,8 @@ public class Member extends BaseTimeEntity {
     public int hashCode() {
         return Objects.hash(email);
     }
- 
+
     @OneToMany(mappedBy = "member")
     private List<Video> videos = new ArrayList<>();
-
 }
+

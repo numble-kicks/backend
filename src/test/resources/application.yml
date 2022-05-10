@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: "test, s3, oauth"
+    include: "test,s3,oauth"
   jpa:
     hibernate:
       ddl-auto: create
@@ -14,11 +14,3 @@ logging:
   level:
     org.hibernate.SQL: debug
 
-social:
-  defaulPasswor: ${env.DEFAULT_PASSWOR}
-  kakao:
-    clientId: ${env.KAKAO_CLIENT_ID}
-    redirectUri : ${env.KAKAO_REDIRECT_URI}
-    redirectUrl : ${env.KAKAO_REDIRECT_URL}
-    getAccessTokenUrl : ${env.KAKAO_GET_ACCESS_TOKEN_URL}
-    getUserProfileUrl : ${env.KAKAO_GET_USER_PROFILE_URL}
