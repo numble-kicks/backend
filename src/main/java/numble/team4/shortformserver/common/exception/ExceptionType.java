@@ -24,6 +24,10 @@ import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import numble.team4.shortformserver.video.exception.NotLoggedInException;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
+
+import static org.springframework.http.HttpStatus.*;
+
 @Getter
 @RequiredArgsConstructor
 public enum ExceptionType {
