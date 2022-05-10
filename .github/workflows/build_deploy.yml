@@ -37,7 +37,7 @@ jobs:
 
       # create .env file
       - name: Create .env file
-        run: 
+        run: |
           touch .env
           
           echo "S3_ACCESS_KEY=${{secrets.S3_ACCESS_KEY}}" >> .env
