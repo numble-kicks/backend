@@ -1,22 +1,20 @@
 package numble.team4.shortformserver.member.member.domain;
 
-import static javax.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.video.domain.Video;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -30,6 +28,8 @@ public class Member extends BaseTimeEntity {
     private Long id;
     private String email;
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
@@ -51,7 +51,7 @@ public class Member extends BaseTimeEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Member member = (Member) o;
-        return Objects.equals(email, member.email);
+        return Objects.equals(id, member.id);
     }
 
     @Override
@@ -61,8 +61,5 @@ public class Member extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "member")
     private List<Video> videos = new ArrayList<>();
-
-    public boolean isEqualMember(Member member) {
-        return id.equals(member.id);
-    }
 }
+
