@@ -6,10 +6,11 @@ import static lombok.AccessLevel.PROTECTED;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Objects;
+
 import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,6 +31,8 @@ public class Member extends BaseTimeEntity {
     private Long id;
     private String email;
     private String name;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
@@ -67,9 +70,6 @@ public class Member extends BaseTimeEntity {
         return id.equals(member.id);
     }
 
-    public void saveNewVideo(Video video) {
-        this.videos.add(video);
-    }
 
     public void removeVideo(Video video) {
         this.videos.remove(video);

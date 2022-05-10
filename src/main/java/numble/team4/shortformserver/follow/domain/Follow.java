@@ -30,14 +30,14 @@ public class Follow {
     private Member toMember;
 
     public static Follow fromMembers(Member fromMember, Member toMember) {
-        if (fromMember.isEqualMember(toMember)) {
+        if (fromMember.equals(toMember)) {
             throw new NotSelfFollowableException();
         }
         return new Follow(null, fromMember, toMember);
     }
 
     public boolean isFollowing(Member fromMember) {
-        return fromMember.isEqualMember(this.fromMember);
+        return fromMember.equals(this.fromMember);
     }
 
 }

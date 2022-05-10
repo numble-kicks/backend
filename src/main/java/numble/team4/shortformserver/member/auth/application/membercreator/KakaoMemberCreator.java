@@ -10,7 +10,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import org.springframework.stereotype.Component;
 
-import static numble.team4.shortformserver.member.member.domain.Role.ROLE_MEMBER;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 
 @Component
 @RequiredArgsConstructor
@@ -27,8 +27,10 @@ public class KakaoMemberCreator implements MemberCreatorFromSocialInfo {
     public Member signUpOrLoginMember(String response) {
         String email = extractEmailFromResponse(response);
         String name = extractNameFromResponse(response);
+        if (checkEmptyEmail(email))
+            return memberRepository.save(new Member(email, name, MEMBER, false));
         return memberRepository.findByEmail(email)
-                .orElseGet(() -> memberRepository.save(new Member(email, name, ROLE_MEMBER, checkEmptyEmail(email))));
+                .orElseGet(() -> memberRepository.save(new Member(email, name, MEMBER, checkEmptyEmail(email))));
     }
 
     @Override
@@ -62,6 +64,6 @@ public class KakaoMemberCreator implements MemberCreatorFromSocialInfo {
     }
 
     private boolean checkEmptyEmail(String email) {
-        return email != null;
+        return email == null;
     }
 }

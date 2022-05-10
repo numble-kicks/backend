@@ -7,8 +7,9 @@ import numble.team4.shortformserver.follow.exception.NotFollowingException;
 import numble.team4.shortformserver.follow.ui.FollowController;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @BaseIntegrationTest
@@ -36,8 +38,8 @@ public class FollowIntegrationTest {
 
     @BeforeEach
     void init() {
-        fromMember = Member.builder().name("from").build();
-        toMember = Member.builder().name("to").build();
+        fromMember = Member.builder().name("from").role(Role.MEMBER).build();
+        toMember = Member.builder().name("to").role(Role.MEMBER).build();
 
         memberRepository.saveAll(Arrays.asList(fromMember, toMember));
     }
@@ -56,7 +58,7 @@ public class FollowIntegrationTest {
             followController.deleteFollow(fromMember.getId() , follow.getId());
 
             //then
-            Assertions.assertThat(followRepository.count()).isEqualTo(0);
+            assertThat(followRepository.count()).isEqualTo(0);
         }
 
         @Test
@@ -79,6 +81,57 @@ public class FollowIntegrationTest {
             assertThrows(
                     NotFollowingException.class,
                     () -> followController.deleteFollow(toMember.getId(), follow.getId())
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("팔로우 목록 조회 테스트")
+    class GetFollowsTest {
+
+        @Test
+        @DisplayName("[성공] 팔로잉(내가 팔로우하는) 목록 조회")
+        void getAllFollowings_getListSizeOne_success() {
+            //given
+            Follow follow = followRepository.save(Follow.fromMembers(fromMember, toMember));
+
+            //when
+            followController.getAllFollowings(fromMember.getId());
+
+            //then
+            assertThat(followRepository.count()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("[성공] 팔로워(나를 팔로우하는) 목록 조회")
+        void getAllFollowers_getListSizeOne_success() {
+            //given
+            followRepository.save(Follow.fromMembers(fromMember, toMember));
+
+            //when
+            followController.getAllFollowers(toMember.getId());
+
+            //then
+            assertThat(followRepository.count()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("[실패] 존재하지 않는 사용자의 팔로잉 목록 요청")
+        void getAllFollowings_notExistMemberException_fail() {
+            //when, then
+            assertThrows(
+                    NotExistMemberException.class,
+                    () -> followController.getAllFollowings(13L)
+            );
+        }
+
+        @Test
+        @DisplayName("[실패] 존재하지 않는 사용자의 팔로워 목록 요청")
+        void getAllFollowerss_notExistMemberException_fail() {
+            //when, then
+            assertThrows(
+                    NotExistMemberException.class,
+                    () -> followController.getAllFollowers(13L)
             );
         }
     }

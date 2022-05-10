@@ -14,7 +14,7 @@ public class MemberAdapter extends User {
     private final Member member;
 
     public MemberAdapter(Member member) {
-        super(String.valueOf(member.getId()), UUID.randomUUID().toString(), Collections.singleton(new SimpleGrantedAuthority(member.getRole().getDescription())));
+        super(String.valueOf(member.getId()), UUID.randomUUID().toString(), Collections.singleton(new SimpleGrantedAuthority(member.getRole().getSecurityRole())));
         this.member = member;
     }
 }
