@@ -1,6 +1,5 @@
 package numble.team4.shortformserver.follow.infrastructure;
 
-import numble.team4.shortformserver.common.config.TestQueryDslConfig;
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.ui.dto.FollowResponse;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.logging.Logger;
 import org.junit.platform.commons.logging.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
@@ -39,12 +37,12 @@ class FollowCustomRepositoryTest {
         fromUser = Member.builder()
                 .name("from")
                 .profileImageUrl("http://www.imagefrom.com")
-                .role(Role.ROLE_MEMBER).emailVerified(true)
+                .role(Role.MEMBER).emailVerified(true)
                 .build();
         toUser = Member.builder()
                 .name("to")
                 .profileImageUrl("http://www.imageto.com")
-                .role(Role.ROLE_MEMBER).emailVerified(true)
+                .role(Role.MEMBER).emailVerified(true)
                 .build();
         memberRepository.save(fromUser);
         memberRepository.save(toUser);

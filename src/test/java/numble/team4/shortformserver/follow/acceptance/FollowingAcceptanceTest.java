@@ -39,8 +39,8 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void 초기_설정_user1_user2_생성() {
-        user1 = Member.builder().name("user1").role(Role.ROLE_MEMBER).build();
-        user2 = Member.builder().name("user2").role(Role.ROLE_MEMBER).build();
+        user1 = Member.builder().name("user1").role(Role.MEMBER).build();
+        user2 = Member.builder().name("user2").role(Role.MEMBER).build();
         memberRepository.saveAll(Arrays.asList(user1, user2));
     }
 

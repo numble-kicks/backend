@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static numble.team4.shortformserver.member.member.domain.Role.ROLE_MEMBER;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -66,10 +66,10 @@ class KakaoMemberCreatorTest {
                 "    }\n" +
                 "}";
         when(memberRepository.findByEmail("numble@numble.com"))
-                .thenReturn(Optional.of(new Member("numble@numble.com", "numble", ROLE_MEMBER, false)));
+                .thenReturn(Optional.of(new Member("numble@numble.com", "numble", MEMBER, false)));
 
         Member newMember = creator.signUpOrLoginMember(response);
 
-        assertThat(newMember).isEqualTo(new Member("numble@numble.com", "numble", ROLE_MEMBER, false));
+        assertThat(newMember).isEqualTo(new Member("numble@numble.com", "numble", MEMBER, false));
     }
 }
