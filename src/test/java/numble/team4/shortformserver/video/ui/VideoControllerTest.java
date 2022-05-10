@@ -2,6 +2,7 @@ package numble.team4.shortformserver.video.ui;
 
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_AUTHOR_EXCEPTION;
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Optional;
 import numble.team4.shortformserver.common.config.SecurityConfig;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
@@ -83,6 +83,7 @@ class VideoControllerTest {
     void setUp() {
         member = Member.builder()
             .id(10L)
+            .role(MEMBER)
             .name("tester")
             .email("test@test.com")
             .emailVerified(true)
@@ -218,6 +219,7 @@ class VideoControllerTest {
         void deleteVideo_notAuthor() throws Exception {
             // given
             Member notAuthor = Member.builder()
+                .role(MEMBER)
                 .id(100L)
                 .email("not@test.com")
                 .build();

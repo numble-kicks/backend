@@ -1,5 +1,6 @@
 package numble.team4.shortformserver.video.acceptance;
 
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -58,6 +59,8 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         user1 = getUser("numble@numble.com");
         user2 = Member.builder()
             .name("tester")
+            .role(MEMBER)
+            .emailVerified(false)
             .build();
 
         memberRepository.save(user2);

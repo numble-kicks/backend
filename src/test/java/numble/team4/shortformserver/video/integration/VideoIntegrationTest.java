@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.video.integration;
 
 
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
@@ -116,6 +117,7 @@ public class VideoIntegrationTest {
             // given
             Member guest = Member.builder()
                 .id(100L)
+                .role(MEMBER)
                 .name("guest")
                 .build();
             videoFile = new MockMultipartFile("video", "video".getBytes());
@@ -336,6 +338,7 @@ public class VideoIntegrationTest {
     private Member createMember(String name) {
         return Member.builder()
             .name(name)
+            .role(MEMBER)
             .build();
     }
 

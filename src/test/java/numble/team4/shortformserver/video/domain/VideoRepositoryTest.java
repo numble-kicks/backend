@@ -1,14 +1,13 @@
 package numble.team4.shortformserver.video.domain;
 
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace.NONE;
 
 import java.util.ArrayList;
 import java.util.List;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
-import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseDataJpaTest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
@@ -20,10 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @BaseDataJpaTest
@@ -47,7 +42,7 @@ class VideoRepositoryTest {
     @BeforeEach
     void setUp() {
         member = Member.builder()
-                .role(Role.MEMBER)
+            .role(MEMBER)
             .videos(new ArrayList<>())
             .build();
         memberRepository.save(member);
@@ -183,6 +178,7 @@ class VideoRepositoryTest {
             // given
             Member someMember = Member.builder()
                 .name("tester")
+                .role(MEMBER)
                 .build();
             Member tester = memberRepository.save(someMember);
 
@@ -205,6 +201,7 @@ class VideoRepositoryTest {
             // given
             Member someMember = Member.builder()
                 .name("tester")
+                .role(MEMBER)
                 .build();
             Member tester = memberRepository.save(someMember);
 
