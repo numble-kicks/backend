@@ -6,7 +6,6 @@ import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -50,13 +49,6 @@ public class Video extends BaseTimeEntity {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @Embedded
-    private Comments comments;
-
-    public void addCommentToVideo(Comment comment) {
-        comments.addComment(comment);
-    }
 
     public void addToMember(Member member) {
         this.member = member;
