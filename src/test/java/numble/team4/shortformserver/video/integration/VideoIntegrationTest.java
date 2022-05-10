@@ -146,7 +146,7 @@ public class VideoIntegrationTest {
 
             // when
             CommonResponse<VideoResponse> response = videoController.updateVideo(
-                videoUpdateRequest, author.getId(), video.getId());
+                videoUpdateRequest, author, video.getId());
             VideoResponse data = response.getData();
 
             // then
@@ -164,7 +164,7 @@ public class VideoIntegrationTest {
                 .build();
             // when, then
             assertThrows(NotAuthorException.class,
-                () -> videoController.updateVideo(videoUpdateRequest, tester.getId(),
+                () -> videoController.updateVideo(videoUpdateRequest, tester,
                     video.getId()));
         }
 
@@ -179,7 +179,7 @@ public class VideoIntegrationTest {
 
             // when, then
             assertThrows(NotExistVideoException.class,
-                () -> videoController.updateVideo(videoUpdateRequest, author.getId(), 100L));
+                () -> videoController.updateVideo(videoUpdateRequest, author, 100L));
         }
     }
 
@@ -201,7 +201,7 @@ public class VideoIntegrationTest {
 
             // when
             CommonResponse<VideoResponse> res = videoController.deleteVideo(
-                savedVideo.getId(), author.getId());
+                savedVideo.getId(), author);
 
             // then
             assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
@@ -213,14 +213,14 @@ public class VideoIntegrationTest {
         @DisplayName("영상 삭제 실패, 작성자를 제외한 유저는 삭제할 수 없다.")
         void deleteVideo_notAuthor() throws Exception {
             assertThrows(NotAuthorException.class,
-                () -> videoController.deleteVideo(video.getId(), tester.getId()));
+                () -> videoController.deleteVideo(video.getId(), tester));
         }
 
         @Test
         @DisplayName("영삭 삭제 실패, 존재하지 않는 영상은 삭제할 수 없다.")
         void deleteVideo_notExistVideo() throws Exception {
             assertThrows(NotExistVideoException.class,
-                () -> videoController.deleteVideo(100L, author.getId()));
+                () -> videoController.deleteVideo(100L, author));
         }
     }
 
@@ -329,7 +329,7 @@ public class VideoIntegrationTest {
         @DisplayName("특정 사용자의 영상 목록 조회 실패, 존재하지 않는 사용자의 영상 목록은 조회할 수 없다.")
         void findAllVideosOfMember_notExistMember() {
             assertThrows(NotExistMemberException.class,
-                () -> videoController.deleteVideo(null, 100L));
+                () -> videoController.findAllVideosOfMember(100L, null, PageRequest.of(0, 10)));
         }
     }
 
