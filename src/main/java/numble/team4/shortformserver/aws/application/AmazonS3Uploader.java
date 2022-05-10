@@ -31,6 +31,12 @@ public class AmazonS3Uploader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    public void deleteToS3(String url) {
+        String key = url.substring(cloudfrontUrl.length());
+
+        amazonS3Client.deleteObject(bucket, key);
+    }
+
     public S3UploadDto saveToS3(MultipartFile file, String dirName) {
         validateFileExist(file);
 

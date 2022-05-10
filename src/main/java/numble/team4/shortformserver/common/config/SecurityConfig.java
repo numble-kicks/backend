@@ -6,6 +6,7 @@ import numble.team4.shortformserver.common.filter.JwtAuthenticationFilter;
 import numble.team4.shortformserver.common.filter.JwtExceptionHandleFilter;
 import numble.team4.shortformserver.member.auth.util.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -14,7 +15,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.*;
+import static numble.team4.shortformserver.member.member.domain.Role.ADMIN;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -34,6 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
                 .authorizeRequests()
+                .antMatchers("/v1/videos/{videoId}/likes", "/v1/videos/likes/{likesId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+                .antMatchers(HttpMethod.GET,"/v1/users/following/from", "/v1/users/following/to").permitAll()
                 .antMatchers("/oauth/**").permitAll()
                 .anyRequest().authenticated();
     }
