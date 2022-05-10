@@ -2,6 +2,7 @@ package numble.team4.shortformserver.video.ui;
 
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_AUTHOR_EXCEPTION;
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -11,6 +12,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,7 +46,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(controllers = VideoController.class,
@@ -101,7 +103,7 @@ class VideoControllerTest {
     @Nested
     @WithMockUser(roles = "USER")
     @DisplayName("Video 수정 테스트")
-    class updateVideo {
+    class UpdateVideo {
 
         @Test
         @DisplayName("video 수정 - 성공")
@@ -123,7 +125,7 @@ class VideoControllerTest {
                 videoResponse);
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
@@ -152,7 +154,7 @@ class VideoControllerTest {
                 .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
@@ -180,7 +182,7 @@ class VideoControllerTest {
                 .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
-                MockMvcRequestBuilders.put(VIDEO_URI + VIDEO_ID, video.getId())
+                put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
@@ -190,6 +192,78 @@ class VideoControllerTest {
             // then
             res.andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
+                .andDo(print());
+        }
+    }
+
+    @Nested
+    @WithMockUser(roles = "USER")
+    @DisplayName("Video 삭제 테스트")
+    class DeleteVideo {
+
+        @Test
+        @DisplayName("Video 삭제 - 성공")
+        void deleteVideo_success() throws Exception {
+            // given
+            given(memberRepository.findById(any())).willReturn(Optional.of(member));
+
+            // when
+            ResultActions res = mockMvc.perform(
+                delete(VIDEO_URI + VIDEO_ID, video.getId())
+                    .with(csrf())
+                    .queryParam("loggedInMemberId", String.valueOf(member.getId()))
+            );
+
+            // then
+            res.andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(DELETE_VIDEO.getMessage()))
+                .andDo(print());
+        }
+
+        @Test
+        @DisplayName("Video 삭제 - 실패, 접근 권한이 없을 경우")
+        void deleteVideo_notAuthor() throws Exception {
+            // given
+            Member notAuthor = Member.builder()
+                .id(100L)
+                .email("not@test.com")
+                .build();
+
+            given(memberRepository.findById(anyLong())).willReturn(Optional.of(notAuthor));
+
+            // when
+            doThrow(new NotAuthorException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
+
+            ResultActions res = mockMvc.perform(
+                delete(VIDEO_URI + VIDEO_ID, video.getId())
+                    .with(csrf())
+                    .queryParam("loggedInMemberId", String.valueOf(notAuthor.getId()))
+            );
+
+            // then
+            res.andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
+                .andDo(print());
+        }
+
+        @Test
+        @DisplayName("Video 삭제 - 실패, 존재하지 않는 영상일 경우")
+        void deleteVideo_notExistVideo() throws Exception {
+            // given
+            given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
+
+            doThrow(new NotExistVideoException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
+
+            // when
+            ResultActions res = mockMvc.perform(
+                delete(VIDEO_URI + VIDEO_ID, video.getId())
+                    .with(csrf())
+                    .queryParam("loggedInMemberId", String.valueOf(member.getId()))
+            );
+
+            // then
+            res.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(NOT_EXIST_VIDEO.getMessage()))
                 .andDo(print());
         }
     }
