@@ -1,6 +1,11 @@
 package numble.team4.shortformserver.video.ui;
 
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEOS;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEOS_OF_MEMBER;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +16,6 @@ import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.common.dto.PageInfo;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
@@ -41,7 +45,6 @@ public class VideoController {
     private static final String LIKES = "likes";
 
     private final VideoService videoService;
-    private final MemberRepository memberRepository;
 
     @PostMapping
     public CommonResponse<VideoResponse> saveVideo(@Valid VideoRequest videoRequest,
