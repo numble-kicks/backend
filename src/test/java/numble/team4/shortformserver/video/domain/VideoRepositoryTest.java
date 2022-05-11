@@ -10,6 +10,9 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseDataJpaTest;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +34,9 @@ class VideoRepositoryTest {
     private MemberRepository memberRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private TestEntityManager testEntityManager;
 
     private Member member;
@@ -39,8 +45,12 @@ class VideoRepositoryTest {
     private static final String VIDEO_URL = "https://d659rm6fgd091.cloudfront.net/test.mov";
     private static final String THUMBNAIL_URL = "https://d659rm6fgd091.cloudfront.net/test.png";
 
+    private Category category;
+
     @BeforeEach
     void setUp() {
+        category = categoryRepository.findById(5L).orElseThrow(NotFoundCategoryException::new);
+
         member = Member.builder()
             .role(MEMBER)
             .videos(new ArrayList<>())
@@ -50,11 +60,14 @@ class VideoRepositoryTest {
         video = Video.builder()
             .title("Title")
             .description("description")
-            .member(member)
-            .videoUrl(VIDEO_URL)
             .thumbnailUrl(THUMBNAIL_URL)
+            .videoUrl(VIDEO_URL)
+            .usedStatus(false)
+            .price(10000)
             .likeCount(0L)
             .viewCount(0L)
+            .category(category)
+            .member(member)
             .build();
     }
 
@@ -64,7 +77,7 @@ class VideoRepositoryTest {
 
         @Test
         @DisplayName("Video를 저장한다.")
-        public void saveVideo() throws Exception {
+        void saveVideo() throws Exception {
             // when
             Video savedVideo = videoRepository.save(video);
 
@@ -117,11 +130,10 @@ class VideoRepositoryTest {
         void findById_fail() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            Video mockVideo = Video.builder().id(100L).build();
 
             // when, then
             assertThrows(NotExistVideoException.class,
-                () -> videoRepository.findById(mockVideo.getId()).orElseThrow(NotExistVideoException::new));
+                () -> videoRepository.findById(100L).orElseThrow(NotExistVideoException::new));
         }
 
         @Test
@@ -228,6 +240,9 @@ class VideoRepositoryTest {
                     .title(String.valueOf(i + 1))
                     .videoUrl("영상")
                     .thumbnailUrl("썸네일")
+                    .price(100)
+                    .usedStatus(false)
+                    .category(category)
                     .member(member)
                     .likeCount(likeCount)
                     .viewCount(viewCount)
@@ -250,39 +265,19 @@ class VideoRepositoryTest {
             // given
             Video savedVideo = videoRepository.save(video);
             savedVideo.addToMember(member);
-            Video findVideo = videoRepository.findById(savedVideo.getId())
-                .orElseThrow(NotExistVideoException::new);
-
 
             // when
-            findVideo.update("제목 수정", "설명 수정",
-                member);
+            savedVideo.update("제목 수정", "설명 수정", 100, true, category, member);
             testEntityManager.flush();
             testEntityManager.clear();
 
-            Member findMember = memberRepository.findById(findVideo.getMember().getId())
+            Member findMember = memberRepository.findById(savedVideo.getMember().getId())
                 .orElseThrow(NotExistMemberException::new);
-            findVideo.update("제목 수정", "설명 수정",
-                member);
 
             // then
-            assertThat(findVideo.getTitle()).isEqualTo("제목 수정");
-            assertThat(findVideo.getDescription()).isEqualTo("설명 수정");
-            assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(findVideo.getTitle());
-        }
-
-        @Test
-        @DisplayName("영상을 수정하면 자동으로 수정 날짜가 주입된다.")
-        void updatedVideoWithModifiedAt_success() throws Exception {
-            // given
-            Video savedVideo = videoRepository.save(video);
-
-            // when
-            savedVideo.update("수정", "수정", member);
-            testEntityManager.flush();
-            testEntityManager.clear();
-
-            // then
+            assertThat(savedVideo.getTitle()).isEqualTo("제목 수정");
+            assertThat(savedVideo.getDescription()).isEqualTo("설명 수정");
+            assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(savedVideo.getTitle());
             assertThat(savedVideo.getCreateAt()).isBefore(savedVideo.getModifiedAt());
         }
     }
@@ -298,22 +293,19 @@ class VideoRepositoryTest {
             Video savedVideo = videoRepository.save(video);
             savedVideo.addToMember(member);
 
-            Video findVideo = videoRepository.findById(savedVideo.getId())
-                .orElseThrow(NotExistVideoException::new);
-
             // when
-            videoRepository.delete(findVideo);
+            videoRepository.delete(savedVideo);
             testEntityManager.flush();
             testEntityManager.clear();
 
-            Member findMember = memberRepository.findById(findVideo.getMember().getId())
+            Member findMember = memberRepository.findById(savedVideo.getMember().getId())
                 .orElseThrow(NotExistMemberException::new);
 
             // then
-            assertThat(findMember.getVideos()).hasSize(0);
+            assertThat(findMember.getVideos()).isEmpty();
 
             assertThrows(NotExistVideoException.class,
-                () -> videoRepository.findById(findVideo.getId())
+                () -> videoRepository.findById(savedVideo.getId())
                     .orElseThrow(NotExistVideoException::new));
         }
     }

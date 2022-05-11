@@ -19,6 +19,9 @@ import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
 import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -30,7 +33,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WithMockCustomUser(name = "numble", email = "numble@numble.com")
-public class VideoAcceptanceTest extends BaseAcceptanceTest {
+class VideoAcceptanceTest extends BaseAcceptanceTest {
 
     private static final String TITLE = "제목";
     private static final String DESCRIPTION = "설명";
@@ -52,11 +55,16 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
     @Autowired
     VideoRepository videoRepository;
 
+    @Autowired
+    CategoryRepository categoryRepository;
+
     Member user1, user2;
+    Category category;
 
     @BeforeEach
     void setUp() {
-        user1 = getUser("numble@numble.com");
+        category = categoryRepository.findByName("기타").orElseThrow(NotFoundCategoryException::new);
+        user1 = getUser();
         user2 = Member.builder()
             .name("tester")
             .role(MEMBER)
@@ -104,6 +112,9 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
             .title(TITLE)
             .description("설명 수정")
+            .category("구두/로퍼")
+            .price(100000)
+            .usedStatus(true)
             .build();
 
         // when
@@ -115,6 +126,7 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         // then
         res.andExpect(status().isOk())
             .andExpect(jsonPath("$.data.description").value(videoUpdateRequest.getDescription()))
+            .andExpect(jsonPath("$.data.category.name").value(videoUpdateRequest.getCategory()))
             .andDo(print());
     }
 
@@ -154,6 +166,9 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
                     VideoUpdateRequest.builder()
                         .title("t")
                         .description("")
+                        .category("기타")
+                        .price(100000)
+                        .usedStatus(false)
                         .build()
                 )));
 
@@ -191,7 +206,7 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
             createVideo(0L, 2L, user2),
             createVideo(0L, 2L, user2),
             createVideo(3L, 2L, user1)
-            );
+        );
 
         videoRepository.saveAll(videos);
 
@@ -242,7 +257,9 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         return mockMvc.perform(multipart(BASE_URI)
             .file(VIDEO_FILE)
             .file(THUMBNAIL_FILE)
-            .param("category", "category")
+            .param("price", "1000")
+            .param("usedStatus", "false")
+            .param("category", "기타")
             .param("title", TITLE)
             .param("description", DESCRIPTION)
         );
@@ -255,14 +272,17 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
             .description(DESCRIPTION)
             .likeCount(likes)
             .videoUrl(VIDEO_URL)
+            .usedStatus(false)
+            .price(10000)
+            .category(category)
             .viewCount(hits)
             .thumbnailUrl(THUMBNAIL_URL)
             .member(author)
             .build();
     }
 
-    private Member getUser(String email) {
-        return memberRepository.findByEmail(email).orElseThrow(
+    private Member getUser() {
+        return memberRepository.findByEmail("numble@numble.com").orElseThrow(
             NotExistMemberException::new);
     }
 }

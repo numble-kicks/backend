@@ -4,16 +4,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
-import java.util.ArrayList;
 import java.util.Optional;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -37,6 +40,9 @@ class VideoServiceTest {
     VideoRepository videoRepository;
 
     @Mock
+    CategoryRepository categoryRepository;
+
+    @Mock
     MemberRepository memberRepository;
 
     @Mock
@@ -48,6 +54,7 @@ class VideoServiceTest {
     private Member member;
     private VideoRequest videoRequest;
     private Video video;
+    private Category category;
 
     private S3UploadDto videoDto;
     private S3UploadDto thumbnailDto;
@@ -63,12 +70,14 @@ class VideoServiceTest {
         MockMultipartFile videos = new MockMultipartFile("test", new byte[]{});
         MockMultipartFile thumbnail = new MockMultipartFile("test", new byte[]{});
 
-        videoRequest = new VideoRequest(videos, thumbnail, "title", "category", "description");
+        videoRequest = new VideoRequest(videos, thumbnail, "title", 100, false, "기타", "");
+
+        category = new Category(10L, "기타");
 
         member = Member.builder()
             .id(10L)
             .email("author@test.com")
-            .videos(new ArrayList<>())
+            .role(Role.MEMBER)
             .build();
 
         video = Video.builder()
@@ -77,7 +86,10 @@ class VideoServiceTest {
             .description(videoRequest.getDescription())
             .videoUrl(videoDto.getFileUrl())
             .thumbnailUrl(thumbnailDto.getFileUrl())
+            .price(10000)
+            .usedStatus(true)
             .member(member)
+            .category(category)
             .viewCount(0L)
             .likeCount(0L)
             .build();
@@ -85,13 +97,13 @@ class VideoServiceTest {
 
     @Nested
     @DisplayName("Video 저장 테스트")
-    class uploadVideoTest {
+    class UploadVideoTest {
 
         @Test
         @DisplayName("video 저장 - 성공")
-        public void uploadVideo_success() throws Exception {
+        void uploadVideo_success() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
+            given(categoryRepository.findByName(anyString())).willReturn(Optional.of(category));
             given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willReturn(videoDto);
             given(amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail")).willReturn(thumbnailDto);
             given(videoRepository.save(any(Video.class))).willReturn(video);
@@ -105,10 +117,11 @@ class VideoServiceTest {
 
         @Test
         @DisplayName("video 저장 - 실패, 파일이 존재하지 않을 경우")
-        public void uploadVideo_notExistFile() throws Exception {
+        void uploadVideo_notExistFile() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
-            given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willThrow(NotExistFileException.class);
+            given(categoryRepository.findByName(anyString())).willReturn(Optional.of(category));
+            given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willThrow(
+                NotExistFileException.class);
 
             // then
             assertThrows(NotExistFileException.class,
@@ -118,15 +131,19 @@ class VideoServiceTest {
 
     @Nested
     @DisplayName("Video 수정 테스트")
-    class updateVideoTest {
+    class UpdateVideoTest {
 
         @Test
         @DisplayName("video 수정 - 성공")
         void updateVideo_success() throws Exception {
             // given
+            given(categoryRepository.findByName(anyString())).willReturn(Optional.of(category));
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("")
+                .category("기타")
+                .price(1000)
+                .usedStatus(true)
                 .build();
 
             given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
@@ -146,12 +163,18 @@ class VideoServiceTest {
         @DisplayName("video 수정 - 실패, 작성자가 아닌 회원이 수정을 시도할 경우")
         void updateVideo_notAuthor() throws Exception {
             // given
+            given(categoryRepository.findByName(anyString())).willReturn(Optional.of(category));
             Member notAuthor = Member.builder()
                 .id(100L)
                 .email("notAuthor@test.com")
                 .build();
-            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder().title("t")
-                .description("").build();
+            VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
+                .title("t")
+                .description("")
+                .price(1000)
+                .usedStatus(false)
+                .category("기타")
+                .build();
 
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
@@ -170,7 +193,7 @@ class VideoServiceTest {
 
     @Nested
     @DisplayName("Video 삭제 테스트")
-    class DeleteVideo {
+    class DeleteVideoTest {
 
         @Test
         @DisplayName("Video 삭제 - 성공")

@@ -18,6 +18,9 @@ import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -48,12 +51,19 @@ public class VideoIntegrationTest {
     @Autowired
     private VideoRepository videoRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     private Member author;
     private Member tester;
     private Video video;
+    private Category category;
+    private VideoUpdateRequest videoUpdateRequest;
 
     @BeforeEach
     void setUp() {
+        category = categoryRepository.findByName("기타")
+            .orElseThrow(NotFoundCategoryException::new);
         List<Member> members = List.of(
             createMember("author"),
             createMember("tester")
@@ -78,6 +88,14 @@ public class VideoIntegrationTest {
         }
 
         video = videos.get(0);
+
+        videoUpdateRequest = VideoUpdateRequest.builder()
+            .title(video.getTitle())
+            .description("설명 수정")
+            .category("기타")
+            .price(100)
+            .usedStatus(false)
+            .build();
     }
 
     @Nested
@@ -95,7 +113,7 @@ public class VideoIntegrationTest {
             videoFile = new MockMultipartFile("video", "video".getBytes());
             thumbnailFile = new MockMultipartFile("thumbnail", "thumbnail".getBytes());
 
-            videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", null, "설명");
+            videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", 100, false, "기타", "");
 
             // when
             CommonResponse<VideoResponse> response = videoController.saveVideo(
@@ -110,42 +128,15 @@ public class VideoIntegrationTest {
             amazonS3Uploader.deleteToS3(videoResponse.getVideoUrl());
             amazonS3Uploader.deleteToS3(videoResponse.getThumbnailUrl());
         }
-
-        @Test
-        @DisplayName("영상 등록 실패, 회원이 아니면 영상들 등록할 수 없다.")
-        void uploadVideo_NotExistMember() throws Exception {
-            // given
-            Member guest = Member.builder()
-                .id(100L)
-                .role(MEMBER)
-                .name("guest")
-                .build();
-            videoFile = new MockMultipartFile("video", "video".getBytes());
-            thumbnailFile = new MockMultipartFile("thumbnail", "thumbnail".getBytes());
-
-            videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", null, "설명");
-
-            // when, then
-            assertThrows(NotExistMemberException.class,
-                () -> videoController.saveVideo(videoRequest, guest));
-        }
     }
 
     @Nested
     @DisplayName("영상 상세정보 수정 테스트")
     class UpdateVideoTest {
 
-        VideoUpdateRequest videoUpdateRequest;
-
         @Test
         @DisplayName("영상 수정 성공")
         void updateVideo_success() throws Exception {
-            // given
-            videoUpdateRequest = VideoUpdateRequest.builder()
-                .title(video.getTitle())
-                .description("설명 수정")
-                .build();
-
             // when
             CommonResponse<VideoResponse> response = videoController.updateVideo(
                 videoUpdateRequest, author, video.getId());
@@ -159,11 +150,6 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("영상 수정 실패, 작성자를 제외한 유저는 수정할 수 없다.")
         void updateVideo_notAuthor() throws Exception {
-            // given
-            videoUpdateRequest = VideoUpdateRequest.builder()
-                .title(video.getTitle())
-                .description("설명 수정")
-                .build();
             // when, then
             assertThrows(NotAuthorException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, tester,
@@ -173,12 +159,6 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("영상 수정 실패, 존재하지 않는 영상은 수정할 수 없다.")
         void updateVideo_notExistVideo() throws Exception {
-            // given
-            videoUpdateRequest = VideoUpdateRequest.builder()
-                .title(video.getTitle())
-                .description("설명 수정")
-                .build();
-
             // when, then
             assertThrows(NotExistVideoException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, author, 100L));
@@ -194,14 +174,16 @@ public class VideoIntegrationTest {
         void deleteVideo_success() throws Exception {
             //given
             VideoResponse savedVideo = videoController.saveVideo(new VideoRequest(
-                new MockMultipartFile("test", "test".getBytes()),
-                new MockMultipartFile("test", "test".getBytes()),
+                new MockMultipartFile("video", "test".getBytes()),
+                new MockMultipartFile("thumbnail", "test".getBytes()),
                 "제목",
-                "",
-                "설명"
+                10000,
+                false,
+                "기타",
+                ""
             ), author).getData();
 
-            // when
+          // when
             CommonResponse<VideoResponse> res = videoController.deleteVideo(
                 savedVideo.getId(), author);
 
@@ -319,7 +301,7 @@ public class VideoIntegrationTest {
                 PageRequest.of(0, 3)).getData();
 
             // then
-            assertThat(data1).hasSize(0);
+            assertThat(data1).isEmpty();
             assertThat(pageInfo.getTotalPages()).isEqualTo(2);
             assertThat(data)
                 .extracting("member")
@@ -346,6 +328,9 @@ public class VideoIntegrationTest {
         return Video.builder()
             .title("제목")
             .description("설명")
+            .price(10000)
+            .category(category)
+            .usedStatus(false)
             .videoUrl("video URL")
             .thumbnailUrl("thumbnail URL")
             .member(author)
