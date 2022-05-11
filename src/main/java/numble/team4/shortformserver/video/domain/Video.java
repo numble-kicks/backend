@@ -48,7 +48,7 @@ public class Video extends BaseTimeEntity {
     private Boolean usedStatus;
 
     @Column(nullable = false)
-    private Long price;
+    private Integer price;
 
     private Long viewCount;
     private Long likeCount;
@@ -66,10 +66,13 @@ public class Video extends BaseTimeEntity {
         member.saveNewVideo(this);
     }
 
-    public void update(String title, String description, Member member) {
+    public void update(String title, String description, Integer price, Boolean usedStatus, Category category, Member member) {
         validateAuthor(member);
 
         this.title = title;
+        this.price = price;
+        this.usedStatus = usedStatus;
+        this.category = category;
         this.description = description;
     }
 
