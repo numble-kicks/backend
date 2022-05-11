@@ -21,8 +21,7 @@ import java.util.Arrays;
 import static numble.team4.shortformserver.common.exception.ExceptionType.*;
 import static numble.team4.shortformserver.follow.ui.FollowResponseMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,7 +56,7 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("[성공] 1. 본인이 아닌 다른 사용자를 팔로우 요청")
         void createFollow_isok_success() throws Exception {
             //when
-            ResultActions res = mockMvc.perform(get("/v1/users/following/{toMemberId}", toMember.getId()));
+            ResultActions res = mockMvc.perform(post("/v1/users/following/{toMemberId}", toMember.getId()));
 
             //then
             res.andExpect(status().isOk())
@@ -70,7 +69,7 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
         void createFollow_notSelfFollowableException_success() throws Exception {
             //when
             Member loginUser = ((MemberAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getMember();
-            ResultActions res = mockMvc.perform(get("/v1/users/following/{toMemberId}", loginUser.getId()));
+            ResultActions res = mockMvc.perform(post("/v1/users/following/{toMemberId}", loginUser.getId()));
 
             //then
             res.andExpect(status().isBadRequest())
@@ -82,11 +81,10 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("[실패] 2. 이미 팔로우한 사용자에 대해 팔로우 요청")
         void createFollow_alreadyExistFollowException_fail() throws Exception {
             //given
-            mockMvc.perform(get("/v1/users/following/{toMemberId}", toMember.getId()));
+            mockMvc.perform(post("/v1/users/following/{toMemberId}", toMember.getId()));
 
             //when
-            ResultActions res = mockMvc.perform(get("/v1/users/following/{toMemberId}", toMember.getId()));
-
+            ResultActions res = mockMvc.perform(post("/v1/users/following/{toMemberId}", toMember.getId()));
 
             //then
             res.andExpect(status().isBadRequest())
@@ -104,7 +102,7 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("[성공] 1. 본인이 아닌 다른 사용자를 팔로우한 상태에서 취소 요청")
         void deleteFollow_isok_success () throws Exception {
             //given
-            mockMvc.perform(get("/v1/users/following/{toMemberId}", toMember.getId()));
+            mockMvc.perform(post("/v1/users/following/{toMemberId}", toMember.getId()));
             Follow follow = followRepository.findAll().get(0);
 
             //when
