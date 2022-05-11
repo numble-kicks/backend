@@ -31,7 +31,7 @@ public class FollowController {
         return CommonResponse.of(followers, GET_FOLLOWERS.getMessage());
     }
 
-    @GetMapping("/{toMemberId}")
+    @PostMapping("/{toMemberId}")
     public CommonResponse createFollow(@LoginUser Member member, @PathVariable Long toMemberId) {
         followService.createFollow(member, toMemberId);
         return CommonResponse.from(CREATE_FOLLOW.getMessage());
