@@ -27,6 +27,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository{
                 )
                 .from(follow)
                 .where(follow.toMember.id.eq(id))
+                .orderBy(follow.fromMember.name.asc())
                 .fetch();
 
     }
@@ -43,6 +44,7 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository{
                 )
                 .from(follow)
                 .where(follow.fromMember.id.eq(id))
+                .orderBy(follow.toMember.name.asc())
                 .fetch();
     }
 }
