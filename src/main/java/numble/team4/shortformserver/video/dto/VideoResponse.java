@@ -31,7 +31,7 @@ public class VideoResponse {
     private String thumbnailUrl;
 
     @NotNull
-    private Long price;
+    private Integer price;
 
     @NotNull
     private Long viewCount;
