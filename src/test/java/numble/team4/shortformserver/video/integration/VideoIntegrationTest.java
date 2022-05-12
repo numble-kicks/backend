@@ -15,7 +15,6 @@ import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
-import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -67,7 +66,7 @@ public class VideoIntegrationTest {
             createVideo(5L, 0L),
             createVideo(3L, 0L),
             createVideo(4L, 0L),
-            createVideo(100, 0L)
+            createVideo(100L, 0L)
         );
 
         videoRepository.saveAll(videos);
@@ -103,25 +102,6 @@ public class VideoIntegrationTest {
 
             amazonS3Uploader.deleteToS3(videoResponse.getVideoUrl());
             amazonS3Uploader.deleteToS3(videoResponse.getThumbnailUrl());
-        }
-
-        @Test
-        @DisplayName("영상 등록 실패, 회원이 아니면 영상들 등록할 수 없다.")
-        void uploadVideo_NotExistMember() throws Exception {
-            // given
-            Member guest = Member.builder()
-                .id(100L)
-                .role(MEMBER)
-                .name("guest")
-                .build();
-            videoFile = new MockMultipartFile("video", "video".getBytes());
-            thumbnailFile = new MockMultipartFile("thumbnail", "thumbnail".getBytes());
-
-            videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", null, "설명");
-
-            // when, then
-            assertThrows(NotExistMemberException.class,
-                () -> videoController.saveVideo(videoRequest, guest));
         }
     }
 
@@ -271,6 +251,7 @@ public class VideoIntegrationTest {
             List<Long> ids = new ArrayList<>();
 
             for (Video v : all) {
+                v.updateCursor();
                 ids.add(v.getId());
             }
 
