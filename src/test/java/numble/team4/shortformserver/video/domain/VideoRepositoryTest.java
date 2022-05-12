@@ -17,9 +17,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-
 
 @BaseDataJpaTest
 class VideoRepositoryTest {
@@ -140,38 +138,6 @@ class VideoRepositoryTest {
             assertThat(videos.get(0)).isEqualTo(mockVideos.get(4));
         }
 
-        @Test
-        @DisplayName("영상 목록 좋아요 순으로 정렬")
-        void sortByLikeCounts() throws Exception {
-            // given
-            List<Video> mockVideos = makeMockVideoList(member);
-            videoRepository.saveAll(mockVideos);
-
-            // when
-            List<Video> videos = videoRepository.findAllSortByLikeCount(PageRequest.of(0, 10)).getContent();
-
-            // then
-            assertThat(videos.get(0).getLikeCount()).isEqualTo(500L);
-            assertThat(videos.get(4).getLikeCount()).isEqualTo(100L);
-            assertThat(videos.get(0)).isEqualTo(mockVideos.get(0));
-        }
-
-        @Test
-        @DisplayName("영상 목록 조회 순으로 정렬")
-        void sortByHits() throws Exception {
-            // given
-            List<Video> mockVideos = makeMockVideoList(member);
-            videoRepository.saveAll(mockVideos);
-
-            // when
-            List<Video> videos = videoRepository.findAllSortByViewCount(PageRequest.of(0, 10)).getContent();
-
-            // then
-            assertThat(videos.get(0).getViewCount()).isEqualTo(500L);
-            assertThat(videos.get(4).getViewCount()).isEqualTo(100L);
-            assertThat(videos.get(0)).isEqualTo(mockVideos.get(4));
-        }
-
         private List<Video> makeMockVideoList(Member member) {
             List<Video> ret = new ArrayList<>();
             Long likeCount = 500L;
@@ -204,34 +170,16 @@ class VideoRepositoryTest {
             Video savedVideo = videoRepository.save(video);
 
             // when
-            savedVideo.update("제목 수정", "설명 수정",
-                member);
+            savedVideo.update("제목 수정", "설명 수정");
             testEntityManager.flush();
             testEntityManager.clear();
 
             Member findMember = memberRepository.findById(savedVideo.getMember().getId())
                 .orElseThrow(NotExistMemberException::new);
-            savedVideo.update("제목 수정", "설명 수정",
-                member);
 
             // then
             assertThat(savedVideo.getTitle()).isEqualTo("제목 수정");
             assertThat(savedVideo.getDescription()).isEqualTo("설명 수정");
-            assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(savedVideo.getTitle());
-        }
-
-        @Test
-        @DisplayName("영상을 수정하면 자동으로 수정 날짜가 주입된다.")
-        void updatedVideoWithModifiedAt_success() throws Exception {
-            // given
-            Video savedVideo = videoRepository.save(video);
-
-            // when
-            savedVideo.update("수정", "수정", member);
-            testEntityManager.flush();
-            testEntityManager.clear();
-
-            // then
             assertThat(savedVideo.getCreateAt()).isBefore(savedVideo.getModifiedAt());
         }
     }
