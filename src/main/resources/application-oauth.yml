@@ -6,8 +6,7 @@ spring:
           kakao:
             client-id: ${env.KAKAO_CLIENT_ID}
             client-name: Kakao
-            redirect-uri: ${env.KAKAO_REDIRECT_URI}
-            redirect-url: ${env.KAKAO_REDIRECT_URL}
+            redirect-uri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
             scope: profile_nickname, profile_image, account_email
             authorization-grant-type: authorization_code
             client-authentication-method: POST
