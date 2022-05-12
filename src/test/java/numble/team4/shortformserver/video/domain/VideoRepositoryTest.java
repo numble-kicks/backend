@@ -118,7 +118,8 @@ class VideoRepositoryTest {
             Video savedVideo = videoRepository.save(video);
 
             // when
-            Video findVideo = videoRepository.findById(savedVideo.getId()).orElseThrow(NotExistVideoException::new);
+            Video findVideo = videoRepository.findById(savedVideo.getId())
+                .orElseThrow(NotExistVideoException::new);
 
             // then
             assertThat(savedVideo).isEqualTo(findVideo);
@@ -159,6 +160,9 @@ class VideoRepositoryTest {
                     .videoUrl("영상")
                     .thumbnailUrl("썸네일")
                     .member(member)
+                    .category(category)
+                    .usedStatus(true)
+                    .price(1000000000)
                     .likeCount(likeCount)
                     .viewCount(viewCount)
                     .build()
@@ -181,7 +185,7 @@ class VideoRepositoryTest {
             Video savedVideo = videoRepository.save(video);
 
             // when
-            savedVideo.update("제목 수정", "설명 수정");
+            savedVideo.update("제목 수정", "설명 수정", 100, true, category);
             testEntityManager.flush();
             testEntityManager.clear();
 

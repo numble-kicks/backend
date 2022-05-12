@@ -9,6 +9,9 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseDataJpaTest;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +28,9 @@ class VideoCustomRepositoryTest {
 
     @Autowired
     private VideoRepository videoRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     private Member member;
     private List<Video> videos;
@@ -47,20 +53,26 @@ class VideoCustomRepositoryTest {
             createVideo(5L, 10L, 5),
             createVideo(5L, 110L, 6)
         );
-        videoRepository.saveAll(videos);
+
+        for (Video v : videoRepository.saveAll(videos)) {
+            v.updateCursor();
+        }
     }
 
     private Video createVideo(long likes, long hits, long id) {
+        Category category = categoryRepository.findByName("구두/로퍼")
+            .orElseThrow(NotFoundCategoryException::new);
         return Video.builder()
             .title("Title")
             .description("description")
             .member(member)
             .videoUrl("VIDEO_URL")
             .thumbnailUrl("THUMBNAIL_URL")
+            .price(1000)
+            .usedStatus(false)
             .likeCount(likes)
+            .category(category)
             .viewCount(hits)
-            .hitsCursor(getCursor(hits, id))
-            .likesCursor(getCursor(likes, id))
             .build();
     }
 
