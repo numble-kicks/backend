@@ -3,6 +3,7 @@ package numble.team4.shortformserver.video.dto;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,10 +19,14 @@ public class VideoResponse {
     private Long id;
     private String title;
     private String description;
-    private String video_url;
-    private String thumbnail_url;
-    private Long view_count;
-    private Long like_count;
+    @JsonProperty("video_url")
+    private String videoUrl;
+    @JsonProperty("thumbnail_url")
+    private String thumbnailUrl;
+    @JsonProperty("view_count")
+    private Long viewCount;
+    @JsonProperty("like_count")
+    private Long likeCount;
     private MemberDto member;
 
     public static VideoResponse from(Video video) {
@@ -29,10 +34,10 @@ public class VideoResponse {
             .id(video.getId())
             .title(video.getTitle())
             .description(video.getDescription())
-            .video_url(video.getVideoUrl())
-            .thumbnail_url(video.getThumbnailUrl())
-            .view_count(video.getViewCount())
-            .like_count(video.getLikeCount())
+            .videoUrl(video.getVideoUrl())
+            .thumbnailUrl(video.getThumbnailUrl())
+            .viewCount(video.getViewCount())
+            .likeCount(video.getLikeCount())
             .member(MemberDto.from(video.getMember().getName()))
             .build();
     }
