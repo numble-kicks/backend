@@ -51,7 +51,7 @@ public class VideoService {
 
         findVideo.validateAuthor(loggedInMember);
 
-        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), loggedInMember);
+        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription());
         return VideoResponse.from(findVideo);
     }
 
@@ -68,6 +68,7 @@ public class VideoService {
         videoRepository.delete(findVideo);
     }
 
+    @Transactional
     public VideoResponse findVideoById(Long videoId) {
         Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
         findVideo.increaseViewCount();
@@ -79,11 +80,11 @@ public class VideoService {
         Page<VideoResponse> videos;
 
         if (Objects.isNull(videoId)) {
-            videos = videoRepository.findAllSortByLikeCount(pageable).map(VideoResponse::from);
+            videos = videoRepository.findAllVideos(null,"likes", pageable).map(VideoResponse::from);
         } else {
-            Long likes = videoRepository.findById(videoId)
-                .orElseThrow(NotExistVideoException::new).getLikeCount();
-            videos = videoRepository.findAllSortByLikeCount(likes, pageable).map(VideoResponse::from);
+            String cursor = videoRepository.findById(videoId)
+                .orElseThrow(NotExistVideoException::new).getLikesCursor();
+            videos = videoRepository.findAllVideos(cursor, "likes", pageable).map(VideoResponse::from);
         }
 
         return videos;
@@ -93,11 +94,11 @@ public class VideoService {
         Page<VideoResponse> videos;
 
         if (Objects.isNull(videoId)) {
-            videos = videoRepository.findAllSortByViewCount(pageable).map(VideoResponse::from);
+            videos = videoRepository.findAllVideos(null, "hits", pageable).map(VideoResponse::from);
         } else {
-            Long hits = videoRepository.findById(videoId)
-                .orElseThrow(NotExistVideoException::new).getViewCount();
-            videos = videoRepository.findAllSortByViewCount(hits, pageable).map(VideoResponse::from);
+            String cursor = videoRepository.findById(videoId)
+                .orElseThrow(NotExistVideoException::new).getHitsCursor();
+            videos = videoRepository.findAllVideos(cursor,"hits", pageable).map(VideoResponse::from);
         }
 
         return videos;
