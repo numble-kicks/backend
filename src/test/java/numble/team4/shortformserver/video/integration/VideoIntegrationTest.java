@@ -155,7 +155,7 @@ public class VideoIntegrationTest {
 
             // when, then
             assertThrows(NotExistVideoException.class,
-                () -> videoController.updateVideo(videoUpdateRequest, author, 100L));
+                () -> videoController.updateVideo(videoUpdateRequest, author, 918367461L));
         }
     }
 
