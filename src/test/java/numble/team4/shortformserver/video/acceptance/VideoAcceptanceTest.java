@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.video.acceptance;
 
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.member.member.domain.Member;
@@ -25,11 +27,15 @@ import numble.team4.shortformserver.video.category.exception.NotFoundCategoryExc
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
+import numble.team4.shortformserver.video.exception.NotExistVideoException;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WithMockCustomUser(name = "numble", email = "numble@numble.com")
@@ -81,15 +87,19 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
         ResultActions res = saveVideo();
 
         // then
-        res.andExpect(status().isOk())
+        MvcResult mvcResult = res
+            .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value(UPLOAD_VIDEO.getMessage()))
-            .andDo(print());
+            .andDo(print())
+            .andReturn();
+
+        Long videoId = StringToJSON(mvcResult);
 
         // given - 영상 조회
-        Video video = videoRepository.findAll().get(0);
+        Video video = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
 
         // when
-        ResultActions read = mockMvc.perform(get(BASE_URI + VIDEO_ID, video.getId()));
+        ResultActions read = mockMvc.perform(get(BASE_URI + VIDEO_ID, videoId));
 
         // then
         read.andExpect(status().isOk())
@@ -101,13 +111,20 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
         amazonS3Uploader.deleteToS3(video.getThumbnailUrl());
     }
 
+    private Long StringToJSON(MvcResult mvcResult)
+        throws UnsupportedEncodingException, ParseException {
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        JSONParser parser = new JSONParser(contentAsString);
+        return Long.parseLong(parser.object().get("data").toString());
+    }
+
     @Test
     @DisplayName("user1은 저장한 영상을 수정한다.")
     void scenario2() throws Exception {
         // given
         Video video = createVideo(0L, 0L, user1);
         Video savedVideo = videoRepository.save(video);
-        VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
+        VideoUpdateRequest req = VideoUpdateRequest.builder()
             .title(TITLE)
             .description("설명 수정")
             .category("구두/로퍼")
@@ -116,16 +133,20 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
             .build();
 
         // when
-        ResultActions res = mockMvc.perform(put(BASE_URI + VIDEO_ID, savedVideo.getId())
-            .content(objectMapper.writeValueAsString(videoUpdateRequest))
-            .contentType(APPLICATION_JSON)
-        );
+        MvcResult res = mockMvc.perform(put(BASE_URI + VIDEO_ID, savedVideo.getId())
+                .content(objectMapper.writeValueAsString(req))
+                .contentType(APPLICATION_JSON)
+            ).andExpect(status().isOk())
+            .andExpect(jsonPath("$.message").value(UPDATE_VIDEO.getMessage()))
+            .andDo(print())
+            .andReturn();
+
+        Video updatedVideo = videoRepository.findById(StringToJSON(res))
+            .orElseThrow(NotExistVideoException::new);
 
         // then
-        res.andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.description").value(videoUpdateRequest.getDescription()))
-            .andExpect(jsonPath("$.data.category.name").value(videoUpdateRequest.getCategory()))
-            .andDo(print());
+        assertThat(updatedVideo.getDescription()).isNotEqualTo(DESCRIPTION);
+        assertThat(updatedVideo.getCategory()).isNotEqualTo(category);
     }
 
     @Test
