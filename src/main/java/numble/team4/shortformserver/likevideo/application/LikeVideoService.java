@@ -37,7 +37,7 @@ public class LikeVideoService {
 
         LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
         likeVideoRepository.save(likeVideo);
-        video.increaseLikeCount();
+        likeVideo.like();
     }
 
     @Transactional
@@ -48,8 +48,8 @@ public class LikeVideoService {
         if (!likeVideo.isMemberOf(member)) {
             throw new NotMemberOfLikeVideoException();
         }
-        likeVideo.getVideo().decreaseLikeCount();
         likeVideoRepository.delete(likeVideo);
+        likeVideo.unlike();
     }
 
 }

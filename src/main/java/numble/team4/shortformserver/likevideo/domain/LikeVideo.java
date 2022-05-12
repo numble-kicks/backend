@@ -40,4 +40,13 @@ public class LikeVideo {
     public boolean isMemberOf(Member member) {
         return this.member.equals(member);
     }
+
+    public void like() {
+        video.increaseLikeCount();
+    }
+
+    public void unlike() {
+        video.decreaseLikeCount();
+    }
+
 }
