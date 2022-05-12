@@ -22,6 +22,7 @@ import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
+import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.ResultActions;
 
 @WithMockCustomUser(name = "numble", email = "numble@numble.com")
-public class VideoAcceptanceTest extends BaseAcceptanceTest {
+class VideoAcceptanceTest extends BaseAcceptanceTest {
 
     private static final String TITLE = "제목";
     private static final String DESCRIPTION = "설명";
@@ -73,14 +74,12 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         ResultActions res = saveVideo();
 
         // then
-        assertThat(user1.getVideos()).hasSize(1);
-
         res.andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value(UPLOAD_VIDEO.getMessage()))
             .andDo(print());
 
         // given - 영상 조회
-        Video video = user1.getVideos().get(0);
+        Video video = videoRepository.findById(1L).orElseThrow(NotExistVideoException::new);
 
         // when
         ResultActions read = mockMvc.perform(get(BASE_URI + VIDEO_ID, video.getId()));
@@ -125,10 +124,7 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         saveVideo();
         saveVideo();
 
-        // 두 개의 영상이 정상적으로 등록 됐는지 확인
-        assertThat(user1.getVideos()).hasSize(2);
-
-        Video video = user1.getVideos().get(1);
+        Video video = videoRepository.findAll().get(1);
 
         // when
         ResultActions res = mockMvc.perform(delete(BASE_URI + VIDEO_ID, video.getId()));
@@ -136,8 +132,6 @@ public class VideoAcceptanceTest extends BaseAcceptanceTest {
         // then
         res.andExpect(status().isOk())
             .andDo(print());
-
-        assertThat(user1.getVideos()).hasSize(1);
     }
 
     @Test
