@@ -64,7 +64,7 @@ public class Video extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void update(String title, String description) {
+    public void update(String title, String description, Integer price, Boolean usedStatus, Category category) {
         this.title = title;
         this.price = price;
         this.usedStatus = usedStatus;
