@@ -53,23 +53,28 @@ public class Video extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void update(String title, String description, Member member) {
+    public void update(String title, String description) {
         this.title = title;
         this.description = description;
     }
 
     public void increaseViewCount() {
         this.viewCount += 1;
-        this.hitsCursor = lpad(this.viewCount);
+        updateCursor();
     }
 
     public void increaseLikeCount() {
         this.likeCount += 1;
-        this.likesCursor = lpad(this.likeCount);
+        updateCursor();
     }
 
     public void decreaseLikeCount() {
         this.likeCount -= 1;
+        updateCursor();
+    }
+
+    public void updateCursor() {
+        this.hitsCursor = lpad(this.viewCount);
         this.likesCursor = lpad(this.likeCount);
     }
 
