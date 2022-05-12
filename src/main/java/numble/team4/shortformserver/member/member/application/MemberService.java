@@ -9,6 +9,7 @@ import numble.team4.shortformserver.member.member.exception.NotExistMemberExcept
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -30,7 +31,10 @@ public class MemberService {
     @Transactional
     public void saveProfileImage(Member member, MultipartFile file) {
         S3UploadDto uploadDto = uploader.saveToS3(file, "user");
-        uploader.deleteToS3(member.getProfileImageUrl());
+
+        if (!StringUtils.hasText(member.getProfileImageUrl())) {
+            uploader.deleteToS3(member.getProfileImageUrl());
+        }
         member.updateProfileImage(uploadDto.getFileUrl());
     }
 
