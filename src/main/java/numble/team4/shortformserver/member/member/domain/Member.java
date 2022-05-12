@@ -47,6 +47,10 @@ public class Member extends BaseTimeEntity {
         return !emailVerified;
     }
 
+    public void updateProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
