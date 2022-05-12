@@ -1,5 +1,9 @@
 package numble.team4.shortformserver.likevideo.intergration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import javax.persistence.EntityManager;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
@@ -19,11 +23,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.EntityManager;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 @BaseIntegrationTest
 public class LikeVideoIntegrationTest {
 
@@ -42,18 +41,20 @@ public class LikeVideoIntegrationTest {
     @BeforeEach
     void init() {
         member = Member.builder()
-                .role(Role.MEMBER)
-                .emailVerified(true)
-                .build();
+            .role(Role.MEMBER)
+            .emailVerified(true)
+            .build();
         entityManager.persist(member);
 
         video = Video.builder()
-                .member(member)
-                .videoUrl("http://videourl.com")
-                .thumbnailUrl("http://url.com")
-                .title("title")
-                .description("description")
-                .build();
+            .member(member)
+            .likeCount(0L)
+            .viewCount(0L)
+            .videoUrl("http://videourl.com")
+            .thumbnailUrl("http://url.com")
+            .title("title")
+            .description("description")
+            .build();
         entityManager.persist(video);
     }
 
@@ -65,7 +66,8 @@ public class LikeVideoIntegrationTest {
         @DisplayName("[성공] 좋아요를 등록하지 않트은 영상에 대해 테스트")
         void existLikeVideo_likeVideoExistsFalse_success() {
             //when
-            CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, 19823012L);
+            CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(
+                member, 19823012L);
 
             //then
             assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(false);
@@ -79,7 +81,8 @@ public class LikeVideoIntegrationTest {
             likeVideoRepository.save(likeVideo);
 
             //when
-            CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, video.getId());
+            CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(
+                member, video.getId());
 
             //then
             assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(true);
@@ -106,8 +109,8 @@ public class LikeVideoIntegrationTest {
         void saveVideo_notExistVideoException_fail() {
             //when, then
             assertThrows(
-                    NotExistVideoException.class,
-                    () -> likeVideoController.saveLikeVideo(member, 33333L)
+                NotExistVideoException.class,
+                () -> likeVideoController.saveLikeVideo(member, 33333L)
             );
         }
 
@@ -120,8 +123,8 @@ public class LikeVideoIntegrationTest {
 
             //when,then
             assertThrows(
-                    AlreadyExistLikeVideoException.class,
-                    () -> likeVideoController.saveLikeVideo(member, video.getId())
+                AlreadyExistLikeVideoException.class,
+                () -> likeVideoController.saveLikeVideo(member, video.getId())
             );
         }
     }
@@ -149,8 +152,8 @@ public class LikeVideoIntegrationTest {
         void deleteLikeVideo_notExistLikeVideoException_success() {
             //when, then
             assertThrows(
-                    NotExistLikeVideoException.class,
-                    () -> likeVideoController.deleteLikeVideo(member, 19329283L)
+                NotExistLikeVideoException.class,
+                () -> likeVideoController.deleteLikeVideo(member, 19329283L)
             );
         }
 
@@ -162,13 +165,13 @@ public class LikeVideoIntegrationTest {
             likeVideoRepository.save(likeVideo);
 
             Member testMember = Member.builder()
-                    .role(Role.MEMBER).name("테스트유저").emailVerified(true)
-                    .build();
+                .role(Role.MEMBER).name("테스트유저").emailVerified(true)
+                .build();
 
             //when, then
             assertThrows(
-                    NotMemberOfLikeVideoException.class,
-                    () -> likeVideoController.deleteLikeVideo(testMember, likeVideo.getId())
+                NotMemberOfLikeVideoException.class,
+                () -> likeVideoController.deleteLikeVideo(testMember, likeVideo.getId())
             );
         }
     }
