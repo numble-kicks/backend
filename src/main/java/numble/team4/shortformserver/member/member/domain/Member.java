@@ -56,8 +56,12 @@ public class Member extends BaseTimeEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Member member = (Member) o;
         return Objects.equals(id, member.id);
     }
@@ -66,4 +70,5 @@ public class Member extends BaseTimeEntity {
     public int hashCode() {
         return Objects.hash(email);
     }
+
 }
