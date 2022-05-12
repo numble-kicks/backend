@@ -18,10 +18,10 @@ public class VideoResponse {
     private Long id;
     private String title;
     private String description;
-    private String videoUrl;
-    private String thumbnailUrl;
-    private Long viewCount;
-    private Long likeCount;
+    private String video_url;
+    private String thumbnail_url;
+    private Long view_count;
+    private Long like_count;
     private MemberDto member;
 
     public static VideoResponse from(Video video) {
@@ -29,10 +29,10 @@ public class VideoResponse {
             .id(video.getId())
             .title(video.getTitle())
             .description(video.getDescription())
-            .videoUrl(video.getVideoUrl())
-            .thumbnailUrl(video.getThumbnailUrl())
-            .viewCount(video.getViewCount())
-            .likeCount(video.getLikeCount())
+            .video_url(video.getVideoUrl())
+            .thumbnail_url(video.getThumbnailUrl())
+            .view_count(video.getViewCount())
+            .like_count(video.getLikeCount())
             .member(MemberDto.from(video.getMember().getName()))
             .build();
     }
