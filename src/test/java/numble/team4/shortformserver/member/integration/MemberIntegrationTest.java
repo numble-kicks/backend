@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.member.auth.integration;
+package numble.team4.shortformserver.member.integration;
 
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.member.member.domain.Member;
