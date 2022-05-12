@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.GET_ALL_LIKE_VIDEOS_OF_MEMBER;
 import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.GET_ALL_VIDEOS_OF_MEMBER;
 
 @RestController
@@ -25,5 +26,13 @@ public class MemberController {
         List<VideoListResponse> videos = videoService.findAllVideosByMember(memberId, videoId);
         return CommonResponse.of(videos, GET_ALL_VIDEOS_OF_MEMBER.getMessage());
     }
+
+    @GetMapping("/v1/users/{memberId}/likes")
+    public CommonResponse<List<VideoListResponse>> findAllLikeVideosByMember(@PathVariable Long memberId,
+                                                                         @RequestParam(value = "last_video_id", required = false) Long videoId) {
+        List<VideoListResponse> videos = videoService.findAllLikeVideosByMember(memberId, videoId);
+        return CommonResponse.of(videos, GET_ALL_LIKE_VIDEOS_OF_MEMBER.getMessage());
+    }
+
 
 }
