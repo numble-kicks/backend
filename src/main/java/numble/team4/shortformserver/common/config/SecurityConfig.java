@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/v1/users/following/from", "/v1/users/following/to", "/v1/users/{memberId}/videos", "/v1/users/{memberId}/likes").permitAll()
+                .antMatchers(HttpMethod.GET,"/v1/users/following/from", "/v1/users/following/to", "/v1/users/{memberId}/videos", "/v1/users/{memberId}/likes", "/v1/users/{memberId}").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}", "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}", "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
                 .antMatchers("/oauth/**", "/renew").permitAll()
