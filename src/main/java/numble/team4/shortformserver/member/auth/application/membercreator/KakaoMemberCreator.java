@@ -30,7 +30,7 @@ public class KakaoMemberCreator implements MemberCreatorFromSocialInfo {
         if (checkEmptyEmail(email))
             return memberRepository.save(new Member(email, name, MEMBER, false));
         return memberRepository.findByEmail(email)
-                .orElseGet(() -> memberRepository.save(new Member(email, name, MEMBER, checkEmptyEmail(email))));
+                .orElseGet(() -> memberRepository.save(new Member(email, name, MEMBER, true)));
     }
 
     @Override
