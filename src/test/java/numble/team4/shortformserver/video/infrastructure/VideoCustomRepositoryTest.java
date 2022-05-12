@@ -88,8 +88,7 @@ class VideoCustomRepositoryTest {
             .collect(Collectors.toList());
 
         // when
-        List<Video> v = videoRepository.findAllVideos(null, "likes", PageRequest.of(0, 5))
-            .getContent();
+        List<Video> v = videoRepository.findAllVideos(null, "likes", PageRequest.of(0, 5));
 
         // then
         assertThat(v)
@@ -111,9 +110,7 @@ class VideoCustomRepositoryTest {
             .collect(Collectors.toList());
         // when
         List<Video> v = videoRepository.findAllVideos(sorts.get(0).cursor, "likes",
-                PageRequest.of(0, 5))
-            .getContent();
-
+            PageRequest.of(0, 5));
         // then
         assertThat(v)
             .extracting("id")
