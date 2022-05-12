@@ -8,4 +8,5 @@ import java.util.List;
 public interface VideoCustomRepository {
 
     List<VideoListResponse> findAllByMemberAndMaxVideoId(Member member, Long videoId, int limitNum);
+    List<VideoListResponse> findAllLikeVideoByMemberAndMaxVideoId(Member member, Long videoId, int limitNum);
 }
