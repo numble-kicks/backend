@@ -110,16 +110,18 @@ public class VideoIntegrationTest {
             videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", 100, false, "기타", "");
 
             // when
-            CommonResponse<VideoResponse> response = videoController.saveVideo(
+            CommonResponse<Long> response = videoController.saveVideo(
                 videoRequest, author);
 
-            VideoResponse videoResponse = response.getData();
+            Video savedVideo = videoRepository.findById(response.getData())
+                .orElseThrow(NotExistVideoException::new);
+
             // then
             assertThat(response.getMessage()).isEqualTo(UPLOAD_VIDEO.getMessage());
-            assertThat(videoResponse).isNotNull();
+            assertThat(savedVideo).isNotNull();
 
-            amazonS3Uploader.deleteToS3(videoResponse.getVideoUrl());
-            amazonS3Uploader.deleteToS3(videoResponse.getThumbnailUrl());
+            amazonS3Uploader.deleteToS3(savedVideo.getVideoUrl());
+            amazonS3Uploader.deleteToS3(savedVideo.getThumbnailUrl());
         }
     }
 
@@ -131,13 +133,15 @@ public class VideoIntegrationTest {
         @DisplayName("영상 수정 성공")
         void updateVideo_success() throws Exception {
             // when
-            CommonResponse<VideoResponse> response = videoController.updateVideo(
+            CommonResponse<Long> res = videoController.updateVideo(
                 videoUpdateRequest, author, video.getId());
-            VideoResponse data = response.getData();
+
+            Video savedVideo = videoRepository.findById(res.getData())
+                .orElseThrow(NotExistVideoException::new);
 
             // then
-            assertThat(data.getId()).isEqualTo(video.getId());
-            assertThat(data.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
+            assertThat(savedVideo.getId()).isEqualTo(video.getId());
+            assertThat(savedVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
         }
 
         @Test
@@ -166,7 +170,7 @@ public class VideoIntegrationTest {
         @DisplayName("영상 삭제 성공")
         void deleteVideo_success() throws Exception {
             //given
-            VideoResponse savedVideo = videoController.saveVideo(new VideoRequest(
+            Long savedVideoId = videoController.saveVideo(new VideoRequest(
                 new MockMultipartFile("video", "test".getBytes()),
                 new MockMultipartFile("thumbnail", "test".getBytes()),
                 "제목",
@@ -178,11 +182,11 @@ public class VideoIntegrationTest {
 
             // when
             CommonResponse<VideoResponse> res = videoController.deleteVideo(
-                savedVideo.getId(), author);
+                savedVideoId, author);
 
             // then
             assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
-            assertThat(videoRepository.existsById(savedVideo.getId())).isFalse();
+            assertThat(videoRepository.existsById(savedVideoId)).isFalse();
         }
 
         @Test
