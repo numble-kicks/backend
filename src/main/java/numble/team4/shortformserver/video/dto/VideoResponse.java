@@ -3,8 +3,6 @@ package numble.team4.shortformserver.video.dto;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,33 +16,17 @@ import numble.team4.shortformserver.video.domain.Video;
 @NoArgsConstructor(access = PROTECTED)
 public class VideoResponse {
 
-    @NotNull
     private Long id;
-
-    @NotBlank
     private String title;
-
-    @NotBlank
+    private String description;
     private String videoUrl;
-
-    @NotBlank
     private String thumbnailUrl;
-
-    @NotNull
     private Integer price;
-
-    @NotNull
     private Long viewCount;
-
-    @NotNull
     private Long likeCount;
-
-    @NotNull
     private MemberDto member;
-
     private CategoryDto category;
     private Boolean usedStatus;
-    private String description;
 
     public static VideoResponse from(Video video) {
         return VideoResponse.builder()
@@ -57,7 +39,7 @@ public class VideoResponse {
             .thumbnailUrl(video.getThumbnailUrl())
             .viewCount(video.getViewCount())
             .likeCount(video.getLikeCount())
-            .category(CategoryDto.create(video.getCategory()))
+            .category(CategoryDto.from(video.getCategory()))
             .member(MemberDto.from(video.getMember().getName()))
             .build();
     }
