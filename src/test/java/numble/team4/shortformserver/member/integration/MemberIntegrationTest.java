@@ -1,9 +1,11 @@
 package numble.team4.shortformserver.member.integration;
 
+import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
+import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
-import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.member.member.ui.MemberController;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
@@ -12,18 +14,18 @@ import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoListResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 
-import javax.persistence.EntityManager;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @BaseIntegrationTest
@@ -33,10 +35,16 @@ public class MemberIntegrationTest {
     MemberController memberController;
 
     @Autowired
-    EntityManager entityManager;
+    LikeVideoRepository likeVideoRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @Autowired
     VideoRepository videoRepository;
+
+    @Autowired
+    AmazonS3Uploader uploader;
 
     private Member member;
 
@@ -45,7 +53,7 @@ public class MemberIntegrationTest {
         member = Member.builder()
                 .name("user2").role(Role.MEMBER).emailVerified(true).profileImageUrl("imageurl")
                 .build();
-        entityManager.persist(member);
+        memberRepository.save(member);
         createVideo();
     }
 
@@ -58,14 +66,14 @@ public class MemberIntegrationTest {
                     .title("title")
                     .description("description")
                     .build();
-            entityManager.persist(video);
+            videoRepository.save(video);
         }
     }
     void createLikeVideo() {
         List<Video> all = videoRepository.findAll();
         for (int i = 0; i < all.size(); i++) {
             LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, all.get(i));
-            entityManager.persist(likeVideo);
+            likeVideoRepository.save(likeVideo);
         }
     }
 
@@ -124,31 +132,36 @@ public class MemberIntegrationTest {
 
     }
 
-    @Nested
-    @DisplayName("사용자 정보 조회")
-    class GetMemberInfoTest {
 
-        @Test
-        @DisplayName("[성공] 존재하는 사용자의 정보 조회")
-        void getMemberInfo_notException_success() {
-            //when
-            MemberInfoResponse res = memberController.findMemberInfo(member.getId()).getData();
+    @Test
+    @DisplayName("[성공] 존재하는 사용자의 정보 조회")
+    void getMemberInfo_notException_success() {
+        //when
+        MemberInfoResponse res = memberController.findMemberInfo(member.getId()).getData();
 
-            //then
-            assertThat(res.getName()).isEqualTo(member.getName());
-            assertThat(res.getEmail()).isEqualTo(member.getEmail());
-            assertThat(res.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
-        }
-
-        @Test
-        @DisplayName("[실패] 존재하지 않는 사용자의 정보 조회")
-        void getMemberInfo_notExistMemberException_fail() {
-            //when,then
-            assertThrows(
-                    NotExistMemberException.class,
-                    () -> memberController.findMemberInfo(203948023L)
-            );
-        }
+        //then
+        assertThat(res.getName()).isEqualTo(member.getName());
+        assertThat(res.getEmail()).isEqualTo(member.getEmail());
+        assertThat(res.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
     }
+
+
+    @Test
+    @DisplayName("[성공] 사용자 프로필 이미지 등록")
+    void saveProfileImage_notExceptionAndMemberProfileImageNotNull_success() throws IOException {
+        //given
+        MockMultipartFile file = new MockMultipartFile("testImage",
+                new FileInputStream("src/test/resources/spring.png"));
+
+        //when
+        memberController.updateProfileImage(member, file);
+
+        //then
+        Member byId = memberRepository.getById(member.getId());
+        assertThat(byId.getProfileImageUrl()).isNotNull();
+
+        uploader.deleteToS3(member.getProfileImageUrl());
+    }
+
 
 }
