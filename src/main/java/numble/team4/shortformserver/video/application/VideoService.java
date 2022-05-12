@@ -36,7 +36,8 @@ public class VideoService {
             .orElseThrow(NotFoundCategoryException::new);
 
         S3UploadDto videoDto = amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video");
-        S3UploadDto thumbnailDto = amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail");
+        S3UploadDto thumbnailDto = amazonS3Uploader.saveToS3(videoRequest.getThumbnail(),
+            "video/thumbnail");
 
         Video video = videoRequest.toVideo(
             videoDto.getFileUrl(),
@@ -66,8 +67,8 @@ public class VideoService {
             videoUpdateRequest.getDescription(),
             videoUpdateRequest.getPrice(),
             videoUpdateRequest.getUsedStatus(),
-            category,
-            loggedInMember);
+            category
+        );
         return VideoResponse.from(findVideo);
     }
 
@@ -86,7 +87,8 @@ public class VideoService {
 
     @Transactional
     public VideoResponse findVideoById(Long videoId) {
-        Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
+        Video findVideo = videoRepository.findById(videoId)
+            .orElseThrow(NotExistVideoException::new);
         findVideo.increaseViewCount();
         return VideoResponse.from(findVideo);
     }
@@ -104,7 +106,8 @@ public class VideoService {
                 cursor = videoRepository.findById(videoId)
                     .orElseThrow(NotExistVideoException::new).getLikesCursor();
             }
-            videos = videoRepository.findAllVideos(cursor, sortBy, pageable).map(VideoResponse::from);
+            videos = videoRepository.findAllVideos(cursor, sortBy, pageable)
+                .map(VideoResponse::from);
         }
         return videos;
     }
