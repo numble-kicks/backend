@@ -89,9 +89,8 @@ class VideoServiceTest {
 
         @Test
         @DisplayName("video 저장 - 성공")
-        public void uploadVideo_success() throws Exception {
+        void uploadVideo_success() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
             given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willReturn(videoDto);
             given(amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail")).willReturn(thumbnailDto);
             given(videoRepository.save(any(Video.class))).willReturn(video);
@@ -105,9 +104,8 @@ class VideoServiceTest {
 
         @Test
         @DisplayName("video 저장 - 실패, 파일이 존재하지 않을 경우")
-        public void uploadVideo_notExistFile() throws Exception {
+        void uploadVideo_notExistFile() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
             given(amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video")).willThrow(NotExistFileException.class);
 
             // then
