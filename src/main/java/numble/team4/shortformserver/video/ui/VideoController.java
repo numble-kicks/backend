@@ -69,7 +69,7 @@ public class VideoController {
     }
 
     @GetMapping("/{videoId}")
-    public CommonResponse<VideoResponse> findByIdVideo(@PathVariable Long videoId) {
+    public CommonResponse<VideoResponse> findById(@PathVariable Long videoId) {
         VideoResponse video = videoService.findVideoById(videoId);
 
         return CommonResponse.of(video, GET_VIDEO_BY_ID.getMessage());

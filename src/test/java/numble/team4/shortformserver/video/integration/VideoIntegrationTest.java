@@ -213,7 +213,7 @@ public class VideoIntegrationTest {
             Long viewCount = video.getViewCount();
 
             // when
-            CommonResponse<VideoResponse> response = videoController.findByIdVideo(video.getId());
+            CommonResponse<VideoResponse> response = videoController.findById(video.getId());
             VideoResponse data = response.getData();
 
             // then
@@ -224,7 +224,7 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("특정 영상 조회 실패, 존재하지 않는 영상은 조회할 수 없다.")
         void findById_notExistVideo() throws Exception {
-            assertThrows(NotExistVideoException.class, () -> videoController.findByIdVideo(100L));
+            assertThrows(NotExistVideoException.class, () -> videoController.findById(100L));
         }
 
         @Test
