@@ -80,13 +80,15 @@ class VideoRepositoryTest {
         void saveVideoAndMember() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addToMember(member);
+            testEntityManager.flush();
+            testEntityManager.clear();
 
             // when
             Video findVideo = videoRepository.findById(savedVideo.getId())
                 .orElseThrow(NotExistVideoException::new);
             Member findMember = memberRepository.findById(findVideo.getMember()
                 .getId()).orElseThrow(NotExistMemberException::new);
+
 
             // then
             assertThat(findVideo.getMember()).isEqualTo(member);
@@ -129,7 +131,6 @@ class VideoRepositoryTest {
         void sortByLatest() throws Exception {
             // given
             List<Video> mockVideos = makeMockVideoList(member);
-
             videoRepository.saveAll(mockVideos);
 
             // when
@@ -144,8 +145,8 @@ class VideoRepositoryTest {
         void sortByLikeCounts() throws Exception {
             // given
             List<Video> mockVideos = makeMockVideoList(member);
-
             videoRepository.saveAll(mockVideos);
+
             // when
             List<Video> videos = videoRepository.findAllSortByLikeCount(PageRequest.of(0, 10)).getContent();
 
@@ -160,63 +161,15 @@ class VideoRepositoryTest {
         void sortByHits() throws Exception {
             // given
             List<Video> mockVideos = makeMockVideoList(member);
-
             videoRepository.saveAll(mockVideos);
+
             // when
             List<Video> videos = videoRepository.findAllSortByViewCount(PageRequest.of(0, 10)).getContent();
-
 
             // then
             assertThat(videos.get(0).getViewCount()).isEqualTo(500L);
             assertThat(videos.get(4).getViewCount()).isEqualTo(100L);
             assertThat(videos.get(0)).isEqualTo(mockVideos.get(4));
-        }
-
-        @Test
-        @DisplayName("특정 사용자의 영상 목록 조회, id 값이 null일 때")
-        void findAllByMember() throws Exception {
-            // given
-            Member someMember = Member.builder()
-                .name("tester")
-                .role(MEMBER)
-                .build();
-            Member tester = memberRepository.save(someMember);
-
-            List<Video> mockVideos = makeMockVideoList(tester);
-            videoRepository.saveAll(mockVideos);
-
-            // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(tester, PageRequest.of(0, 3)).getContent();
-
-            // then
-            assertThat(videos)
-                .extracting("member")
-                .extracting("name")
-                .containsExactly("tester", "tester", "tester");
-        }
-
-        @Test
-        @DisplayName("특정 사용자의 영상 목록 조회, id 값이 존재할 때")
-        void findAllByMember_cursorBasedPaging() throws Exception {
-            // given
-            Member someMember = Member.builder()
-                .name("tester")
-                .role(MEMBER)
-                .build();
-            Member tester = memberRepository.save(someMember);
-
-            List<Video> mockVideos = makeMockVideoList(tester);
-            List<Video> all = videoRepository.saveAll(mockVideos);
-
-            Long id = all.get(4).getId();
-            // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(id, tester, PageRequest.of(0, 3)).getContent();
-
-            // then
-            assertThat(videos).hasSize(3);
-            assertThat(videos)
-                .extracting("id")
-                .containsExactly(id - 1, id - 2, id - 3);
         }
 
         private List<Video> makeMockVideoList(Member member) {
@@ -249,26 +202,22 @@ class VideoRepositoryTest {
         void updateVideo_success() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addToMember(member);
-            Video findVideo = videoRepository.findById(savedVideo.getId())
-                .orElseThrow(NotExistVideoException::new);
-
 
             // when
-            findVideo.update("제목 수정", "설명 수정",
+            savedVideo.update("제목 수정", "설명 수정",
                 member);
             testEntityManager.flush();
             testEntityManager.clear();
 
-            Member findMember = memberRepository.findById(findVideo.getMember().getId())
+            Member findMember = memberRepository.findById(savedVideo.getMember().getId())
                 .orElseThrow(NotExistMemberException::new);
-            findVideo.update("제목 수정", "설명 수정",
+            savedVideo.update("제목 수정", "설명 수정",
                 member);
 
             // then
-            assertThat(findVideo.getTitle()).isEqualTo("제목 수정");
-            assertThat(findVideo.getDescription()).isEqualTo("설명 수정");
-            assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(findVideo.getTitle());
+            assertThat(savedVideo.getTitle()).isEqualTo("제목 수정");
+            assertThat(savedVideo.getDescription()).isEqualTo("설명 수정");
+            assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(savedVideo.getTitle());
         }
 
         @Test
@@ -296,24 +245,20 @@ class VideoRepositoryTest {
         void deleteVideo_success() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addToMember(member);
-
-            Video findVideo = videoRepository.findById(savedVideo.getId())
-                .orElseThrow(NotExistVideoException::new);
 
             // when
-            videoRepository.delete(findVideo);
+            videoRepository.delete(savedVideo);
             testEntityManager.flush();
             testEntityManager.clear();
 
-            Member findMember = memberRepository.findById(findVideo.getMember().getId())
+            Member findMember = memberRepository.findById(savedVideo.getMember().getId())
                 .orElseThrow(NotExistMemberException::new);
 
             // then
-            assertThat(findMember.getVideos()).hasSize(0);
+            assertThat(findMember.getVideos()).isEmpty();
 
             assertThrows(NotExistVideoException.class,
-                () -> videoRepository.findById(findVideo.getId())
+                () -> videoRepository.findById(savedVideo.getId())
                     .orElseThrow(NotExistVideoException::new));
         }
     }

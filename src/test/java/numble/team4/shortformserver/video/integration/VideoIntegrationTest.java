@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.common.dto.CommonResponse;
-import numble.team4.shortformserver.common.dto.PageInfo;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
@@ -73,10 +72,6 @@ public class VideoIntegrationTest {
 
         videoRepository.saveAll(videos);
 
-        for (Video v : videos) {
-            v.addToMember(author);
-        }
-
         video = videos.get(0);
     }
 
@@ -105,7 +100,6 @@ public class VideoIntegrationTest {
             // then
             assertThat(response.getMessage()).isEqualTo(UPLOAD_VIDEO.getMessage());
             assertThat(videoResponse).isNotNull();
-            assertThat(author.getVideos()).hasSize(6);
 
             amazonS3Uploader.deleteToS3(videoResponse.getVideoUrl());
             amazonS3Uploader.deleteToS3(videoResponse.getThumbnailUrl());
@@ -207,7 +201,6 @@ public class VideoIntegrationTest {
 
             // then
             assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
-            assertThat(author.getVideos()).hasSize(5);
             assertThat(videoRepository.existsById(savedVideo.getId())).isFalse();
         }
 
@@ -296,6 +289,7 @@ public class VideoIntegrationTest {
                 .extracting("id")
                 .containsExactly(ids.get(4), ids.get(1), ids.get(3), ids.get(2), ids.get(0));
 
+
             assertThat(data2)
                 .extracting("id")
                 .containsExactly(ids.get(1), ids.get(3), ids.get(2));
@@ -303,35 +297,6 @@ public class VideoIntegrationTest {
             assertThat(data3)
                 .extracting("id")
                 .containsExactly(ids.get(3), ids.get(2), ids.get(0));
-        }
-
-        @Test
-        @DisplayName("특정 사용자의 영상 목록 조회")
-        void findAllVideosOfMember() throws Exception {
-            // when
-            CommonResponse<List<VideoResponse>> response = videoController.findAllVideosOfMember(
-                author.getId(), null, PageRequest.of(0, 3));
-            PageInfo pageInfo = response.getPageInfo();
-
-            List<VideoResponse> data = response.getData();
-
-            List<VideoResponse> data1 = videoController.findAllVideosOfMember(tester.getId(), null,
-                PageRequest.of(0, 3)).getData();
-
-            // then
-            assertThat(data1).hasSize(0);
-            assertThat(pageInfo.getTotalPages()).isEqualTo(2);
-            assertThat(data)
-                .extracting("member")
-                .extracting("name")
-                .containsExactly("author", "author", "author");
-        }
-
-        @Test
-        @DisplayName("특정 사용자의 영상 목록 조회 실패, 존재하지 않는 사용자의 영상 목록은 조회할 수 없다.")
-        void findAllVideosOfMember_notExistMember() {
-            assertThrows(NotExistMemberException.class,
-                () -> videoController.findAllVideosOfMember(100L, null, PageRequest.of(0, 10)));
         }
     }
 

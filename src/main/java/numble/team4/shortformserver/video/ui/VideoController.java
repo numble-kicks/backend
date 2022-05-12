@@ -94,18 +94,4 @@ public class VideoController {
 
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ALL_VIDEOS.getMessage());
     }
-
-    // 멤버 컨트롤러로 이동해야 됨
-    @GetMapping("/v1/users/{memberId}/videos")
-    public CommonResponse<List<VideoResponse>> findAllVideosOfMember(
-        @PathVariable Long memberId,
-        @Nullable @RequestParam Long videoId,
-        @PageableDefault Pageable pageable
-        ) {
-        Page<VideoResponse> videos = videoService.findAllVideosOfMember(memberId, videoId,
-            pageable);
-
-        return CommonResponse.of(videos.getContent(), PageInfo.from(videos),
-            GET_ALL_VIDEOS_OF_MEMBER.getMessage());
-    }
 }

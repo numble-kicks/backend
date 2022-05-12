@@ -7,7 +7,6 @@ import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
-import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -31,7 +30,6 @@ public class VideoService {
 
     @Transactional
     public VideoResponse uploadVideo(VideoRequest videoRequest, Member loggedInMember) {
-        memberRepository.findById(loggedInMember.getId()).orElseThrow(NotExistMemberException::new);
         S3UploadDto videoDto = amazonS3Uploader.saveToS3(videoRequest.getVideo(), "video");
         S3UploadDto thumbnailDto = amazonS3Uploader.saveToS3(videoRequest.getThumbnail(), "video/thumbnail");
 
@@ -51,16 +49,18 @@ public class VideoService {
         Video findVideo = videoRepository.findById(videoId)
             .orElseThrow(NotExistVideoException::new);
 
+        findVideo.validateAuthor(loggedInMember);
+
         findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(), loggedInMember);
         return VideoResponse.from(findVideo);
     }
 
     @Transactional
-    public void deleteVideo(Long videoId, Member loggedMember) {
+    public void deleteVideo(Long videoId, Member loggedInMember) {
         Video findVideo = videoRepository.findById(videoId)
             .orElseThrow(NotExistVideoException::new);
 
-        findVideo.delete(loggedMember);
+        findVideo.validateAuthor(loggedInMember);
 
         amazonS3Uploader.deleteToS3(findVideo.getVideoUrl());
         amazonS3Uploader.deleteToS3(findVideo.getThumbnailUrl());
@@ -73,20 +73,6 @@ public class VideoService {
         findVideo.increaseViewCount();
 
         return VideoResponse.from(findVideo);
-    }
-
-    public Page<VideoResponse> findAllVideosOfMember(Long memberId, Long videoId, Pageable pageable) {
-        Member member = memberRepository.findById(memberId)
-            .orElseThrow(NotExistMemberException::new);
-
-        Page<VideoResponse> videos;
-        if (Objects.isNull(videoId)) {
-            videos = videoRepository.findAllVideosOfMember(member, pageable).map(VideoResponse::from);
-        } else {
-            videos = videoRepository.findAllVideosOfMember(videoId, member, pageable).map(VideoResponse::from);
-        }
-
-        return videos;
     }
 
     public Page<VideoResponse> findAllVideosSortByLikes(Long videoId, Pageable pageable) {
