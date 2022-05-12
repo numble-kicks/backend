@@ -16,11 +16,7 @@ public class CategoryDto {
     @NotBlank
     private String name;
 
-    public static CategoryDto create (Category category) {
+    public static CategoryDto from(Category category) {
         return new CategoryDto(category.getName());
-    }
-
-    public static Category toCategory (CategoryDto categoryDto) {
-        return new Category(categoryDto.getName());
     }
 }

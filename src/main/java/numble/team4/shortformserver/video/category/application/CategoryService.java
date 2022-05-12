@@ -20,7 +20,7 @@ public class CategoryService {
     public List<CategoryDto> findCategories() {
         return categoryRepository.findAll()
             .stream()
-            .map(CategoryDto::create)
+            .map(CategoryDto::from)
             .collect(Collectors.toList());
     }
 }
