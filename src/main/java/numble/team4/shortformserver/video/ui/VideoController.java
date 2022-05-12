@@ -2,12 +2,10 @@ package numble.team4.shortformserver.video.ui;
 
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEOS;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEOS_OF_MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
-import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.lang.Nullable;
@@ -84,31 +81,7 @@ public class VideoController {
         @Nullable @RequestParam Long videoId,
         @PageableDefault Pageable pageable
     ) {
-        Page<VideoResponse> videos = new PageImpl<>(new ArrayList<>(), pageable,
-            pageable.getPageSize());
-
-        if (sortBy.equals(LIKES)) {
-            videos = videoService.findAllVideosSortByLikes(videoId, pageable);
-        }
-
-        if (sortBy.equals(HITS)) {
-            videos = videoService.findAllVideosSortByHits(videoId, pageable);
-        }
-
+        Page<VideoResponse> videos = videoService.findAllVideos(videoId, sortBy, pageable);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ALL_VIDEOS.getMessage());
-    }
-
-    // 멤버 컨트롤러로 이동해야 됨
-    @GetMapping("/v1/users/{memberId}/videos")
-    public CommonResponse<List<VideoResponse>> findAllVideosOfMember(
-        @PathVariable Long memberId,
-        @Nullable @RequestParam Long videoId,
-        @PageableDefault Pageable pageable
-        ) {
-        Page<VideoResponse> videos = videoService.findAllVideosOfMember(memberId, videoId,
-            pageable);
-
-        return CommonResponse.of(videos.getContent(), PageInfo.from(videos),
-            GET_ALL_VIDEOS_OF_MEMBER.getMessage());
     }
 }
