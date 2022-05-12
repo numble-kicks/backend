@@ -19,7 +19,7 @@ public class CategoryService {
 
     public List<CategoryDto> findCategories() {
         return categoryRepository.findAll()
-            .stream()
+            .stream().sorted((a, b)-> (int) (a.getId() - b.getId()))
             .map(CategoryDto::from)
             .collect(Collectors.toList());
     }
