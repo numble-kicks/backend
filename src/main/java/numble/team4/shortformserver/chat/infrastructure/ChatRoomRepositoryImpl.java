@@ -21,7 +21,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Page<ChatRoom> findChatRoomByMember(Member findMember, Pageable pageable) {
+    public Page<ChatRoom> findChatRoomByBuyer(Member findMember, Pageable pageable) {
         List<ChatRoom> chatRooms = factory.selectFrom(chatRoom)
                 .where(containsMember(findMember))
                 .orderBy(chatRoom.modifiedAt.desc())
@@ -32,7 +32,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomCustomRepository {
     }
 
     @Override
-    public Optional<ChatRoom> findChatRoomByAllMember(Member buyer, Member seller) {
+    public Optional<ChatRoom> findChatRoomByBuyerOrSeller(Member buyer, Member seller) {
         return Optional.ofNullable(factory.selectFrom(chatRoom)
                 .where(matchAllMember(buyer, seller))
                 .fetchOne());

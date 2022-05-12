@@ -7,6 +7,6 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface ChatRoomCustomRepository {
-    Page<ChatRoom> findChatRoomByMember(Member member, Pageable pageable);
-    Optional<ChatRoom> findChatRoomByAllMember(Member buyer, Member seller);
+    Page<ChatRoom> findChatRoomByBuyer(Member member, Pageable pageable);
+    Optional<ChatRoom> findChatRoomByBuyerOrSeller(Member buyer, Member seller);
 }
