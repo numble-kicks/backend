@@ -30,7 +30,7 @@ public class VideoRequest {
     private String description;
 
     public Video toVideo(String videoUrl, String thumbnailUrl, Member member) {
-        Video video = Video.builder()
+        return Video.builder()
             .title(title)
             .description(description)
             .videoUrl(videoUrl)
@@ -39,8 +39,5 @@ public class VideoRequest {
             .viewCount(0L)
             .member(member)
             .build();
-
-        video.addToMember(member);
-        return video;
     }
 }
