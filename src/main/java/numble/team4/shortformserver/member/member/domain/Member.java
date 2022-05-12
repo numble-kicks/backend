@@ -54,12 +54,6 @@ public class Member extends BaseTimeEntity {
         return !emailVerified;
     }
 
-    public void saveNewVideo(Video video) { this.videos.add(video); }
-
-    public void removeVideo(Video video) {
-        this.videos.remove(video);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
