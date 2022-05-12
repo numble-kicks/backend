@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
+import numble.team4.shortformserver.member.auth.domain.OauthProvider;
 import numble.team4.shortformserver.video.domain.Video;
 
 import javax.persistence.*;
@@ -26,24 +27,36 @@ public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+    private Long userId;
     private String email;
     private String name;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    private OauthProvider provider;
+
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
     private boolean emailVerified;
 
-    public Member(String email, String name, Role role, boolean emailVerified) {
+    @Builder
+    public Member(Long userId, String email, String name, Role role, OauthProvider provider, boolean emailVerified) {
+        this.userId = userId;
         this.email = email;
         this.name = name;
         this.role = role;
+        this.provider = provider;
         this.emailVerified = emailVerified;
     }
 
     public boolean hasNotEmail() {
         return !emailVerified;
+    }
+
+    public void updateLastLoginDate() {
+        lastLoginDate = LocalDateTime.now();
     }
 
     @Override
