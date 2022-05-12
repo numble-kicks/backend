@@ -1,6 +1,5 @@
 package numble.team4.shortformserver.video.application;
 
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
@@ -13,8 +12,6 @@ import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -74,33 +71,5 @@ public class VideoService {
         findVideo.increaseViewCount();
 
         return VideoResponse.from(findVideo);
-    }
-
-    public Page<VideoResponse> findAllVideosSortByLikes(Long videoId, Pageable pageable) {
-        Page<VideoResponse> videos;
-
-        if (Objects.isNull(videoId)) {
-            videos = videoRepository.findAllVideos(null,"likes", pageable).map(VideoResponse::from);
-        } else {
-            String cursor = videoRepository.findById(videoId)
-                .orElseThrow(NotExistVideoException::new).getLikesCursor();
-            videos = videoRepository.findAllVideos(cursor, "likes", pageable).map(VideoResponse::from);
-        }
-
-        return videos;
-    }
-
-    public Page<VideoResponse> findAllVideosSortByHits(Long videoId, Pageable pageable) {
-        Page<VideoResponse> videos;
-
-        if (Objects.isNull(videoId)) {
-            videos = videoRepository.findAllVideos(null, "hits", pageable).map(VideoResponse::from);
-        } else {
-            String cursor = videoRepository.findById(videoId)
-                .orElseThrow(NotExistVideoException::new).getHitsCursor();
-            videos = videoRepository.findAllVideos(cursor,"hits", pageable).map(VideoResponse::from);
-        }
-
-        return videos;
     }
 }

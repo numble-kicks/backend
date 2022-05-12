@@ -8,7 +8,6 @@ import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.ArrayList;
 import java.util.List;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.common.dto.CommonResponse;
@@ -28,7 +27,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 @BaseIntegrationTest
@@ -225,59 +223,6 @@ public class VideoIntegrationTest {
         @DisplayName("특정 영상 조회 실패, 존재하지 않는 영상은 조회할 수 없다.")
         void findById_notExistVideo() throws Exception {
             assertThrows(NotExistVideoException.class, () -> videoController.findById(100L));
-        }
-
-        @Test
-        @DisplayName("영상 목록 조회 - 조회순으로 정렬")
-        void findVideoSortByHits() throws Exception {
-            // when
-            CommonResponse<List<VideoResponse>> allVideos = videoController.findAllVideos(HITS,
-                null, PageRequest.of(0, 5));
-
-            List<VideoResponse> data = allVideos.getData();
-
-            // then
-            assertThat(data).hasSize(5);
-            assertThat(data)
-                .extracting("viewCount")
-                .containsExactly(3L, 0L, 0L, 0L, 0L);
-        }
-
-        @Test
-        @DisplayName("영상 목록 조회 - 좋아요 순으로 정렬 및 pagination 테스트")
-        void findVideoSortByLikes() throws Exception {
-            // given
-            List<Video> all = videoRepository.findAll();
-            List<Long> ids = new ArrayList<>();
-
-            for (Video v : all) {
-                v.updateCursor();
-                ids.add(v.getId());
-            }
-
-            // when
-            List<VideoResponse> data1 = videoController.findAllVideos(LIKES, null,
-                PageRequest.of(0, 5)).getData();
-
-            List<VideoResponse> data2 = videoController.findAllVideos(LIKES, ids.get(4),
-                PageRequest.of(0, 3)).getData();
-
-            List<VideoResponse> data3 = videoController.findAllVideos(LIKES, ids.get(1),
-                PageRequest.of(0, 3)).getData();
-
-            // then
-            assertThat(data1)
-                .extracting("id")
-                .containsExactly(ids.get(4), ids.get(1), ids.get(3), ids.get(2), ids.get(0));
-
-
-            assertThat(data2)
-                .extracting("id")
-                .containsExactly(ids.get(1), ids.get(3), ids.get(2));
-
-            assertThat(data3)
-                .extracting("id")
-                .containsExactly(ids.get(3), ids.get(2), ids.get(0));
         }
     }
 
