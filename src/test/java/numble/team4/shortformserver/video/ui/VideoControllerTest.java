@@ -146,7 +146,7 @@ class VideoControllerTest {
 
             // then
             res.andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(video.getId()))
+                .andExpect(jsonPath("$.data").value(video.getId()))
                 .andExpect(jsonPath("$.message").value(UPDATE_VIDEO.getMessage()))
                 .andDo(print());
         }

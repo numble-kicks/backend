@@ -44,35 +44,33 @@ public class VideoController {
     private final VideoService videoService;
 
     @PostMapping
-    public CommonResponse<VideoResponse> saveVideo(@Valid VideoRequest videoRequest,
+    public CommonResponse<Long> saveVideo(@Valid VideoRequest videoRequest,
         @LoginUser Member loggedInMember) {
-        VideoResponse videoResponse = videoService.uploadVideo(videoRequest, loggedInMember);
-        return CommonResponse.of(videoResponse, UPLOAD_VIDEO.getMessage());
+        Long savedVideoId = videoService.uploadVideo(videoRequest, loggedInMember).getId();
+        return CommonResponse.of(savedVideoId, UPLOAD_VIDEO.getMessage());
     }
 
-    @PutMapping("/{videoId}")
-    public CommonResponse<VideoResponse> updateVideo(
+    @PutMapping("/{video_id}")
+    public CommonResponse<Long> updateVideo(
         @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
         @LoginUser Member loggedInMember,
-        @PathVariable Long videoId) {
-        VideoResponse videoResponse = videoService.updateVideo(videoUpdateRequest, loggedInMember,
-            videoId);
-        return CommonResponse.of(videoResponse, UPDATE_VIDEO.getMessage());
+        @PathVariable("video_id") Long videoId) {
+        Long updatedVideoId = videoService.updateVideo(videoUpdateRequest, loggedInMember,
+            videoId).getId();
+        return CommonResponse.of(updatedVideoId, UPDATE_VIDEO.getMessage());
     }
 
-    @DeleteMapping("/{videoId}")
-    public CommonResponse<VideoResponse> deleteVideo(@PathVariable Long videoId,
+    @DeleteMapping("/{video_id}")
+    public CommonResponse<VideoResponse> deleteVideo(@PathVariable("video_id") Long videoId,
         @LoginUser Member loggedInMember) {
         videoService.deleteVideo(videoId, loggedInMember);
 
         return CommonResponse.from(DELETE_VIDEO.getMessage());
     }
 
-    @GetMapping("/{videoId}")
-    public CommonResponse<VideoResponse> findByIdVideo(@PathVariable Long videoId) {
-        VideoResponse video = videoService.findVideoById(videoId);
-
-        return CommonResponse.of(video, GET_VIDEO_BY_ID.getMessage());
+    @GetMapping("/{video_id}")
+    public CommonResponse<VideoResponse> findByIdVideo(@PathVariable("video_id") Long videoId) {
+        return CommonResponse.of(videoService.findVideoById(videoId), GET_VIDEO_BY_ID.getMessage());
     }
 
     @GetMapping
@@ -82,6 +80,7 @@ public class VideoController {
         @PageableDefault Pageable pageable
     ) {
         Page<VideoResponse> videos = videoService.findAllVideos(videoId, sortBy, pageable);
-        return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ALL_VIDEOS.getMessage());
+        return CommonResponse.of(videos.getContent(), PageInfo.from(videos),
+            GET_ALL_VIDEOS.getMessage());
     }
 }
