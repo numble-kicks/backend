@@ -22,7 +22,6 @@ import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
-import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -79,7 +78,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
             .andDo(print());
 
         // given - 영상 조회
-        Video video = videoRepository.findById(1L).orElseThrow(NotExistVideoException::new);
+        Video video = videoRepository.findAll().get(0);
 
         // when
         ResultActions read = mockMvc.perform(get(BASE_URI + VIDEO_ID, video.getId()));
