@@ -1,5 +1,6 @@
 package numble.team4.shortformserver.member.auth.integration;
 
+import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -8,15 +9,19 @@ import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideoResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,53 +60,67 @@ public class MemberIntegrationTest {
             entityManager.persist(video);
         }
     }
-
-    @Nested
-    @DisplayName("마이비디오 목록 조회")
-    class GetMyVideosTest {
-
-        @Test
-        @DisplayName("[성공] 마이비디오 목록 조회 (videoId가 null일 때)")
-        void findAllVideosByMember_returnListHasSize18_success() {
-            //when
-            List<VideoListResponse> data = memberController.findAllVideosByMember(member.getId(), null).getData();
-
-            //then
-            assertThat(data).hasSize(18);
-            for (int i = 0; i < 14; i++) {
-                assertTrue(data.get(i).getId() > data.get(i + 1).getId());
-            }
-        }
-
-        @Test
-        @DisplayName("[성공] 마이비디오 목록 조회 (videoId가 null이 아닐 때)")
-        void findAllVideosByMember_returnListHasSize2_success() {
-            //given
-            Long videoId = videoRepository.findAll()
-                    .stream()
-                    .map(x -> x.getId())
-                    .sorted()
-                    .collect(Collectors.toList()).get(5);
-            //when
-            List<VideoListResponse> data = memberController.findAllVideosByMember(member.getId(), videoId).getData();
-
-            //then
-            assertThat(data).hasSize(5);
-            for (int i = 0; i < 4; i++) {
-                assertTrue(data.get(i).getId() > data.get(i + 1).getId());
-            }
-        }
-
-        @Test
-        @DisplayName("[실패] 존재하지 않는 멤버일 때")
-        void findAllVideosByMember_notExistMemberException_fail() {
-            //when,then
-
-            assertThrows(
-                    NotExistMemberException.class,
-                    () -> memberController.findAllVideosByMember(99999L, null)
-            );
-
+    void createLikeVideo() {
+        List<Video> all = videoRepository.findAll();
+        for (int i = 0; i < all.size(); i++) {
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, all.get(i));
+            entityManager.persist(likeVideo);
         }
     }
+
+    static Stream<Long> valueSources() {
+        return Stream.of(null, 3L, 8L, 30L);
+    }
+
+
+
+    @ParameterizedTest
+    @DisplayName("[성공] 마이비디오 목록 조회 (videoId가 null일 때)")
+    @MethodSource("valueSources")
+    void findAllVideosByMember_returnListHasSize18_success(Long value) {
+        //given
+        createLikeVideo();
+        long count = 18;
+        if (value != null) {
+            count = videoRepository.findAll().stream()
+                    .map(x -> x.getId())
+                    .filter(x -> x < value)
+                    .count();
+        }
+
+        //when
+        List<VideoListResponse> res = memberController.findAllVideosByMember(member.getId(), value).getData();
+
+        //then
+        assertThat(res).hasSize((count > 18) ? 18 : (int) count);
+        for (int i = 0; i < res.size() - 1; i++) {
+            assertTrue(res.get(i).getId() > res.get(i + 1).getId());
+        }
+    }
+
+    @ParameterizedTest
+    @DisplayName("[성공] 존재하는 사용자의 좋아요 동영상 목록 조회")
+    @MethodSource("valueSources")
+    void findAllLikeVideosByMember_returnListHasSizeLessThanEqual15_success(Long value) {
+        //given
+        createLikeVideo();
+        long count = 18;
+        if (value != null) {
+            count = videoRepository.findAll().stream()
+                    .map(x -> x.getId())
+                    .filter(x -> x < value)
+                    .count();
+        }
+
+        //when
+        List<VideoListResponse> res = memberController.findAllLikeVideosByMember(member.getId(), value).getData();
+
+        //then
+        assertThat(res).hasSize((count > 18) ? 18 : (int) count);
+        for (int i = 0; i < res.size() - 1; i++) {
+            assertTrue(res.get(i).getId() > res.get(i + 1).getId());
+        }
+
+    }
+
 }
