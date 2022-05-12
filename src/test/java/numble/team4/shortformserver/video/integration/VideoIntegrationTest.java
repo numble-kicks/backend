@@ -31,7 +31,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 @BaseIntegrationTest
@@ -237,7 +236,7 @@ public class VideoIntegrationTest {
         void findVideoSortByHits() throws Exception {
             // when
             CommonResponse<List<VideoResponse>> allVideos = videoController.findAllVideos(HITS,
-                null, PageRequest.of(0, 5));
+                null);
 
             List<VideoResponse> data = allVideos.getData();
 
@@ -261,14 +260,11 @@ public class VideoIntegrationTest {
             }
 
             // when
-            List<VideoResponse> data1 = videoController.findAllVideos(LIKES, null,
-                PageRequest.of(0, 5)).getData();
+            List<VideoResponse> data1 = videoController.findAllVideos(LIKES, null).getData();
 
-            List<VideoResponse> data2 = videoController.findAllVideos(LIKES, ids.get(4),
-                PageRequest.of(0, 3)).getData();
+            List<VideoResponse> data2 = videoController.findAllVideos(LIKES, ids.get(4)).getData();
 
-            List<VideoResponse> data3 = videoController.findAllVideos(LIKES, ids.get(1),
-                PageRequest.of(0, 3)).getData();
+            List<VideoResponse> data3 = videoController.findAllVideos(LIKES, ids.get(1)).getData();
 
             // then
             assertThat(data1)

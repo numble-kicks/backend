@@ -11,16 +11,14 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.common.dto.CommonResponse;
-import numble.team4.shortformserver.common.dto.PageInfo;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +38,8 @@ public class VideoController {
 
     private static final String HITS = "hits";
     private static final String LIKES = "likes";
+    private static final int PAGE_SIZE = 18;
+    private static final Pageable PAGE = PageRequest.of(0, PAGE_SIZE);
 
     private final VideoService videoService;
 
@@ -74,13 +74,8 @@ public class VideoController {
     }
 
     @GetMapping
-    public CommonResponse<List<VideoResponse>> findAllVideos(
-        @RequestParam String sortBy,
-        @Nullable @RequestParam Long videoId,
-        @PageableDefault Pageable pageable
+    public CommonResponse<List<VideoResponse>> findAllVideos(@RequestParam String sortBy, @Nullable @RequestParam Long videoId
     ) {
-        Page<VideoResponse> videos = videoService.findAllVideos(videoId, sortBy, pageable);
-        return CommonResponse.of(videos.getContent(), PageInfo.from(videos),
-            GET_ALL_VIDEOS.getMessage());
+        return CommonResponse.of(videoService.findAllVideos(videoId, sortBy, PAGE), GET_ALL_VIDEOS.getMessage());
     }
 }

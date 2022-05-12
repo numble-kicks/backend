@@ -9,8 +9,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.video.domain.Video;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
@@ -19,16 +17,14 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     private final JPAQueryFactory factory;
 
     @Override
-    public Page<Video> findAllVideos(String cursor, String sortBy, Pageable pageable) {
-        List<Video> videos = factory
+    public List<Video> findAllVideos(String cursor, String sortBy, Pageable pageable) {
+        return factory
             .select(video)
             .from(video)
             .orderBy(videoSort(sortBy), video.id.desc())
             .where(cursorId(cursor, sortBy))
             .limit(pageable.getPageSize())
             .fetch();
-
-        return new PageImpl<>(videos, pageable, pageable.getPageSize());
     }
 
     private OrderSpecifier<?> videoSort(String sortBy) {
