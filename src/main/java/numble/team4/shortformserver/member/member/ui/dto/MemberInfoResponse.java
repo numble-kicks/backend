@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MemberInfoResponse {
 
+    private Long id;
     private String email;
     private String name;
     private String profileImageUrl;
@@ -23,6 +24,7 @@ public class MemberInfoResponse {
 
     public static MemberInfoResponse from(Member member) {
         return new MemberInfoResponse(
+                member.getId(),
                 member.getEmail(),
                 member.getName(),
                 member.getProfileImageUrl(),
