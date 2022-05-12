@@ -64,8 +64,8 @@ public class LikeVideoIntegrationTest {
             .price(100000)
             .usedStatus(true)
             .category(category)
-            .likeCount(0)
-            .viewCount(9)
+            .likeCount(0L)
+            .viewCount(0L)
             .build();
         entityManager.persist(video);
     }
@@ -81,7 +81,7 @@ public class LikeVideoIntegrationTest {
             CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, 19823012L);
 
             //then
-            assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(false);
+            assertThat(existLikeVideo.getData().isExistLikeVideo()).isFalse();
         }
 
         @Test
@@ -95,7 +95,7 @@ public class LikeVideoIntegrationTest {
             CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, video.getId());
 
             //then
-            assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(true);
+            assertThat(existLikeVideo.getData().isExistLikeVideo()).isTrue();
         }
 
     }
@@ -154,7 +154,7 @@ public class LikeVideoIntegrationTest {
             likeVideoController.deleteLikeVideo(member, likeVideo.getId());
 
             //then
-            assertThat(likeVideoRepository.findAll()).hasSize(0);
+            assertThat(likeVideoRepository.findAll()).isEmpty();
         }
 
         @Test
