@@ -12,6 +12,7 @@ import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class LikeVideoService {
         return LikeVideoExistResponse.from(exists);
     }
 
+    @Transactional
     public void saveLikeVideo(Member member, Long videoId) {
         Video video = videoRepository.findById(videoId)
                 .orElseThrow(NotExistVideoException::new);
@@ -35,9 +37,10 @@ public class LikeVideoService {
 
         LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
         likeVideoRepository.save(likeVideo);
+        likeVideo.like();
     }
 
-
+    @Transactional
     public void deleteLikeVideo(Member member, Long likesId) {
         LikeVideo likeVideo = likeVideoRepository.findById(likesId)
                 .orElseThrow(NotExistLikeVideoException::new);
@@ -47,6 +50,7 @@ public class LikeVideoService {
         }
 
         likeVideoRepository.delete(likeVideo);
+        likeVideo.unlike();
     }
 
 }
