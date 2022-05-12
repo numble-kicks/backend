@@ -74,6 +74,15 @@ public class VideoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
-        return videoRepository.findAllByMemberAndMaxVideoId(member, videoId, pageSize);
+        List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId, pageSize);
+        return VideoListResponse.from(videos);
+    }
+
+    public List<VideoListResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotExistMemberException::new);
+
+        List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId, pageSize);
+        return VideoListResponse.from(videos);
     }
 }
