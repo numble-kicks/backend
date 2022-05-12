@@ -66,7 +66,7 @@ class VideoCustomRepositoryTest {
     void findAllByMemberAndMaxVideoId_returnListHasSizeLimitNum_success() {
 
         //when
-        List<VideoListResponse> videos = videoRepository.findAllByMemberAndMaxVideoId(member, null, 5);
+        List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, null, 5);
 
         assertThat(videoRepository.count()).isEqualTo(8);
         //then
@@ -86,7 +86,7 @@ class VideoCustomRepositoryTest {
 
         Long id = all.get(3).getId();
 
-        List<VideoListResponse> videos = videoRepository.findAllByMemberAndMaxVideoId(member, id, 5);
+        List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, id, 5);
 
         assertThat(videos).hasSize(3);
         for (int i = 0; i < videos.size() - 1; i++) {
@@ -112,7 +112,7 @@ class VideoCustomRepositoryTest {
         }
 
         //when
-        List<VideoListResponse> res = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, intVal, 5);
+        List<Video> res = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, intVal, 5);
 
         //then
         assertThat(res).hasSize((int) count);
