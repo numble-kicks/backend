@@ -33,11 +33,10 @@ public class VideoRequest {
     private Boolean usedStatus;
 
     private String category;
-
     private String description;
 
     public Video toVideo(String videoUrl, String thumbnailUrl, Member member, Category category) {
-        Video v = Video.builder()
+        return Video.builder()
             .title(title)
             .description(description)
             .videoUrl(videoUrl)
@@ -49,7 +48,5 @@ public class VideoRequest {
             .member(member)
             .category(category)
             .build();
-        v.addToMember(member);
-        return v;
     }
 }

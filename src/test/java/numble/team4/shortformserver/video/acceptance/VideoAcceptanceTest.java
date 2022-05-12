@@ -81,14 +81,12 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
         ResultActions res = saveVideo();
 
         // then
-        assertThat(user1.getVideos()).hasSize(1);
-
         res.andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value(UPLOAD_VIDEO.getMessage()))
             .andDo(print());
 
         // given - 영상 조회
-        Video video = user1.getVideos().get(0);
+        Video video = videoRepository.findAll().get(0);
 
         // when
         ResultActions read = mockMvc.perform(get(BASE_URI + VIDEO_ID, video.getId()));
@@ -137,10 +135,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
         saveVideo();
         saveVideo();
 
-        // 두 개의 영상이 정상적으로 등록 됐는지 확인
-        assertThat(user1.getVideos()).hasSize(2);
-
-        Video video = user1.getVideos().get(1);
+        Video video = videoRepository.findAll().get(1);
 
         // when
         ResultActions res = mockMvc.perform(delete(BASE_URI + VIDEO_ID, video.getId()));
@@ -148,8 +143,6 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
         // then
         res.andExpect(status().isOk())
             .andDo(print());
-
-        assertThat(user1.getVideos()).hasSize(1);
     }
 
     @Test

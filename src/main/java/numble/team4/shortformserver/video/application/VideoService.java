@@ -60,8 +60,6 @@ public class VideoService {
         Category category = categoryRepository.findByName(videoUpdateRequest.getCategory())
             .orElseThrow(NotFoundCategoryException::new);
 
-
-
         findVideo.validateAuthor(loggedInMember);
         findVideo.update(
             videoUpdateRequest.getTitle(),

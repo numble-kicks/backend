@@ -20,9 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-
 
 @BaseDataJpaTest
 class VideoRepositoryTest {
@@ -93,7 +91,8 @@ class VideoRepositoryTest {
         void saveVideoAndMember() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addToMember(member);
+            testEntityManager.flush();
+            testEntityManager.clear();
 
             // when
             Video findVideo = videoRepository.findById(savedVideo.getId())
@@ -141,7 +140,6 @@ class VideoRepositoryTest {
         void sortByLatest() throws Exception {
             // given
             List<Video> mockVideos = makeMockVideoList(member);
-
             videoRepository.saveAll(mockVideos);
 
             // when
@@ -149,86 +147,6 @@ class VideoRepositoryTest {
 
             // then
             assertThat(videos.get(0)).isEqualTo(mockVideos.get(4));
-        }
-
-        @Test
-        @DisplayName("영상 목록 좋아요 순으로 정렬")
-        void sortByLikeCounts() throws Exception {
-            // given
-            List<Video> mockVideos = makeMockVideoList(member);
-
-            videoRepository.saveAll(mockVideos);
-            // when
-            List<Video> videos = videoRepository.findAllSortByLikeCount(PageRequest.of(0, 10)).getContent();
-
-            // then
-            assertThat(videos.get(0).getLikeCount()).isEqualTo(500L);
-            assertThat(videos.get(4).getLikeCount()).isEqualTo(100L);
-            assertThat(videos.get(0)).isEqualTo(mockVideos.get(0));
-        }
-
-        @Test
-        @DisplayName("영상 목록 조회 순으로 정렬")
-        void sortByHits() throws Exception {
-            // given
-            List<Video> mockVideos = makeMockVideoList(member);
-
-            videoRepository.saveAll(mockVideos);
-            // when
-            List<Video> videos = videoRepository.findAllSortByViewCount(PageRequest.of(0, 10)).getContent();
-
-
-            // then
-            assertThat(videos.get(0).getViewCount()).isEqualTo(500L);
-            assertThat(videos.get(4).getViewCount()).isEqualTo(100L);
-            assertThat(videos.get(0)).isEqualTo(mockVideos.get(4));
-        }
-
-        @Test
-        @DisplayName("특정 사용자의 영상 목록 조회, id 값이 null일 때")
-        void findAllByMember() throws Exception {
-            // given
-            Member someMember = Member.builder()
-                .name("tester")
-                .role(MEMBER)
-                .build();
-            Member tester = memberRepository.save(someMember);
-
-            List<Video> mockVideos = makeMockVideoList(tester);
-            videoRepository.saveAll(mockVideos);
-
-            // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(tester, PageRequest.of(0, 3)).getContent();
-
-            // then
-            assertThat(videos)
-                .extracting("member")
-                .extracting("name")
-                .containsExactly("tester", "tester", "tester");
-        }
-
-        @Test
-        @DisplayName("특정 사용자의 영상 목록 조회, id 값이 존재할 때")
-        void findAllByMember_cursorBasedPaging() throws Exception {
-            // given
-            Member someMember = Member.builder()
-                .name("tester")
-                .role(MEMBER)
-                .build();
-            Member tester = memberRepository.save(someMember);
-
-            List<Video> mockVideos = makeMockVideoList(tester);
-            List<Video> all = videoRepository.saveAll(mockVideos);
-
-            Long id = all.get(4).getId();
-            // when
-            List<Video> videos = videoRepository.findAllVideosOfMember(id, tester, PageRequest.of(0, 3)).getContent();
-
-            // then
-            assertThat(videos).hasSize(3);
-            assertThat(videos)
-                .extracting("id")
-                .containsExactly(id - 1, id - 2, id - 3);
         }
 
         private List<Video> makeMockVideoList(Member member) {
@@ -240,9 +158,6 @@ class VideoRepositoryTest {
                     .title(String.valueOf(i + 1))
                     .videoUrl("영상")
                     .thumbnailUrl("썸네일")
-                    .price(100)
-                    .usedStatus(false)
-                    .category(category)
                     .member(member)
                     .likeCount(likeCount)
                     .viewCount(viewCount)
@@ -264,10 +179,9 @@ class VideoRepositoryTest {
         void updateVideo_success() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addToMember(member);
 
             // when
-            savedVideo.update("제목 수정", "설명 수정", 100, true, category, member);
+            savedVideo.update("제목 수정", "설명 수정");
             testEntityManager.flush();
             testEntityManager.clear();
 
@@ -277,7 +191,6 @@ class VideoRepositoryTest {
             // then
             assertThat(savedVideo.getTitle()).isEqualTo("제목 수정");
             assertThat(savedVideo.getDescription()).isEqualTo("설명 수정");
-            assertThat(findMember.getVideos().get(0).getTitle()).isEqualTo(savedVideo.getTitle());
             assertThat(savedVideo.getCreateAt()).isBefore(savedVideo.getModifiedAt());
         }
     }
@@ -291,7 +204,6 @@ class VideoRepositoryTest {
         void deleteVideo_success() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            savedVideo.addToMember(member);
 
             // when
             videoRepository.delete(savedVideo);

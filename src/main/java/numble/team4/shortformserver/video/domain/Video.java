@@ -53,6 +53,9 @@ public class Video extends BaseTimeEntity {
     private Long viewCount;
     private Long likeCount;
 
+    private String hitsCursor;
+    private String likesCursor;
+
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -61,14 +64,7 @@ public class Video extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void addToMember(Member member) {
-        this.member = member;
-        member.saveNewVideo(this);
-    }
-
-    public void update(String title, String description, Integer price, Boolean usedStatus, Category category, Member member) {
-        validateAuthor(member);
-
+    public void update(String title, String description) {
         this.title = title;
         this.price = price;
         this.usedStatus = usedStatus;
@@ -76,18 +72,33 @@ public class Video extends BaseTimeEntity {
         this.description = description;
     }
 
-    public void delete(Member member) {
-        validateAuthor(member);
-        member.removeVideo(this);
-    }
-
     public void increaseViewCount() {
         this.viewCount += 1;
+        updateCursor();
     }
 
-    private void validateAuthor(Member member) {
+    public void increaseLikeCount() {
+        this.likeCount += 1;
+        updateCursor();
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount -= 1;
+        updateCursor();
+    }
+
+    public void updateCursor() {
+        this.hitsCursor = lpad(this.viewCount);
+        this.likesCursor = lpad(this.likeCount);
+    }
+
+    public void validateAuthor(Member member) {
         if (!this.member.equals(member)) {
             throw new NotAuthorException();
         }
+    }
+
+    private String lpad(Long cursor) {
+        return String.format("%05d", cursor) + String.format("%05d", this.id);
     }
 }

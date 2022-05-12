@@ -66,6 +66,8 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
             .category(category)
             .usedStatus(true)
             .price(99999)
+            .likeCount(0L)
+            .viewCount(0L)
             .build();
         entityManager.persist(video);
     }
@@ -83,7 +85,7 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
 
             //then
             res.andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.exist_like_video").value(false));
+                    .andExpect(jsonPath("$.data.exist_like_video").value(false));
         }
 
         @Test
@@ -94,12 +96,11 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
             likeVideoRepository.save(likeVideo);
 
             //when
-            ResultActions res = mockMvc.perform(
-                get("/v1/videos/{videoId}/likes", likeVideo.getId()));
+            ResultActions res = mockMvc.perform(get("/v1/videos/{videoId}/likes", likeVideo.getId()));
 
             //then
             res.andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.exist_like_video").value(false));
+                    .andExpect(jsonPath("$.data.exist_like_video").value(false));
         }
     }
 
@@ -113,13 +114,13 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         void saveLikeVideo_isok_success() throws Exception {
             //when
             ResultActions res = mockMvc.perform(
-                post("/v1/videos/{videoId}/likes", video.getId())
+                    post("/v1/videos/{videoId}/likes", video.getId())
             );
 
             //then
             res.andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(SAVE_LIKE_VIDEO.getMessage()))
-                .andDo(print());
+                    .andExpect(jsonPath("$.message").value(SAVE_LIKE_VIDEO.getMessage()))
+                    .andDo(print());
         }
 
         @Test
@@ -127,12 +128,12 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         void saveLikeVideo_notExistLikeVideoException_fail() throws Exception {
             //when
             ResultActions res = mockMvc.perform(
-                post("/v1/videos/{videoId}/likes", 39842109L)
+                    post("/v1/videos/{videoId}/likes", 39842109L)
             );
 
             //then
             res.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(NOT_EXIST_VIDEO.getMessage()));
+                    .andExpect(jsonPath("$.message").value(NOT_EXIST_VIDEO.getMessage()));
         }
 
         @Test
@@ -140,17 +141,17 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         void saveLikeVideo_alreadyExistLikeVideoExceiption_fail() throws Exception {
             //given
             mockMvc.perform(
-                post("/v1/videos/{videoId}/likes", video.getId())
+                    post("/v1/videos/{videoId}/likes", video.getId())
             );
 
             //when
             ResultActions res = mockMvc.perform(
-                post("/v1/videos/{videoId}/likes", video.getId())
+                    post("/v1/videos/{videoId}/likes", video.getId())
             );
 
             //then
             res.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(ALREADY_EXIST_LIKE_VIDEO.getMessage()));
+                    .andExpect(jsonPath("$.message").value(ALREADY_EXIST_LIKE_VIDEO.getMessage()));
         }
     }
 
@@ -167,12 +168,11 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
             LikeVideo likeVideo = likeVideoRepository.findAll().get(0);
 
             //when
-            ResultActions res = mockMvc.perform(
-                delete("/v1/videos/likes/{likesId}", likeVideo.getId()));
+            ResultActions res = mockMvc.perform(delete("/v1/videos/likes/{likesId}", likeVideo.getId()));
 
             //then
             res.andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(DELETE_LIKE_VIDEO.getMessage()));
+                    .andExpect(jsonPath("$.message").value(DELETE_LIKE_VIDEO.getMessage()));
         }
 
         @Test
@@ -183,7 +183,7 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
 
             //then
             res.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(NOT_EXIST_LIKE_VIDEO.getMessage()));
+                    .andExpect(jsonPath("$.message").value(NOT_EXIST_LIKE_VIDEO.getMessage()));
         }
 
         @Test
@@ -193,12 +193,11 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
             LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
             likeVideoRepository.save(likeVideo);
             //when
-            ResultActions res = mockMvc.perform(
-                delete("/v1/videos/likes/{likesId}", likeVideo.getId()));
+            ResultActions res = mockMvc.perform(delete("/v1/videos/likes/{likesId}", likeVideo.getId()));
 
             //then
             res.andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(NOT_MEMBER_OF_LIKE_VIDEO.getMessage()));
+                    .andExpect(jsonPath("$.message").value(NOT_MEMBER_OF_LIKE_VIDEO.getMessage()));
         }
     }
 }

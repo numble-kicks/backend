@@ -36,9 +36,9 @@ class LikeVideoRepositoryTest {
         Category category = categoryRepository.findByName("기타").orElseThrow(
             NotFoundCategoryException::new);
         member = Member.builder()
-            .role(Role.MEMBER)
-            .emailVerified(true)
-            .build();
+                .role(Role.MEMBER)
+                .emailVerified(true)
+                .build();
         entityManager.persist(member);
 
         video = Video.builder()
@@ -49,6 +49,8 @@ class LikeVideoRepositoryTest {
             .usedStatus(false)
             .category(category)
             .description("description")
+            .likeCount(0L)
+            .viewCount(0L)
             .build();
         entityManager.persist(video);
     }

@@ -64,6 +64,8 @@ public class LikeVideoIntegrationTest {
             .price(100000)
             .usedStatus(true)
             .category(category)
+            .likeCount(0)
+            .viewCount(9)
             .build();
         entityManager.persist(video);
     }
