@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.video.category.domain;
 
 import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +14,7 @@ import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 public class Category extends BaseTimeEntity {
 
