@@ -72,8 +72,4 @@ public class Video extends BaseTimeEntity {
             throw new NotAuthorException();
         }
     }
-
-    private String lpad(Long cursor) {
-        return String.format("%05d", cursor) + String.format("%05d", this.id);
-    }
 }
