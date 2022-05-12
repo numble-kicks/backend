@@ -13,7 +13,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static numble.team4.shortformserver.chat.ui.ChatRoomResponseMessage.FIND_MESSAGE;
@@ -27,7 +26,7 @@ public class ChatMessageController {
     private final ChatMessageService chatMessageService;
 
     @MessageMapping("/messages")
-    public void sendMessage(@Valid ChatMessageRequest request) {
+    public void sendMessage(ChatMessageRequest request) {
         chatMessageService.saveMessage(request);
         simpMessagingTemplate.convertAndSend("/sub/rooms/" + request.getRoomId(), request.getMessage());
     }
