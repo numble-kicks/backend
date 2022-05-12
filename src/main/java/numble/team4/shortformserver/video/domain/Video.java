@@ -46,9 +46,6 @@ public class Video extends BaseTimeEntity {
     private Long viewCount;
     private Long likeCount;
 
-    private String hitsCursor;
-    private String likesCursor;
-
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -60,22 +57,14 @@ public class Video extends BaseTimeEntity {
 
     public void increaseViewCount() {
         this.viewCount += 1;
-        updateCursor();
     }
 
     public void increaseLikeCount() {
         this.likeCount += 1;
-        updateCursor();
     }
 
     public void decreaseLikeCount() {
         this.likeCount -= 1;
-        updateCursor();
-    }
-
-    public void updateCursor() {
-        this.hitsCursor = lpad(this.viewCount);
-        this.likesCursor = lpad(this.likeCount);
     }
 
     public void validateAuthor(Member member) {
