@@ -1,5 +1,9 @@
 package numble.team4.shortformserver.common.config;
 
+import static numble.team4.shortformserver.member.member.domain.Role.ADMIN;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.filter.JwtAuthenticationFilter;
@@ -14,10 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import static numble.team4.shortformserver.member.member.domain.Role.ADMIN;
-import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/v1/users/following/from", "/v1/users/following/to", "/v1/users/{memberId}/videos", "/v1/users/{memberId}/likes").permitAll()
                 .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}", "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}", "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}").permitAll()
                 .antMatchers("/oauth/**", "/renew").permitAll()
                 .anyRequest().authenticated();
     }

@@ -36,6 +36,10 @@ public class Member extends BaseTimeEntity {
     private String profileImageUrl;
     private boolean emailVerified;
 
+    @OneToMany(mappedBy = "member")
+    @Builder.Default
+    private List<Video> videos = new ArrayList<>();
+
     public Member(String email, String name, Role role, boolean emailVerified) {
         this.email = email;
         this.name = name;
@@ -60,7 +64,5 @@ public class Member extends BaseTimeEntity {
         return Objects.hash(email);
     }
 
-    @OneToMany(mappedBy = "member")
-    private List<Video> videos = new ArrayList<>();
 }
 

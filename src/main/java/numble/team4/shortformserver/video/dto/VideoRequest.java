@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.domain.Video;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,10 +27,15 @@ public class VideoRequest {
     @NotBlank(message = "제목은 비어있을 수 없습니다.")
     private String title;
 
+    @NotNull(message = "가격은 비어있을 수 없습니다.")
+    private Integer price;
+
+    private Boolean usedStatus;
+
     private String category;
     private String description;
 
-    public Video toVideo(String videoUrl, String thumbnailUrl, Member member) {
+    public Video toVideo(String videoUrl, String thumbnailUrl, Member member, Category category) {
         return Video.builder()
             .title(title)
             .description(description)
@@ -37,7 +43,10 @@ public class VideoRequest {
             .thumbnailUrl(thumbnailUrl)
             .likeCount(0L)
             .viewCount(0L)
+            .price(price)
+            .usedStatus((usedStatus))
             .member(member)
+            .category(category)
             .build();
     }
 }

@@ -8,6 +8,7 @@ import com.amazonaws.util.IOUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,7 @@ public class AmazonS3Uploader {
     }
 
     private void validateFileExist(MultipartFile file) {
-        if (file.isEmpty()) {
+        if (Objects.isNull(file) || file.isEmpty()) {
             throw new NotExistFileException();
         }
     }

@@ -1,5 +1,6 @@
 package numble.team4.shortformserver.video.infrastructure;
 
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -47,4 +48,5 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository{
 
         return builder;
     }
+
 }
