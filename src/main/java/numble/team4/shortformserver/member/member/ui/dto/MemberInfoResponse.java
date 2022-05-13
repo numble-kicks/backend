@@ -25,7 +25,7 @@ public class MemberInfoResponse {
     private final long followings;
     private final long videos;
 
-    public static MemberInfoResponse from(Member member, long followers, long followings, long videos) {
+    public static MemberInfoResponse of(Member member, long followers, long followings, long videos) {
         return new MemberInfoResponse(
                 member.getId(),
                 member.getEmail(),

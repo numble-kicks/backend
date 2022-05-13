@@ -34,7 +34,7 @@ public class MemberService {
         long followings = followRepository.countByFromMember(member);
         long videos = videoRepository.countByMember(member);
 
-        return MemberInfoResponse.from(member, followers, followings, videos);
+        return MemberInfoResponse.of(member, followers, followings, videos);
     }
 
     @Transactional
