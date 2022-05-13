@@ -5,5 +5,5 @@ import numble.team4.shortformserver.member.member.domain.Member;
 
 public interface MemberCreator {
     Member signUpOrLoginMember(String response);
-    OauthProvider getProviderName();
+    OauthProvider getProvider();
 }

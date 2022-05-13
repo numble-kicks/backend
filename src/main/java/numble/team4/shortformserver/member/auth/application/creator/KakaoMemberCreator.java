@@ -73,7 +73,7 @@ public class KakaoMemberCreator implements MemberCreator {
     }
 
     @Override
-    public OauthProvider getProviderName() {
+    public OauthProvider getProvider() {
         return KAKAO;
     }
 }
