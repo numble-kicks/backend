@@ -177,7 +177,7 @@ class VideoSearchIntegrationTest {
     void findByKeyword_cursor_id_exist() {
         // given
         String keyword = "나이키";
-        Object[] value = new Object[] {3L, 2L, 5L};
+        Object[] value = new Object[] {ids.get(2), ids.get(1), ids.get(4)};
 
         // when
         List<VideoListResponse> 정렬_순서_325 = videoSearchController.searchVideoByKeyword(keyword, ids.get(0),
