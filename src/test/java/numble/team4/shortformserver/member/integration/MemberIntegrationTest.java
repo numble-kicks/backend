@@ -8,6 +8,7 @@ import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.member.member.ui.MemberController;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
+import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -163,5 +164,17 @@ public class MemberIntegrationTest {
         uploader.deleteToS3(member.getProfileImageUrl());
     }
 
+    @Test
+    @DisplayName("[성공] 사용자 닉네임 수정")
+    void updateUserName_memberNameModified_fail() {
+        //given
+        MemberNameUpdateRequest request = new MemberNameUpdateRequest("kebin");
+
+        //when
+        memberController.updateUserName(member, request);
+
+        //then
+        assertThat(memberRepository.getById(member.getId()).getName()).isEqualTo("kebin");
+    }
 
 }
