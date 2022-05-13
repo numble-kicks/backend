@@ -41,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}", "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/v1/users/image", "/v1/users/name").hasAnyRole(MEMBER.name())
                 .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}", "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
-                .antMatchers("/oauth/**", "/renew").permitAll()
+                .antMatchers("/oauth/**", "/renew", "/v1/users/email").permitAll()
                 .anyRequest().authenticated();
     }
 
