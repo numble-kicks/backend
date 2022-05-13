@@ -37,6 +37,7 @@ public class MemberService {
             uploader.deleteToS3(member.getProfileImageUrl());
         }
         member.updateProfileImage(uploadDto.getFileUrl());
+        memberRepository.save(member);
     }
 
     @Transactional
