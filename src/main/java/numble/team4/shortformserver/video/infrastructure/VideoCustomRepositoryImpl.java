@@ -1,9 +1,10 @@
 package numble.team4.shortformserver.video.infrastructure;
 
+import static com.querydsl.core.types.Order.DESC;
 import static com.querydsl.core.types.dsl.StringExpressions.lpad;
 import static numble.team4.shortformserver.video.domain.QVideo.video;
+import static org.springframework.util.StringUtils.hasText;
 
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
@@ -78,18 +79,10 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     }
 
     private OrderSpecifier<?> videoSort(String sortBy) {
-        if (Objects.isNull(sortBy)) {
-            return new OrderSpecifier<>(Order.DESC, video.id);
+        if (!hasText(sortBy)) {
+            return new OrderSpecifier<>(DESC, video.id);
         }
-
-        if (sortBy.equals("hits")) {
-            return new OrderSpecifier<>(Order.DESC, video.viewCount);
-        }
-
-        if (sortBy.equals("likes")) {
-            return new OrderSpecifier<>(Order.DESC, video.likeCount);
-        }
-
-        return new OrderSpecifier<>(Order.DESC, video.id);
+        return new OrderSpecifier<>(DESC,
+            (sortBy.equals("hits") ? video.viewCount : video.likeCount));
     }
 }
