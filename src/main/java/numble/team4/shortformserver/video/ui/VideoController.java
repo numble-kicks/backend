@@ -1,10 +1,12 @@
 package numble.team4.shortformserver.video.ui;
 
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.application.VideoService;
+import numble.team4.shortformserver.video.dto.VideoListResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -66,4 +69,8 @@ public class VideoController {
         return CommonResponse.of(videoService.findVideoById(videoId), GET_VIDEO_BY_ID.getMessage());
     }
 
+    @GetMapping
+    public CommonResponse<List<VideoListResponse>> getAllVideo() {
+        return CommonResponse.of(videoService.getAllVideo(), GET_ALL_VIDEO.getMessage());
+    }
 }

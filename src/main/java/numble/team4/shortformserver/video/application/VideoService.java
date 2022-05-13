@@ -1,5 +1,7 @@
 package numble.team4.shortformserver.video.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
@@ -10,6 +12,7 @@ import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
+import numble.team4.shortformserver.video.dto.VideoListResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -88,5 +91,12 @@ public class VideoService {
             .orElseThrow(NotExistVideoException::new);
         findVideo.increaseViewCount();
         return VideoResponse.from(findVideo);
+    }
+
+    public List<VideoListResponse> getAllVideo() {
+        return videoRepository.findAll()
+            .stream()
+            .map(VideoListResponse::from)
+            .collect(Collectors.toList());
     }
 }
