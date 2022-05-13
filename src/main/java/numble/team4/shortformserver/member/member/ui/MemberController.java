@@ -42,7 +42,7 @@ public class MemberController {
         return CommonResponse.of(videos, GET_ALL_VIDEOS_OF_MEMBER.getMessage());
     }
 
-    @GetMapping("/likes")
+    @GetMapping("/{memberId}/likes")
     public CommonResponse<List<VideoListResponse>> findAllLikeVideosByMember(@PathVariable Long memberId,
                                                                              @RequestParam(value = "last_video_id", required = false) Long videoId) {
         List<VideoListResponse> videos = videoService.findAllLikeVideosByMember(memberId, videoId);
