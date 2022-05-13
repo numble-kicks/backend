@@ -101,6 +101,7 @@ public class VideoService {
 
         List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId, pageSize);
         return VideoListResponse.from(videos);
+    }
 
     @Transactional
     public VideoResponse findVideoById(Long videoId) {
