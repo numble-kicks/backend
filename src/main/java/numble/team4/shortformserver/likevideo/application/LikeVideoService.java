@@ -48,7 +48,6 @@ public class LikeVideoService {
         if (!likeVideo.isMemberOf(member)) {
             throw new NotMemberOfLikeVideoException();
         }
-
         likeVideoRepository.delete(likeVideo);
         likeVideo.unlike();
     }

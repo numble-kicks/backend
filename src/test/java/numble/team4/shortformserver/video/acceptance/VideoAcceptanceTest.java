@@ -69,8 +69,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void setUp() {
-        category = categoryRepository.findByName("기타").orElseThrow(NotFoundCategoryException::new);
-        user1 = getUser();
+        user1 = getUser("numble@numble.com");
         user2 = Member.builder()
             .name("tester")
             .role(MEMBER)
@@ -205,68 +204,6 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
             .andDo(print());
     }
 
-    @Test
-    @DisplayName("사용자가 모든 영상 목록을 조회순으로 조회한다.")
-    void scenario6() throws Exception {
-        // given
-        List<Video> videos = List.of(
-            createVideo(2L, 2L, user1),
-            createVideo(1L, 2L, user1),
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 2L, user2),
-            createVideo(3L, 2L, user1)
-        );
-
-        videoRepository.saveAll(videos);
-
-        // when
-        ResultActions res = mockMvc.perform(
-            get(BASE_URI)
-                .queryParam("sortBy", "hits")
-        );
-
-        // then
-        res.andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.size()").value(10))
-            .andExpect(jsonPath("$.data[0].viewCount").value(3L))
-            .andExpect(jsonPath("$.data[1].viewCount").value(2L))
-            .andExpect(jsonPath("$.data[2].viewCount").value(1L))
-            .andExpect(jsonPath("$.data[3].viewCount").value(0L))
-            .andDo(print());
-    }
-
-    @Test
-    @DisplayName("사용자가 모든 영상 목록을 좋아요순으로 조회한다.")
-    void scenario7() throws Exception {
-        // given
-        List<Video> videos = List.of(
-            createVideo(0L, 2L, user2),
-            createVideo(0L, 1L, user2),
-            createVideo(0L, 1L, user2)
-        );
-
-        videoRepository.saveAll(videos);
-
-        // when
-        ResultActions res = mockMvc.perform(
-            get(BASE_URI)
-                .queryParam("sortBy", "likes")
-        );
-
-        // then
-        res.andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.size()").value(3))
-            .andExpect(jsonPath("$.data[0].likeCount").value(2L))
-            .andExpect(jsonPath("$.data[1].likeCount").value(1L))
-            .andExpect(jsonPath("$.data[2].likeCount").value(1L))
-            .andDo(print());
-    }
-
     private ResultActions saveVideo() throws Exception {
         return mockMvc.perform(multipart(BASE_URI)
             .file(VIDEO_FILE)
@@ -278,7 +215,6 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
             .param("description", DESCRIPTION)
         );
     }
-
 
     private Video createVideo(Long hits, Long likes, Member author) {
         return Video.builder()

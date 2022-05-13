@@ -26,8 +26,6 @@ CREATE TABLE video
     view_count    bigint,
     category_id   bigint,
     member_id     bigint,
-    hits_cursor varchar(10) default '0000',
-    likes_cursor varchar(10) default '0000',
     create_at   datetime(6) DEFAULT NULL,
     modified_at datetime(6) DEFAULT NULL,
     primary key (id)

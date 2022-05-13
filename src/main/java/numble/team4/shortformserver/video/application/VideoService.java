@@ -1,8 +1,5 @@
 package numble.team4.shortformserver.video.application;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
@@ -17,7 +14,6 @@ import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,29 +88,5 @@ public class VideoService {
             .orElseThrow(NotExistVideoException::new);
         findVideo.increaseViewCount();
         return VideoResponse.from(findVideo);
-    }
-
-    public List<VideoResponse> findAllVideos(Long videoId, String sortBy, Pageable pageable) {
-        List<VideoResponse> videos;
-        if (Objects.isNull(videoId)) {
-            videos = videoRepository.findAllVideos(null, sortBy, pageable)
-                .stream()
-                .map(VideoResponse::from)
-                .collect(Collectors.toList());
-        } else {
-            String cursor;
-            if (sortBy.equals("hits")) {
-                cursor = videoRepository.findById(videoId)
-                    .orElseThrow(NotExistVideoException::new).getHitsCursor();
-            } else {
-                cursor = videoRepository.findById(videoId)
-                    .orElseThrow(NotExistVideoException::new).getLikesCursor();
-            }
-            videos = videoRepository.findAllVideos(cursor, sortBy, pageable)
-                .stream()
-                .map(VideoResponse::from)
-                .collect(Collectors.toList());
-        }
-        return videos;
     }
 }

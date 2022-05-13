@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.Sort;
 
 @BaseDataJpaTest
 class VideoRepositoryTest {
@@ -134,20 +133,6 @@ class VideoRepositoryTest {
             // when, then
             assertThrows(NotExistVideoException.class,
                 () -> videoRepository.findById(100L).orElseThrow(NotExistVideoException::new));
-        }
-
-        @Test
-        @DisplayName("영상 목록 최신순으로 정렬")
-        void sortByLatest() throws Exception {
-            // given
-            List<Video> mockVideos = makeMockVideoList(member);
-            videoRepository.saveAll(mockVideos);
-
-            // when
-            List<Video> videos = videoRepository.findAll(Sort.by("createAt").descending());
-
-            // then
-            assertThat(videos.get(0)).isEqualTo(mockVideos.get(4));
         }
 
         private List<Video> makeMockVideoList(Member member) {

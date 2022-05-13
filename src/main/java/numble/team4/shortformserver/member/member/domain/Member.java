@@ -1,24 +1,21 @@
 package numble.team4.shortformserver.member.member.domain;
 
-import static javax.persistence.GenerationType.IDENTITY;
-import static lombok.AccessLevel.PROTECTED;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.video.domain.Video;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import static javax.persistence.GenerationType.IDENTITY;
+import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
@@ -57,13 +54,15 @@ public class Member extends BaseTimeEntity {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || (getClass() != o.getClass() && Hibernate.getClass(o) != getClass())) return false;
         Member member = (Member) o;
-        return Objects.equals(id, member.id);
+        return Objects.equals(getId(), member.getId());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(email);
     }
+
 }
+

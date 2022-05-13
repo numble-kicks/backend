@@ -44,9 +44,6 @@ dependencies {
 	implementation 'me.paulschwarz:spring-dotenv:2.5.3'
 	implementation 'com.querydsl:querydsl-jpa:5.0.0'
 	implementation 'com.querydsl:querydsl-apt:5.0.0'
-
-	implementation 'com.google.code.findbugs:jsr305:3.0.2'
-
 }
 
 def querydslDir = "$buildDir/generated/querydsl"

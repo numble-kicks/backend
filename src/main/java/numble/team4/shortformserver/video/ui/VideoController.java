@@ -1,10 +1,6 @@
 package numble.team4.shortformserver.video.ui;
 
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEOS;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
 
 import java.util.List;
 import javax.validation.Valid;
@@ -68,14 +64,10 @@ public class VideoController {
         return CommonResponse.from(DELETE_VIDEO.getMessage());
     }
 
-    @GetMapping("/{video_id}")
-    public CommonResponse<VideoResponse> findByIdVideo(@PathVariable("video_id") Long videoId) {
-        return CommonResponse.of(videoService.findVideoById(videoId), GET_VIDEO_BY_ID.getMessage());
-    }
+    @GetMapping("/{videoId}")
+    public CommonResponse<VideoResponse> findById(@PathVariable Long videoId) {
+        VideoResponse video = videoService.findVideoById(videoId);
 
-    @GetMapping
-    public CommonResponse<List<VideoResponse>> findAllVideos(@RequestParam String sortBy, @Nullable @RequestParam Long videoId
-    ) {
-        return CommonResponse.of(videoService.findAllVideos(videoId, sortBy, PAGE), GET_ALL_VIDEOS.getMessage());
+        return CommonResponse.of(video, GET_VIDEO_BY_ID.getMessage());
     }
 }
