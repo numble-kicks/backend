@@ -7,6 +7,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
+import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -36,6 +37,10 @@ public class MemberService {
             uploader.deleteToS3(member.getProfileImageUrl());
         }
         member.updateProfileImage(uploadDto.getFileUrl());
+    }
+
+    public void updateUserName(Member member, MemberNameUpdateRequest request) {
+        member.updateName(request.getName());
     }
 
 }
