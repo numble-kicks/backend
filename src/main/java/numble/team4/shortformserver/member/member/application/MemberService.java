@@ -32,7 +32,7 @@ public class MemberService {
     public void saveProfileImage(Member member, MultipartFile file) {
         S3UploadDto uploadDto = uploader.saveToS3(file, "user");
 
-        if (!StringUtils.hasText(member.getProfileImageUrl())) {
+        if (StringUtils.hasText(member.getProfileImageUrl())) {
             uploader.deleteToS3(member.getProfileImageUrl());
         }
         member.updateProfileImage(uploadDto.getFileUrl());
