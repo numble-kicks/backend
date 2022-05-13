@@ -61,8 +61,8 @@ public class MemberController {
         return CommonResponse.from(UPDATE_USER_NAME.getMessage());
     }
 
-    @GetMapping("/email")
-    public CommonResponse<EmailAuthResponse> mail(@RequestBody @Valid MemberEmailRequest request) {
+    @PostMapping("/email/auth")
+    public CommonResponse<EmailAuthResponse> getMailAuthNumber(@RequestBody @Valid MemberEmailRequest request) {
         EmailAuthResponse response = mailService.sendAuthMail(request);
         return CommonResponse.of(response, GET_MAIL_AUTH_NUMBER.getMessage());
     }
