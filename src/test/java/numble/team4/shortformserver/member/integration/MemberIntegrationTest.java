@@ -149,6 +149,9 @@ public class MemberIntegrationTest {
         assertThat(res.getName()).isEqualTo(member.getName());
         assertThat(res.getEmail()).isEqualTo(member.getEmail());
         assertThat(res.getProfileImageUrl()).isEqualTo(member.getProfileImageUrl());
+        assertThat(res.getFollowers()).isNotNull();
+        assertThat(res.getFollowings()).isNotNull();
+        assertThat(res.getVideos()).isNotNull();
     }
 
 
