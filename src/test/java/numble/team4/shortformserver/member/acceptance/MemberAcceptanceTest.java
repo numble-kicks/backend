@@ -1,9 +1,11 @@
 package numble.team4.shortformserver.member.acceptance;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
 import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
@@ -26,8 +28,7 @@ import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EX
 import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -208,5 +209,24 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         res.andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(UPDATE_USER_NAME.getMessage()))
                 .andDo(print());
+    }
+
+    @Test
+    @WithMockCustomUser
+    @DisplayName("[성공] 1. 사용자의 이메일 등록")
+    void saveEmail_isok_success() throws Exception {
+        //given
+        MemberEmailRequest request = new MemberEmailRequest("test@numble.com");
+
+        //when
+         ResultActions res = mockMvc.perform(
+                        post("/v1/users/email")
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                );
+
+        //then
+        res.andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(SAVE_MEMBER_EMAIL.getMessage()));
     }
 }
