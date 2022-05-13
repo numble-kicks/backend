@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.video.category.domain.Category;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -43,15 +44,28 @@ public class Video extends BaseTimeEntity {
     @Column(nullable = false)
     private String videoUrl;
 
+    @Column(nullable = false)
+    private Boolean usedStatus;
+
+    @Column(nullable = false)
+    private Integer price;
+
     private Long viewCount;
     private Long likeCount;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public void update(String title, String description) {
+    public void update(String title, String description, Integer price, Boolean usedStatus, Category category) {
         this.title = title;
+        this.price = price;
+        this.usedStatus = usedStatus;
+        this.category = category;
         this.description = description;
     }
 

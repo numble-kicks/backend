@@ -10,6 +10,9 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.testCommon.BaseDataJpaTest;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +31,9 @@ class VideoRepositoryTest {
     private MemberRepository memberRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private TestEntityManager testEntityManager;
 
     private Member member;
@@ -36,8 +42,12 @@ class VideoRepositoryTest {
     private static final String VIDEO_URL = "https://d659rm6fgd091.cloudfront.net/test.mov";
     private static final String THUMBNAIL_URL = "https://d659rm6fgd091.cloudfront.net/test.png";
 
+    private Category category;
+
     @BeforeEach
     void setUp() {
+        category = categoryRepository.findById(5L).orElseThrow(NotFoundCategoryException::new);
+
         member = Member.builder()
             .role(MEMBER)
             .videos(new ArrayList<>())
@@ -47,11 +57,14 @@ class VideoRepositoryTest {
         video = Video.builder()
             .title("Title")
             .description("description")
-            .member(member)
-            .videoUrl(VIDEO_URL)
             .thumbnailUrl(THUMBNAIL_URL)
+            .videoUrl(VIDEO_URL)
+            .usedStatus(false)
+            .price(10000)
             .likeCount(0L)
             .viewCount(0L)
+            .category(category)
+            .member(member)
             .build();
     }
 
@@ -61,7 +74,7 @@ class VideoRepositoryTest {
 
         @Test
         @DisplayName("Video를 저장한다.")
-        public void saveVideo() throws Exception {
+        void saveVideo() throws Exception {
             // when
             Video savedVideo = videoRepository.save(video);
 
@@ -86,7 +99,6 @@ class VideoRepositoryTest {
             Member findMember = memberRepository.findById(findVideo.getMember()
                 .getId()).orElseThrow(NotExistMemberException::new);
 
-
             // then
             assertThat(findVideo.getMember()).isEqualTo(member);
             assertThat(findMember.getVideos().get(0)).isEqualTo(findVideo);
@@ -105,7 +117,8 @@ class VideoRepositoryTest {
             Video savedVideo = videoRepository.save(video);
 
             // when
-            Video findVideo = videoRepository.findById(savedVideo.getId()).orElseThrow(NotExistVideoException::new);
+            Video findVideo = videoRepository.findById(savedVideo.getId())
+                .orElseThrow(NotExistVideoException::new);
 
             // then
             assertThat(savedVideo).isEqualTo(findVideo);
@@ -116,11 +129,10 @@ class VideoRepositoryTest {
         void findById_fail() throws Exception {
             // given
             Video savedVideo = videoRepository.save(video);
-            Video mockVideo = Video.builder().id(100L).build();
 
             // when, then
             assertThrows(NotExistVideoException.class,
-                () -> videoRepository.findById(mockVideo.getId()).orElseThrow(NotExistVideoException::new));
+                () -> videoRepository.findById(100L).orElseThrow(NotExistVideoException::new));
         }
 
         private List<Video> makeMockVideoList(Member member) {
@@ -133,6 +145,9 @@ class VideoRepositoryTest {
                     .videoUrl("영상")
                     .thumbnailUrl("썸네일")
                     .member(member)
+                    .category(category)
+                    .usedStatus(true)
+                    .price(1000000000)
                     .likeCount(likeCount)
                     .viewCount(viewCount)
                     .build()
@@ -155,7 +170,7 @@ class VideoRepositoryTest {
             Video savedVideo = videoRepository.save(video);
 
             // when
-            savedVideo.update("제목 수정", "설명 수정");
+            savedVideo.update("제목 수정", "설명 수정", 100, true, category);
             testEntityManager.flush();
             testEntityManager.clear();
 

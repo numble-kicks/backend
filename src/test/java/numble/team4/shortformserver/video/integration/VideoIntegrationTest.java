@@ -15,6 +15,9 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -44,12 +47,19 @@ public class VideoIntegrationTest {
     @Autowired
     private VideoRepository videoRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
     private Member author;
     private Member tester;
     private Video video;
+    private Category category;
+    private VideoUpdateRequest videoUpdateRequest;
 
     @BeforeEach
     void setUp() {
+        category = categoryRepository.findByName("기타")
+            .orElseThrow(NotFoundCategoryException::new);
         List<Member> members = List.of(
             createMember("author"),
             createMember("tester")
@@ -70,6 +80,14 @@ public class VideoIntegrationTest {
         videoRepository.saveAll(videos);
 
         video = videos.get(0);
+
+        videoUpdateRequest = VideoUpdateRequest.builder()
+            .title(video.getTitle())
+            .description("설명 수정")
+            .category("기타")
+            .price(100)
+            .usedStatus(false)
+            .build();
     }
 
     @Nested
@@ -87,19 +105,21 @@ public class VideoIntegrationTest {
             videoFile = new MockMultipartFile("video", "video".getBytes());
             thumbnailFile = new MockMultipartFile("thumbnail", "thumbnail".getBytes());
 
-            videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", null, "설명");
+            videoRequest = new VideoRequest(videoFile, thumbnailFile, "제목", 100, false, "기타", "");
 
             // when
-            CommonResponse<VideoResponse> response = videoController.saveVideo(
+            CommonResponse<Long> response = videoController.saveVideo(
                 videoRequest, author);
 
-            VideoResponse videoResponse = response.getData();
+            Video savedVideo = videoRepository.findById(response.getData())
+                .orElseThrow(NotExistVideoException::new);
+
             // then
             assertThat(response.getMessage()).isEqualTo(UPLOAD_VIDEO.getMessage());
-            assertThat(videoResponse).isNotNull();
+            assertThat(savedVideo).isNotNull();
 
-            amazonS3Uploader.deleteToS3(videoResponse.getVideoUrl());
-            amazonS3Uploader.deleteToS3(videoResponse.getThumbnailUrl());
+            amazonS3Uploader.deleteToS3(savedVideo.getVideoUrl());
+            amazonS3Uploader.deleteToS3(savedVideo.getThumbnailUrl());
         }
     }
 
@@ -107,35 +127,24 @@ public class VideoIntegrationTest {
     @DisplayName("영상 상세정보 수정 테스트")
     class UpdateVideoTest {
 
-        VideoUpdateRequest videoUpdateRequest;
-
         @Test
         @DisplayName("영상 수정 성공")
         void updateVideo_success() throws Exception {
-            // given
-            videoUpdateRequest = VideoUpdateRequest.builder()
-                .title(video.getTitle())
-                .description("설명 수정")
-                .build();
-
             // when
-            CommonResponse<VideoResponse> response = videoController.updateVideo(
+            CommonResponse<Long> res = videoController.updateVideo(
                 videoUpdateRequest, author, video.getId());
-            VideoResponse data = response.getData();
+
+            Video savedVideo = videoRepository.findById(res.getData())
+                .orElseThrow(NotExistVideoException::new);
 
             // then
-            assertThat(data.getId()).isEqualTo(video.getId());
-            assertThat(data.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
+            assertThat(savedVideo.getId()).isEqualTo(video.getId());
+            assertThat(savedVideo.getDescription()).isEqualTo(videoUpdateRequest.getDescription());
         }
 
         @Test
         @DisplayName("영상 수정 실패, 작성자를 제외한 유저는 수정할 수 없다.")
         void updateVideo_notAuthor() throws Exception {
-            // given
-            videoUpdateRequest = VideoUpdateRequest.builder()
-                .title(video.getTitle())
-                .description("설명 수정")
-                .build();
             // when, then
             assertThrows(NotAuthorException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, tester,
@@ -145,12 +154,6 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("영상 수정 실패, 존재하지 않는 영상은 수정할 수 없다.")
         void updateVideo_notExistVideo() throws Exception {
-            // given
-            videoUpdateRequest = VideoUpdateRequest.builder()
-                .title(video.getTitle())
-                .description("설명 수정")
-                .build();
-
             // when, then
             assertThrows(NotExistVideoException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, author, 918367461L));
@@ -165,21 +168,23 @@ public class VideoIntegrationTest {
         @DisplayName("영상 삭제 성공")
         void deleteVideo_success() throws Exception {
             //given
-            VideoResponse savedVideo = videoController.saveVideo(new VideoRequest(
-                new MockMultipartFile("test", "test".getBytes()),
-                new MockMultipartFile("test", "test".getBytes()),
+            Long savedVideoId = videoController.saveVideo(new VideoRequest(
+                new MockMultipartFile("video", "test".getBytes()),
+                new MockMultipartFile("thumbnail", "test".getBytes()),
                 "제목",
-                "",
-                "설명"
+                10000,
+                false,
+                "기타",
+                ""
             ), author).getData();
 
             // when
             CommonResponse<VideoResponse> res = videoController.deleteVideo(
-                savedVideo.getId(), author);
+                savedVideoId, author);
 
             // then
             assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
-            assertThat(videoRepository.existsById(savedVideo.getId())).isFalse();
+            assertThat(videoRepository.existsById(savedVideoId)).isFalse();
         }
 
         @Test
@@ -237,6 +242,9 @@ public class VideoIntegrationTest {
         return Video.builder()
             .title("제목")
             .description("설명")
+            .price(10000)
+            .category(category)
+            .usedStatus(false)
             .videoUrl("video URL")
             .thumbnailUrl("thumbnail URL")
             .member(author)

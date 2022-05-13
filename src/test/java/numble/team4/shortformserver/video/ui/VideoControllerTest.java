@@ -7,6 +7,8 @@ import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
@@ -19,12 +21,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Optional;
 import numble.team4.shortformserver.common.config.SecurityConfig;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.application.VideoService;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -68,6 +73,9 @@ class VideoControllerTest {
     private MemberRepository memberRepository;
 
     @MockBean
+    private CategoryRepository categoryRepository;
+
+    @MockBean
     private VideoRepository videoRepository;
 
     @MockBean
@@ -78,6 +86,7 @@ class VideoControllerTest {
     private Video video;
     private MockMultipartFile videos;
     private MockMultipartFile thumbnail;
+    private Category category = new Category(10L , "기타");
 
     @BeforeEach
     void setUp() {
@@ -96,6 +105,7 @@ class VideoControllerTest {
             .videoUrl("test url")
             .thumbnailUrl("test url")
             .member(member)
+            .category(category)
             .viewCount(0L)
             .likeCount(0L)
             .build();
@@ -110,9 +120,13 @@ class VideoControllerTest {
         @DisplayName("video 수정 - 성공")
         void updateVideo_success() throws Exception {
             // given
+            given(categoryRepository.findByName(anyString())).willReturn(Optional.of(category));
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
+                .category("기타")
+                .price(100000)
+                .usedStatus(false)
                 .build();
 
             VideoResponse videoResponse = VideoResponse.from(video);
@@ -132,7 +146,7 @@ class VideoControllerTest {
 
             // then
             res.andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(video.getId()))
+                .andExpect(jsonPath("$.data").value(video.getId()))
                 .andExpect(jsonPath("$.message").value(UPDATE_VIDEO.getMessage()))
                 .andDo(print());
         }
@@ -145,6 +159,9 @@ class VideoControllerTest {
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
+                .price(10000)
+                .usedStatus(false)
+                .category("기타")
                 .build();
 
             // when
@@ -172,6 +189,9 @@ class VideoControllerTest {
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
+                .category("기타")
+                .usedStatus(false)
+                .price(99999)
                 .build();
 
             // when
