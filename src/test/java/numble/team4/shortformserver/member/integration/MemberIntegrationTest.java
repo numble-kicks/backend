@@ -7,6 +7,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.member.member.ui.MemberController;
+import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
@@ -184,5 +185,22 @@ public class MemberIntegrationTest {
         //then
         assertThat(memberRepository.getById(this.member.getId()).getName()).isEqualTo("kebin");
     }
+
+    @Test
+    @DisplayName("[성공] 사용자 이메일 등록")
+    void saveEmail_memberEmailModifiedAndNotNull_success() {
+        //given
+        entityManager.flush();
+        entityManager.clear();
+        String testEmail = "test@numble.com";
+        MemberEmailRequest request = new MemberEmailRequest(testEmail);
+
+        //when
+        memberController.saveEmail(member, request);
+
+        //then
+        assertThat(memberRepository.getById(member.getId()).getEmail()).isEqualTo(testEmail);
+    }
+
 
 }
