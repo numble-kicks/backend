@@ -155,6 +155,8 @@ public class MemberIntegrationTest {
     @DisplayName("[성공] 사용자 프로필 이미지 등록")
     void saveProfileImage_notExceptionAndMemberProfileImageNotNull_success() throws IOException {
         //given
+        entityManager.flush();
+        entityManager.clear();
         MockMultipartFile file = new MockMultipartFile("testImage",
                 new FileInputStream("src/test/resources/spring.png"));
 
