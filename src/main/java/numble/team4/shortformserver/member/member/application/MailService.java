@@ -2,6 +2,7 @@ package numble.team4.shortformserver.member.member.application;
 
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.member.member.exception.FailMailAuthNumberIssuanceException;
+import numble.team4.shortformserver.member.member.ui.dto.EmailAuthResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,7 +24,7 @@ public class MailService {
     private final String content = "\nKicks 숏폼 컨텐츠 이메일 확인을 위한 인증번호입니다." +
             "\n아래의 6자리 숫자를 인증 번호 확인란에 입력해주세요.\n";
 
-    public int sendAuthMail(MemberEmailRequest request) {
+    public EmailAuthResponse sendAuthMail(MemberEmailRequest request) {
 
         String authNum = issueMailAuthNumber();
 
@@ -37,7 +38,7 @@ public class MailService {
 
             mailSender.send(message);
 
-            return Integer.parseInt(authNum);
+            return EmailAuthResponse.from(Integer.parseInt(authNum));
 
         } catch (Exception e) {
             throw new FailMailAuthNumberIssuanceException();
