@@ -18,7 +18,7 @@ public class MailService {
     private final JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
-    private final String host;
+    private String host;
 
     private final String title = "Kicks 숏폼 컨텐츠 이메일 인증";
     private final String content = "\nKicks 숏폼 컨텐츠 이메일 확인을 위한 인증번호입니다." +
