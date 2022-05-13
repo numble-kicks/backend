@@ -6,11 +6,13 @@ import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.application.MemberService;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
+import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideoListResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.*;
@@ -47,6 +49,12 @@ public class MemberController {
     public CommonResponse updateProfileImage(@LoginUser Member member, MultipartFile file) {
         memberService.saveProfileImage(member, file);
         return CommonResponse.from(SAVE_PROFILE_IMAGE.getMessage());
+    }
+
+    @PutMapping("/name")
+    public CommonResponse updateUserName(@LoginUser Member member, @RequestBody @Valid MemberNameUpdateRequest request) {
+        memberService.updateUserName(member, request);
+        return CommonResponse.from(UPDATE_USER_NAME.getMessage());
     }
 
 
