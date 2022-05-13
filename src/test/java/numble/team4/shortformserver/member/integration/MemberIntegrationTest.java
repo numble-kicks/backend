@@ -51,7 +51,7 @@ public class MemberIntegrationTest {
     @BeforeEach
     void init() {
         member = Member.builder()
-                .name("user2").role(Role.MEMBER).emailVerified(true).profileImageUrl("imageurl")
+                .name("user2").role(Role.MEMBER).emailVerified(true)
                 .build();
         memberRepository.save(member);
         createVideo();
