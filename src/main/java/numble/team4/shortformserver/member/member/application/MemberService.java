@@ -3,12 +3,14 @@ package numble.team4.shortformserver.member.member.application;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
+import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
+import numble.team4.shortformserver.video.domain.VideoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -20,14 +22,19 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberService {
 
+    private final VideoRepository videoRepository;
+    private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
     private final AmazonS3Uploader uploader;
 
     public MemberInfoResponse getMemberInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
+        long followers = followRepository.countByToMember(member);
+        long followings = followRepository.countByFromMember(member);
+        long videos = videoRepository.countByMember(member);
 
-        return MemberInfoResponse.from(member);
+        return MemberInfoResponse.from(member, followers, followings, videos);
     }
 
     @Transactional
