@@ -3,8 +3,11 @@ package numble.team4.shortformserver.member.member.ui;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
+import numble.team4.shortformserver.member.member.application.MailService;
 import numble.team4.shortformserver.member.member.application.MemberService;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.ui.dto.EmailAuthResponse;
+import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.video.application.VideoService;
@@ -24,6 +27,7 @@ public class MemberController {
 
     private final MemberService memberService;
     private final VideoService videoService;
+    private final MailService mailService;
 
     @GetMapping("/{memberId}")
     public CommonResponse<MemberInfoResponse> findMemberInfo(@PathVariable Long memberId) {
@@ -57,5 +61,10 @@ public class MemberController {
         return CommonResponse.from(UPDATE_USER_NAME.getMessage());
     }
 
+    @GetMapping("/email")
+    public CommonResponse<EmailAuthResponse> mail(@RequestBody @Valid MemberEmailRequest request) {
+        EmailAuthResponse response = mailService.sendAuthMail(request);
+        return CommonResponse.of(response, GET_MAIL_AUTH_NUMBER.getMessage());
+    }
 
 }
