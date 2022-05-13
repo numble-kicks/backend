@@ -8,8 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import static numble.team4.shortformserver.member.auth.domain.OauthProvider.findMatchProvider;
+
 @Component
 public class MemberCreatorFactory {
+
     private final Map<OauthProvider, MemberCreator> creators = new HashMap<>();
 
     @Autowired
@@ -18,7 +21,7 @@ public class MemberCreatorFactory {
     }
 
     public MemberCreator findMemberCreator(String providerName) {
-        return creators.get(OauthProvider.findMatchProvider(providerName));
+        return creators.get(findMatchProvider(providerName));
     }
 
     private void registerCreators(Set<MemberCreator> creators) {
