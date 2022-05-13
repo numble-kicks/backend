@@ -39,8 +39,10 @@ public class MemberService {
         member.updateProfileImage(uploadDto.getFileUrl());
     }
 
+    @Transactional
     public void updateUserName(Member member, MemberNameUpdateRequest request) {
         member.updateName(request.getName());
+        memberRepository.save(member);
     }
 
 }
