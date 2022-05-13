@@ -57,6 +57,10 @@ public class Member extends BaseTimeEntity {
         this.name = name;
     }
 
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

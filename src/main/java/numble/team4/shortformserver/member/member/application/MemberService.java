@@ -6,6 +6,7 @@ import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
+import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,12 @@ public class MemberService {
     @Transactional
     public void updateUserName(Member member, MemberNameUpdateRequest request) {
         member.updateName(request.getName());
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void updateUserEmail(Member member, MemberEmailRequest request) {
+        member.updateEmail(request.getEmail());
         memberRepository.save(member);
     }
 
