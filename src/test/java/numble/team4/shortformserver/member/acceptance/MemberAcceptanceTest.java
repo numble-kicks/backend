@@ -1,9 +1,12 @@
 package numble.team4.shortformserver.member.acceptance;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
+import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +24,10 @@ import java.util.stream.Stream;
 
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_MEMBER;
 import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -184,4 +190,23 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         }
     }
 
+    @Test
+    @WithMockCustomUser
+    @DisplayName("[성공]1. 사용자의 닉네임 수정")
+    void updateUserName_isok_success() throws Exception {
+        //given
+        MemberNameUpdateRequest request = new MemberNameUpdateRequest("kebin");
+        //when
+        ResultActions res = mockMvc.perform(
+                put("/v1/users/name")
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .with(csrf())
+        );
+
+        //then
+        res.andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value(UPDATE_USER_NAME.getMessage()))
+                .andDo(print());
+    }
 }
