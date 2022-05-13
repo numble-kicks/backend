@@ -1,5 +1,9 @@
 package numble.team4.shortformserver.likevideo.intergration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import javax.persistence.EntityManager;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
@@ -11,6 +15,9 @@ import numble.team4.shortformserver.likevideo.ui.dto.LikeVideoExistResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
+import numble.team4.shortformserver.video.category.domain.Category;
+import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,11 +25,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.persistence.EntityManager;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @BaseIntegrationTest
 public class LikeVideoIntegrationTest {
@@ -34,6 +36,9 @@ public class LikeVideoIntegrationTest {
     private LikeVideoRepository likeVideoRepository;
 
     @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
     private EntityManager entityManager;
 
     private Video video;
@@ -41,6 +46,9 @@ public class LikeVideoIntegrationTest {
 
     @BeforeEach
     void init() {
+        Category category = categoryRepository.findByName("기타").orElseThrow(
+            NotFoundCategoryException::new);
+
         member = Member.builder()
                 .role(Role.MEMBER)
                 .emailVerified(true)
@@ -48,12 +56,17 @@ public class LikeVideoIntegrationTest {
         entityManager.persist(member);
 
         video = Video.builder()
-                .member(member)
-                .videoUrl("http://videourl.com")
-                .thumbnailUrl("http://url.com")
-                .title("title")
-                .description("description")
-                .build();
+            .member(member)
+            .videoUrl("http://videourl.com")
+            .thumbnailUrl("http://url.com")
+            .title("title")
+            .description("description")
+            .price(100000)
+            .usedStatus(true)
+            .category(category)
+            .likeCount(0L)
+            .viewCount(0L)
+            .build();
         entityManager.persist(video);
     }
 
@@ -68,7 +81,7 @@ public class LikeVideoIntegrationTest {
             CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, 19823012L);
 
             //then
-            assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(false);
+            assertThat(existLikeVideo.getData().isExistLikeVideo()).isFalse();
         }
 
         @Test
@@ -82,7 +95,7 @@ public class LikeVideoIntegrationTest {
             CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, video.getId());
 
             //then
-            assertThat(existLikeVideo.getData().isExistLikeVideo()).isEqualTo(true);
+            assertThat(existLikeVideo.getData().isExistLikeVideo()).isTrue();
         }
 
     }
@@ -141,7 +154,7 @@ public class LikeVideoIntegrationTest {
             likeVideoController.deleteLikeVideo(member, likeVideo.getId());
 
             //then
-            assertThat(likeVideoRepository.findAll()).hasSize(0);
+            assertThat(likeVideoRepository.findAll()).isEmpty();
         }
 
         @Test

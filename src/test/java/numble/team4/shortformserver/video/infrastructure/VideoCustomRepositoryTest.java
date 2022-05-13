@@ -44,6 +44,8 @@ class VideoCustomRepositoryTest {
                     .videoUrl("videoUrl")
                     .thumbnailUrl("thumnailUrl")
                     .description("테스트 비디오")
+                    .price(5000)
+                    .usedStatus(true)
                     .title("테스트 비디오")
                     .build();
             videoRepository.save(build);

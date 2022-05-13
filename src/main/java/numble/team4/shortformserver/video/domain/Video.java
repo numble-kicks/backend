@@ -6,7 +6,6 @@ import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -19,6 +18,7 @@ import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.video.category.domain.Category;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
@@ -44,34 +44,46 @@ public class Video extends BaseTimeEntity {
     @Column(nullable = false)
     private String videoUrl;
 
+    @Column(nullable = false)
+    private Boolean usedStatus;
+
+    @Column(nullable = false)
+    private Integer price;
+
     private Long viewCount;
     private Long likeCount;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Embedded
-    private Comments comments;
-
-    public void addCommentToVideo(Comment comment) {
-        comments.addComment(comment);
+    public void update(String title, String description, Integer price, Boolean usedStatus, Category category) {
+        this.title = title;
+        this.price = price;
+        this.usedStatus = usedStatus;
+        this.category = category;
+        this.description = description;
     }
 
-    public void update(String title, String description, Member member) {
-        validateAuthor(member);
+    public void increaseViewCount() {
+        this.viewCount += 1;
+    }
 
-        this.title = title;
-        this.description = description;
+    public void increaseLikeCount() {
+        this.likeCount += 1;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount -= 1;
     }
 
     public void validateAuthor(Member member) {
         if (!this.member.equals(member)) {
             throw new NotAuthorException();
         }
-    }
-
-    public void increaseViewCount() {
-        this.viewCount += 1;
     }
 }

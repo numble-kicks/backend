@@ -56,6 +56,8 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
                     .videoUrl("http://videourl.com")
                     .thumbnailUrl("http://url.com")
                     .title("title")
+                    .price(5000)
+                    .usedStatus(true)
                     .description("description")
                     .build();
             entityManager.persist(video);
