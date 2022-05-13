@@ -22,6 +22,7 @@ import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
 import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -67,6 +68,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void setUp() {
+        category = categoryRepository.findByName("기타").orElseThrow(NotFoundCategoryException::new);
         user1 = getUser();
         user2 = Member.builder()
             .name("tester")
