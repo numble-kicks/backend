@@ -18,6 +18,7 @@ import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
+import numble.team4.shortformserver.video.dto.VideoListResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -140,10 +141,13 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("영상 수정 실패, 작성자를 제외한 유저는 수정할 수 없다.")
         void updateVideo_notAuthor() {
+            // given
+            Long videoId = video.getId();
+
             // when, then
             assertThrows(NotAuthorException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, tester,
-                    video.getId()));
+                    videoId));
         }
 
         @Test
@@ -181,8 +185,12 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("영상 삭제 실패, 작성자를 제외한 유저는 삭제할 수 없다.")
         void deleteVideo_notAuthor()  {
+            // given
+            Long videoId = video.getId();
+
+            // when, then
             assertThrows(NotAuthorException.class,
-                () -> videoController.deleteVideo(video.getId(), tester));
+                () -> videoController.deleteVideo(videoId, tester));
         }
 
         @Test
@@ -201,6 +209,19 @@ public class VideoIntegrationTest {
         @DisplayName("특정 영상 조회 실패, 존재하지 않는 영상은 조회할 수 없다.")
         void findById_notExistVideo()  {
             assertThrows(NotExistVideoException.class, () -> videoController.findVideoById(100L));
+        }
+
+        @Test
+        @DisplayName("모든 영상 조회")
+        void getAllVideo() {
+            // given
+            int size = videoRepository.findAll().size();
+
+            // when
+            List<VideoListResponse> all = videoController.getAllVideo().getData();
+
+            // then
+            assertThat(all).hasSize(size);
         }
     }
 
