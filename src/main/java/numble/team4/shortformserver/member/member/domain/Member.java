@@ -59,6 +59,7 @@ public class Member extends BaseTimeEntity {
 
     public void updateEmail(String email) {
         this.email = email;
+        this.emailVerified = true;
     }
 
     @Override
