@@ -14,15 +14,18 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MemberInfoResponse {
 
-    private Long id;
-    private String email;
-    private String name;
-    private String profileImageUrl;
-    private boolean emailVerified;
-    private LocalDateTime createAt;
-    private LocalDateTime lastLoginDate;
+    private final Long id;
+    private final String email;
+    private final String name;
+    private final String profileImageUrl;
+    private final boolean emailVerified;
+    private final LocalDateTime createAt;
+    private final LocalDateTime lastLoginDate;
+    private final long followers;
+    private final long followings;
+    private final long videos;
 
-    public static MemberInfoResponse from(Member member) {
+    public static MemberInfoResponse from(Member member, long followers, long followings, long videos) {
         return new MemberInfoResponse(
                 member.getId(),
                 member.getEmail(),
@@ -30,7 +33,10 @@ public class MemberInfoResponse {
                 member.getProfileImageUrl(),
                 member.isEmailVerified(),
                 member.getCreateAt(),
-                member.getLastLoginDate()
+                member.getLastLoginDate(),
+                followers,
+                followings,
+                videos
         );
     }
 
