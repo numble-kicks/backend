@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.video.domain.Video;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @Builder
+@DynamicUpdate
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PROTECTED)
 public class Member extends BaseTimeEntity {
