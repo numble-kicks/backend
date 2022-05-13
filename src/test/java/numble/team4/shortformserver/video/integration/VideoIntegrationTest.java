@@ -162,13 +162,20 @@ public class VideoIntegrationTest {
         @Test
         @DisplayName("영상 삭제 성공")
         void deleteVideo_success() {
+            // given
+            MockMultipartFile videoFile = new MockMultipartFile("video", "video".getBytes());
+            MockMultipartFile thumbnailFile = new MockMultipartFile("thumbnail",
+                "thumbnail".getBytes());
+            VideoRequest req = new VideoRequest(videoFile, thumbnailFile, "제목", 100, false, "기타", "");
+
+            Long videoId = videoController.saveVideo(req, author).getData();
+
             // when
-            CommonResponse<VideoResponse> res = videoController.deleteVideo(
-                video.getId(), author);
+            CommonResponse<VideoResponse> res = videoController.deleteVideo(videoId, author);
 
             // then
             assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
-            assertThat(videoRepository.existsById(video.getId())).isFalse();
+            assertThat(videoRepository.existsById(videoId)).isFalse();
         }
 
         @Test
