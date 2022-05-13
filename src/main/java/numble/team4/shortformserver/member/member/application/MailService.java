@@ -47,11 +47,11 @@ public class MailService {
 
     private String issueMailAuthNumber() {
         Random rand = new Random();
-        String authNum = "";
-        for (int i = 0; i < 6; i++) {
-            authNum += Integer.toString(rand.nextInt(10));
-        }
-        return authNum;
-    }
+        StringBuilder sb = new StringBuilder();
 
+        for (int i = 0; i < 6; i++) {
+            sb.append(Integer.toString(rand.nextInt(10)));
+        }
+        return sb.toString();
+    }
 }
