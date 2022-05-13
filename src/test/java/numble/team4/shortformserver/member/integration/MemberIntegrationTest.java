@@ -21,6 +21,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 
+import javax.persistence.EntityManager;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @BaseIntegrationTest
 public class MemberIntegrationTest {
+
+    @Autowired
+    EntityManager entityManager;
 
     @Autowired
     MemberController memberController;
@@ -168,13 +172,15 @@ public class MemberIntegrationTest {
     @DisplayName("[성공] 사용자 닉네임 수정")
     void updateUserName_memberNameModified_fail() {
         //given
+        entityManager.flush();
+        entityManager.clear();
         MemberNameUpdateRequest request = new MemberNameUpdateRequest("kebin");
 
         //when
         memberController.updateUserName(member, request);
 
         //then
-        assertThat(memberRepository.getById(member.getId()).getName()).isEqualTo("kebin");
+        assertThat(memberRepository.getById(this.member.getId()).getName()).isEqualTo("kebin");
     }
 
 }
