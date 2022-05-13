@@ -18,6 +18,7 @@ import numble.team4.shortformserver.member.auth.exception.JwtTokenExpiredExcepti
 import numble.team4.shortformserver.member.auth.exception.KakaoLoginFailException;
 import numble.team4.shortformserver.member.auth.exception.NotExistProviderException;
 import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
+import numble.team4.shortformserver.member.member.exception.FailMailAuthNumberIssuanceException;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
@@ -49,7 +50,8 @@ public enum ExceptionType {
     ALREADY_EXIST_LIKE_VIDEO("이미 좋아요를 등록한 동영상입니다.", BAD_REQUEST, AlreadyExistLikeVideoException.class),
     NOT_EXIST_LIKE_VIDEO("존재하지 않는 좋아요입니다.", BAD_REQUEST, NotExistLikeVideoException.class),
     NOT_MEMBER_OF_LIKE_VIDEO("본인이 등록한 좋아요만 취소할 수 있습니다.", BAD_REQUEST, NotMemberOfLikeVideoException.class),
-    NOT_AUTHOR_EXCEPTION("접근권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class);
+    NOT_AUTHOR_EXCEPTION("접근권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class),
+    FAIL_MAIL_AUTH_NUM_ISSUANCE("이메일 확인을 위한 인증번호 발급을 실패했습니다.", INTERNAL_SERVER_ERROR, FailMailAuthNumberIssuanceException.class);
 
     private final String message;
     private final HttpStatus status;
