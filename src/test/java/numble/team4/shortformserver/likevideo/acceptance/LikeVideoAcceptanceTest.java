@@ -1,6 +1,20 @@
 package numble.team4.shortformserver.likevideo.acceptance;
 
 
+import static numble.team4.shortformserver.common.exception.ExceptionType.ALREADY_EXIST_LIKE_VIDEO;
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_LIKE_VIDEO;
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
+import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_MEMBER_OF_LIKE_VIDEO;
+import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.DELETE_LIKE_VIDEO;
+import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.SAVE_LIKE_VIDEO;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import javax.persistence.EntityManager;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
 import numble.team4.shortformserver.member.member.domain.Member;
@@ -14,16 +28,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
-
-import javax.persistence.EntityManager;
-
-import static numble.team4.shortformserver.common.exception.ExceptionType.*;
-import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.DELETE_LIKE_VIDEO;
-import static numble.team4.shortformserver.likevideo.ui.LikeVideoResponseMessage.SAVE_LIKE_VIDEO;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
 
@@ -45,12 +49,14 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         entityManager.persist(member);
 
         video = Video.builder()
-                .member(member)
-                .videoUrl("http://videourl.com")
-                .thumbnailUrl("http://url.com")
-                .title("title")
-                .description("description")
-                .build();
+            .member(member)
+            .videoUrl("http://videourl.com")
+            .thumbnailUrl("http://url.com")
+            .title("title")
+            .description("description")
+            .likeCount(0L)
+            .viewCount(0L)
+            .build();
         entityManager.persist(video);
     }
 

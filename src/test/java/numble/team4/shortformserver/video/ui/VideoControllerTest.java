@@ -2,11 +2,11 @@ package numble.team4.shortformserver.video.ui;
 
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_AUTHOR_EXCEPTION;
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.context.annotation.FilterType.ASSIGNABLE_TYPE;
@@ -19,11 +19,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Optional;
 import numble.team4.shortformserver.common.config.SecurityConfig;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -43,7 +43,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -84,6 +83,8 @@ class VideoControllerTest {
     void setUp() {
         member = Member.builder()
             .id(10L)
+            .role(MEMBER)
+            .name("tester")
             .email("test@test.com")
             .emailVerified(true)
             .build();
@@ -101,9 +102,9 @@ class VideoControllerTest {
     }
 
     @Nested
-    @WithMockUser(roles = "USER")
+    @WithMockCustomUser
     @DisplayName("Video 수정 테스트")
-    class UpdateVideo {
+    class UpdateVideoTest {
 
         @Test
         @DisplayName("video 수정 - 성공")
@@ -116,20 +117,17 @@ class VideoControllerTest {
 
             VideoResponse videoResponse = VideoResponse.from(video);
 
-            when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
             // when
             when(
                 videoService.updateVideo(any(VideoUpdateRequest.class), any(Member.class),
-                    anyLong())).thenReturn(
-                videoResponse);
+                    anyLong())).thenReturn(videoResponse);
 
             ResultActions res = mockMvc.perform(
                 put(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
-                    .queryParam("memberId", String.valueOf(member.getId()))
             );
 
             // then
@@ -140,10 +138,10 @@ class VideoControllerTest {
         }
 
         @Test
+        @WithMockCustomUser
         @DisplayName("Video 수정 - 실패, 존재하지 않는 영상일 경우")
         void updateVideo_notExistVideo() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
@@ -158,7 +156,6 @@ class VideoControllerTest {
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
-                    .queryParam("memberId", String.valueOf(member.getId()))
             );
 
             // then
@@ -168,10 +165,10 @@ class VideoControllerTest {
         }
 
         @Test
+        @WithMockCustomUser
         @DisplayName("Video 수정 - 실패, 접근 권한이 없는 경우")
         void updateVideo_notAuthor() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("update title")
                 .description("description")
@@ -186,7 +183,6 @@ class VideoControllerTest {
                     .with(csrf())
                     .contentType(APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(videoUpdateRequest))
-                    .queryParam("memberId", String.valueOf(member.getId()))
             );
 
             // then
@@ -197,21 +193,18 @@ class VideoControllerTest {
     }
 
     @Nested
-    @WithMockUser(roles = "USER")
+    @WithMockCustomUser
     @DisplayName("Video 삭제 테스트")
-    class DeleteVideo {
+    class DeleteVideoTest {
 
         @Test
         @DisplayName("Video 삭제 - 성공")
         void deleteVideo_success() throws Exception {
             // given
-            given(memberRepository.findById(any())).willReturn(Optional.of(member));
-
             // when
             ResultActions res = mockMvc.perform(
                 delete(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
-                    .queryParam("loggedInMemberId", String.valueOf(member.getId()))
             );
 
             // then
@@ -221,15 +214,15 @@ class VideoControllerTest {
         }
 
         @Test
+        @WithMockCustomUser
         @DisplayName("Video 삭제 - 실패, 접근 권한이 없을 경우")
         void deleteVideo_notAuthor() throws Exception {
             // given
             Member notAuthor = Member.builder()
+                .role(MEMBER)
                 .id(100L)
                 .email("not@test.com")
                 .build();
-
-            given(memberRepository.findById(anyLong())).willReturn(Optional.of(notAuthor));
 
             // when
             doThrow(new NotAuthorException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
@@ -237,7 +230,6 @@ class VideoControllerTest {
             ResultActions res = mockMvc.perform(
                 delete(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
-                    .queryParam("loggedInMemberId", String.valueOf(notAuthor.getId()))
             );
 
             // then
@@ -247,10 +239,10 @@ class VideoControllerTest {
         }
 
         @Test
+        @WithMockCustomUser
         @DisplayName("Video 삭제 - 실패, 존재하지 않는 영상일 경우")
         void deleteVideo_notExistVideo() throws Exception {
             // given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.ofNullable(member));
 
             doThrow(new NotExistVideoException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
 
@@ -258,7 +250,6 @@ class VideoControllerTest {
             ResultActions res = mockMvc.perform(
                 delete(VIDEO_URI + VIDEO_ID, video.getId())
                     .with(csrf())
-                    .queryParam("loggedInMemberId", String.valueOf(member.getId()))
             );
 
             // then

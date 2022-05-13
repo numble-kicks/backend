@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoRequest;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class VideoService {
 
     private final VideoRepository videoRepository;
+    private final MemberRepository memberRepository;
     private final AmazonS3Uploader amazonS3Uploader;
 
     @Transactional
@@ -44,21 +46,30 @@ public class VideoService {
         Video findVideo = videoRepository.findById(videoId)
             .orElseThrow(NotExistVideoException::new);
 
-        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription(),
-            loggedInMember);
+        findVideo.validateAuthor(loggedInMember);
+
+        findVideo.update(videoUpdateRequest.getTitle(), videoUpdateRequest.getDescription());
         return VideoResponse.from(findVideo);
     }
 
     @Transactional
-    public void deleteVideo(Long videoId, Member loggedMember) {
+    public void deleteVideo(Long videoId, Member loggedInMember) {
         Video findVideo = videoRepository.findById(videoId)
             .orElseThrow(NotExistVideoException::new);
 
-        findVideo.validateAuthor(loggedMember);
+        findVideo.validateAuthor(loggedInMember);
 
         amazonS3Uploader.deleteToS3(findVideo.getVideoUrl());
         amazonS3Uploader.deleteToS3(findVideo.getThumbnailUrl());
 
         videoRepository.delete(findVideo);
+    }
+
+    @Transactional
+    public VideoResponse findVideoById(Long videoId) {
+        Video findVideo = videoRepository.findById(videoId).orElseThrow(NotExistVideoException::new);
+        findVideo.increaseViewCount();
+
+        return VideoResponse.from(findVideo);
     }
 }

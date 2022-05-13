@@ -6,7 +6,6 @@ import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -51,27 +50,26 @@ public class Video extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Embedded
-    private Comments comments;
-
-    public void addCommentToVideo(Comment comment) {
-        comments.addComment(comment);
-    }
-
-    public void update(String title, String description, Member member) {
-        validateAuthor(member);
-
+    public void update(String title, String description) {
         this.title = title;
         this.description = description;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount += 1;
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount += 1;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount -= 1;
     }
 
     public void validateAuthor(Member member) {
         if (!this.member.equals(member)) {
             throw new NotAuthorException();
         }
-    }
-
-    public void increaseViewCount() {
-        this.viewCount += 1;
     }
 }
