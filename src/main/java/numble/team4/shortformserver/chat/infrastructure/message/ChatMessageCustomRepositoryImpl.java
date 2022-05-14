@@ -20,7 +20,7 @@ public class ChatMessageCustomRepositoryImpl implements ChatMessageCustomReposit
     @Override
     public List<ChatMessage> searchLastMessages(Long id, ChatRoom chatRoom, Pageable pageable) {
         return factory.selectFrom(chatMessage)
-                .where(lessThan(id))
+                .where(lessThan(id), chatMessage.chatRoom.eq(chatRoom))
                 .orderBy(chatMessage.id.desc())
                 .limit(pageable.getPageSize())
                 .fetch();
