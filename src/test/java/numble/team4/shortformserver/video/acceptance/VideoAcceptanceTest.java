@@ -186,7 +186,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
                 )));
 
         // then
-        res.andExpect(status().isUnauthorized())
+        res.andExpect(status().isForbidden())
             .andDo(print());
     }
 
@@ -200,7 +200,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
         ResultActions res = mockMvc.perform(delete(BASE_URI + VIDEO_ID, savedVideo.getId()));
 
         // then
-        res.andExpect(status().isUnauthorized())
+        res.andExpect(status().isForbidden())
             .andDo(print());
     }
 

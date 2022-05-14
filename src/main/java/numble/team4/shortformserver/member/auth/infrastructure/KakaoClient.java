@@ -19,7 +19,7 @@ import static org.springframework.http.HttpMethod.GET;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KakaoClient implements OauthClient {
+public class KakaoClient implements OAuthClient {
 
     private static final String X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded;charset=utf-8";
     private static final String AUTHORIZATION_CODE = "authorization_code";
@@ -36,16 +36,13 @@ public class KakaoClient implements OauthClient {
     private String clientId;
 
     @Value("${spring.security.oauth2.client.provider.kakao.token_uri}")
-    private String getAccessTokenUrl;
+    private String tokenUri;
 
     @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
-    private String getUserProfileUrl;
+    private String userInfoUrl;
 
     @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
     private String redirectUri;
-
-    @Value("${spring.security.oauth2.client.registration.kakao.redirect-url}")
-    private String redirectUrl;
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
@@ -56,18 +53,13 @@ public class KakaoClient implements OauthClient {
     }
 
     @Override
-    public String getRedirectUrl() {
-        return redirectUrl;
-    }
-
-    @Override
     public String getUserProfile(String code) {
         String accessToken = getAccessToken(code);
         HttpEntity<Object> httpEntity = createHttpEntityForUserProfile(accessToken);
 
         try {
             return restTemplate
-                    .exchange(getUserProfileUrl, GET, httpEntity, String.class)
+                    .exchange(userInfoUrl, GET, httpEntity, String.class)
                     .getBody();
         } catch (HttpClientErrorException e) {
             throw new KakaoLoginFailException();
@@ -78,7 +70,7 @@ public class KakaoClient implements OauthClient {
         HttpEntity<MultiValueMap<String, String>> httpEntity = createHttpEntityForGetAccessToken(code);
         try {
             ResponseEntity<String> response = restTemplate.exchange(
-                    getAccessTokenUrl,
+                    tokenUri,
                     HttpMethod.POST,
                     httpEntity,
                     String.class
