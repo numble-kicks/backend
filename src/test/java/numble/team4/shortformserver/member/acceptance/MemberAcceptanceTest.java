@@ -1,13 +1,12 @@
 package numble.team4.shortformserver.member.acceptance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
+import numble.team4.shortformserver.testCommon.mockUser.WithMockAdmin;
 import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -22,9 +21,12 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_MEMBER;
+import static numble.team4.shortformserver.member.auth.domain.OauthProvider.KAKAO;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -36,6 +38,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MemberAcceptanceTest extends BaseAcceptanceTest {
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     private VideoRepository videoRepository;
 
     @Autowired
@@ -45,10 +50,26 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
 
     @BeforeEach
     void init() {
-        member = Member.builder().name("user2").role(Role.MEMBER).build();
+        member = Member.builder().name("user2").role(MEMBER).build();
         entityManager.persist(member);
+        createMember();
         createVideo();
     }
+
+    void createMember() {
+        for (int i = 0; i < 20; i++) {
+            Member member = new Member(
+                    Integer.toUnsignedLong(i),
+                    "numble" + i + "@numble.com",
+                    "numble" + i,
+                    MEMBER,
+                    KAKAO,
+                    true
+            );
+            entityManager.persist(member);
+        }
+    }
+
     void createVideo() {
         for (int i = 0; i < 20; i++) {
             Video video = Video.builder()
@@ -63,6 +84,7 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
             entityManager.persist(video);
         }
     }
+
     void createLikeVideo() {
         List<Video> all = videoRepository.findAll();
         for (int i = 0; i < all.size(); i++) {
@@ -74,7 +96,6 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
     static Stream<Long> valueSources() {
         return Stream.of(null, 3L, 8L, 30L);
     }
-
 
     @ParameterizedTest
     @DisplayName("[성공] 1. 존재하는 사용자가 업로드한 영상 목록 조회")
@@ -230,5 +251,40 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         //then
         res.andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value(SAVE_MEMBER_EMAIL.getMessage()));
+    }
+
+    @Test
+    @WithMockAdmin
+    @DisplayName("[성공] 어드민 페이지에서 사용자 정보 조회")
+    void getMemberInfo_success() throws Exception {
+        long count = memberRepository.findAll().stream()
+                .filter(m -> m.getName().contains("numble"))
+                .collect(Collectors.toList())
+                .size();
+        //when
+        ResultActions res = mockMvc.perform(
+                get("/v1/users")
+                        .param("keyword", "numble")
+        );
+
+        //then
+        res.andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.size()").value(count))
+                .andExpect(jsonPath("$.message").value(GET_MEMBER_INFO.getMessage()))
+                .andDo(print());
+    }
+
+    @Test
+    @WithMockAdmin
+    @DisplayName("[성공] 어드민 페이지에서 사용자 정보 삭제")
+    void deleteMemberInfo_success() throws Exception {
+        //when
+        ResultActions res = mockMvc.perform(
+                delete("/v1/users/20000"));
+
+        //then
+        res.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(NOT_EXIST_MEMBER.getMessage()))
+                .andDo(print());
     }
 }
