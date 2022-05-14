@@ -29,22 +29,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
-                .httpBasic().disable()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionHandleFilter(objectMapper), JwtAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET,"/v1/users/following/from", "/v1/users/following/to").permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}", "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}", "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/videos").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/search/**").permitAll()
-                .antMatchers("/oauth/**", "/renew").permitAll()
-                .anyRequest().authenticated();
+            .cors().and()
+            .csrf().disable()
+            .httpBasic().disable()
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtExceptionHandleFilter(objectMapper),
+                JwtAuthenticationFilter.class)
+            .sessionManagement().sessionCreationPolicy(STATELESS)
+            .and()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.GET, "/v1/users/following/from", "/v1/users/following/to")
+            .permitAll()
+            .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}").permitAll()
+            .antMatchers(HttpMethod.PUT, "/v1/videos/{videoId}")
+            .hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.DELETE, "/v1/videos/{videoId}")
+            .hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.GET, "/v1/videos").permitAll()
+            .antMatchers(HttpMethod.GET, "/v1/search/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}",
+                "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}",
+                "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.GET, "/v1/admin/**").hasAnyRole(ADMIN.name())
+            .antMatchers("/oauth/**", "/renew").permitAll()
+            .anyRequest().authenticated();
     }
 
     @Bean
