@@ -29,6 +29,8 @@ class VideoDtoTest {
             .title(null)
             .description(null)
             .category(null)
+            .price(null)
+            .usedStatus(null)
             .build();
 
         // when
@@ -36,19 +38,19 @@ class VideoDtoTest {
             videoUpdateRequest);
 
         // then
-        assertThat(violations.size()).isEqualTo(1);
+        assertThat(violations).hasSize(4);
     }
 
     @Test
     @DisplayName("VideoRequest DTO 테스트")
     void videoRequestValidateTest() throws Exception {
         // given
-        VideoRequest videoRequest = new VideoRequest(null, null, null, null, null);
+        VideoRequest videoRequest = new VideoRequest(null, null, null, null, null, null, null);
 
         // when
         Set<ConstraintViolation<VideoRequest>> violations = validator.validate(videoRequest);
 
         // then
-        assertThat(violations.size()).isEqualTo(3);
+        assertThat(violations).hasSize(4);
     }
 }

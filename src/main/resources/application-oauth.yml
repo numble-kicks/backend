@@ -16,6 +16,19 @@ spring:
             token_uri: https://kauth.kakao.com/oauth/token
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user_name_attribute: id
+            
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${env.SMTP_USERNAME}
+    password: ${env.SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
 
 jwt:
   secretKey: ${env.JWT_SECRET_KEY}

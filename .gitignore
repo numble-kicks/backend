@@ -36,12 +36,13 @@ out/
 ### user setting ###
 src/main/resources/**
 src/test/resources/**
+!src/test/resources/spring.png
 !src/main/resources/application-prod.yml
 !src/main/resources/application-oauth.yml
 !src/main/resources/application-s3.yml
 !src/main/resources/application-test.yml
 !src/main/resources/application-oauth.yml
-!src/main/resources/init.sql
+!src/main/resources/*.sql
 .gradle/
 .env
 .DS_Store

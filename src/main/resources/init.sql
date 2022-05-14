@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS comment;
 DROP TABLE IF EXISTS like_video;
 DROP TABLE IF EXISTS video;
 DROP TABLE IF EXISTS follow;
 DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS category;
 
 CREATE TABLE chat_message
 (
@@ -34,6 +34,14 @@ CREATE TABLE comment
     member_id   bigint NOT NULL,
     video_id    bigint NOT NULL,
     PRIMARY KEY (id)
+  
+CREATE TABLE category
+(
+    id          bigint       not null auto_increment,
+    create_at   timestamp default current_timestamp,
+    modified_at timestamp default current_timestamp on update current_timestamp,
+    name        varchar(255) not null,
+    primary key (id)
 ) ENGINE = InnoDB;
 
 CREATE TABLE follow
@@ -47,18 +55,18 @@ CREATE TABLE follow
 CREATE TABLE like_video
 (
     id        bigint NOT NULL AUTO_INCREMENT,
-    member_id bigint,
-    video_id  bigint,
+    member_id bigint NOT NULL,
+    video_id  bigint NOT NULL,
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
 CREATE TABLE member
 (
-    id                bigint NOT NULL AUTO_INCREMENT,
-    create_at         datetime(6),
-    modified_at       datetime(6),
+    id                bigint      NOT NULL AUTO_INCREMENT,
+    create_at         datetime(6) DEFAULT NULL,
+    modified_at       datetime(6) DEFAULT NULL,
     email             varchar(255),
-    email_verified    bit    NOT NULL,
+    email_verified    bit         NOT NULL,
     last_login_date   datetime(6),
     name              varchar(255),
     profile_image_url varchar(255),
@@ -70,17 +78,20 @@ CREATE TABLE member
 
 CREATE TABLE video
 (
-    id            bigint       NOT NULL AUTO_INCREMENT,
-    create_at     datetime(6),
-    modified_at   datetime(6),
+    id            bigint       not null auto_increment,
     description   varchar(255),
     like_count    bigint,
-    thumbnail_url varchar(255) NOT NULL,
-    title         varchar(255) NOT NULL,
-    video_url     varchar(255) NOT NULL,
+    price         integer      not null,
+    thumbnail_url varchar(255) not null,
+    title         varchar(255) not null,
+    used_status   bit          not null,
+    video_url     varchar(255) not null,
     view_count    bigint,
+    category_id   bigint,
     member_id     bigint,
-    PRIMARY KEY (id)
+    create_at   datetime(6) DEFAULT NULL,
+    modified_at datetime(6) DEFAULT NULL,
+    primary key (id)
 ) ENGINE = InnoDB;
 
 ALTER TABLE chat_message
@@ -112,6 +123,12 @@ ALTER TABLE like_video
 
 ALTER TABLE like_video
     ADD CONSTRAINT FOREIGN KEY (video_id) references video (id)
+  
+ALTER TABLE video
+    ADD CONSTRAINT FOREIGN KEY (member_id) REFERENCES member (id);
 
 ALTER TABLE video
-    ADD CONSTRAINT FOREIGN KEY (member_id) references member (id)
+    ADD CONSTRAINT FOREIGN KEY (category_id) REFERENCES category (id);
+
+ALTER TABLE category
+    ADD CONSTRAINT UNIQUE (name);

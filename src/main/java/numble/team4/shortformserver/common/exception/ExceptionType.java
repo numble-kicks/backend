@@ -1,5 +1,10 @@
 package numble.team4.shortformserver.common.exception;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+
+import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.aws.exception.AmazonClientException;
@@ -12,22 +17,19 @@ import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.likevideo.exception.AlreadyExistLikeVideoException;
 import numble.team4.shortformserver.likevideo.exception.NotExistLikeVideoException;
 import numble.team4.shortformserver.likevideo.exception.NotMemberOfLikeVideoException;
-import numble.team4.shortformserver.member.auth.exception.*;
 import numble.team4.shortformserver.member.auth.exception.EmailEmptyException;
 import numble.team4.shortformserver.member.auth.exception.JsonParsingException;
 import numble.team4.shortformserver.member.auth.exception.JwtTokenExpiredException;
 import numble.team4.shortformserver.member.auth.exception.KakaoLoginFailException;
 import numble.team4.shortformserver.member.auth.exception.NotExistProviderException;
 import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
+import numble.team4.shortformserver.member.member.exception.FailMailAuthNumberIssuanceException;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
+import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import numble.team4.shortformserver.video.exception.NotLoggedInException;
 import org.springframework.http.HttpStatus;
-
-import java.util.Arrays;
-
-import static org.springframework.http.HttpStatus.*;
 
 @Getter
 @RequiredArgsConstructor
@@ -52,6 +54,8 @@ public enum ExceptionType {
     NOT_MEMBER_OF_LIKE_VIDEO("본인이 등록한 좋아요만 취소할 수 있습니다.", BAD_REQUEST, NotMemberOfLikeVideoException.class),
     NOT_AUTHOR_EXCEPTION("접근권한이 없습니다.",FORBIDDEN, NotAuthorException.class),
     NOT_EXIST_CHAT_ROOM("존재하지 않는 채팅방입니다.", BAD_REQUEST, NotExistChatRoomException.class);
+    FAIL_MAIL_AUTH_NUM_ISSUANCE("이메일 확인을 위한 인증번호 발급을 실패했습니다.", INTERNAL_SERVER_ERROR, FailMailAuthNumberIssuanceException.class),
+    NOT_FOUND_CATEGORY("카테고리를 찾을 수 없습니다.", BAD_REQUEST, NotFoundCategoryException.class);
 
     private final String message;
     private final HttpStatus status;

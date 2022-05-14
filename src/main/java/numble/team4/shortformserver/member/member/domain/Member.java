@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.auth.domain.OauthProvider;
 import numble.team4.shortformserver.video.domain.Video;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,6 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @Builder
+@DynamicUpdate
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor(access = PROTECTED)
 public class Member extends BaseTimeEntity {
@@ -40,6 +43,10 @@ public class Member extends BaseTimeEntity {
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
     private boolean emailVerified;
+  
+    @OneToMany(mappedBy = "member")
+    @Builder.Default
+    private List<Video> videos = new ArrayList<>();
 
     @Builder
     public Member(Long userId, String email, String name, Role role, OauthProvider provider, boolean emailVerified) {
@@ -58,21 +65,30 @@ public class Member extends BaseTimeEntity {
     public void updateLastLoginDate() {
         lastLoginDate = LocalDateTime.now();
     }
+  
+    public void updateProfileImage(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
+        this.emailVerified = true;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || (getClass() != o.getClass() && Hibernate.getClass(o) != getClass())) return false;
         Member member = (Member) o;
-        return Objects.equals(id, member.id);
+        return Objects.equals(getId(), member.getId());
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(email);
     }
-
-    @OneToMany(mappedBy = "member")
-    private List<Video> videos = new ArrayList<>();
 }
-
