@@ -51,7 +51,6 @@ jobs:
           echo "JWT_REFRESH_KEY=${{secrets.JWT_REFRESH_KEY}}" >> .env
           echo "KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}" >> .env
           echo "KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}" >> .env
-          echo "KAKAO_REDIRECT_URL=${{secrets.KAKAO_REDIRECT_URL}}" >> .env
 
 
       # copy .env file
