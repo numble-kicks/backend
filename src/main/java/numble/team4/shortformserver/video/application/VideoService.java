@@ -1,7 +1,6 @@
 package numble.team4.shortformserver.video.application;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
@@ -22,20 +21,19 @@ import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VideoService {
 
+    private static final int PAZE_SIZE = 18;
+
     private final MemberRepository memberRepository;
     private final VideoRepository videoRepository;
     private final CategoryRepository categoryRepository;
     private final AmazonS3Uploader amazonS3Uploader;
 
-    private final int pageSize = 18;
 
     @Transactional
     public VideoResponse uploadVideo(VideoRequest videoRequest, Member loggedInMember) {
@@ -93,7 +91,8 @@ public class VideoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
-        List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId, pageSize);
+        List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId,
+            PAZE_SIZE);
         return VideoListResponse.from(videos);
     }
 
@@ -101,7 +100,8 @@ public class VideoService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
-        List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId, pageSize);
+        List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId,
+            PAZE_SIZE);
         return VideoListResponse.from(videos);
     }
 
@@ -114,9 +114,8 @@ public class VideoService {
     }
 
     public List<VideoListResponse> getAllVideos() {
-        return videoRepository.findAll()
-            .stream()
-            .map(VideoListResponse::from)
-            .collect(Collectors.toList());
+        List<Video> videos = videoRepository.findAll();
+        return VideoListResponse.from(videos);
+
     }
 }

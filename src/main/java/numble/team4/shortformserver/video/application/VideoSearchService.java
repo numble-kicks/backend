@@ -1,7 +1,6 @@
 package numble.team4.shortformserver.video.application;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.video.domain.VideoRepository;
@@ -20,18 +19,14 @@ public class VideoSearchService {
         if (!StringUtils.hasText(sortBy)) {
             sortBy = "";
         }
-        return videoRepository.searchVideoByKeyword(lastId, keyword, sortBy)
-            .stream()
-            .map(VideoListResponse::from)
-            .collect(Collectors.toList());
+
+        return VideoListResponse.from(
+            videoRepository.searchVideoByKeyword(lastId, keyword, sortBy));
     }
 
     public List<VideoListResponse> getTopVideo(String sortBy, Integer limitNum) {
 
-        return videoRepository.getTopVideo(sortBy, limitNum)
-            .stream()
-            .map(VideoListResponse::from)
-            .collect(Collectors.toList());
+        return VideoListResponse.from(videoRepository.getTopVideo(sortBy, limitNum));
     }
 
 }
