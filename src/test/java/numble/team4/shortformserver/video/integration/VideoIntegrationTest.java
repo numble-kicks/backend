@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.video.integration;
 
 
+import static numble.team4.shortformserver.member.member.domain.Role.ADMIN;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -222,6 +223,48 @@ public class VideoIntegrationTest {
 
             // then
             assertThat(all).hasSize(size);
+        }
+    }
+
+    @Nested
+    @DisplayName("관리자 권한 테스트")
+    class AdminPermissionTest {
+
+        @Test
+        @DisplayName("관리자가 영상을 수정한다.")
+        void updateVideoByAdmin() {
+            // given
+            Member admin = Member.builder()
+                .role(ADMIN)
+                .email("admin@test.com")
+                .build();
+            memberRepository.save(admin);
+            Long videoId = video.getId();
+
+            // when
+            CommonResponse<Long> res = videoController.updateVideo(
+                videoUpdateRequest, admin, videoId);
+
+            // then
+            assertThat(res.getMessage()).isEqualTo(UPDATE_VIDEO.getMessage());
+        }
+
+        @Test
+        @DisplayName("관리자가 영상을 식제한다.")
+        void deleteVideoByAdmin() {
+            // given
+            Member admin = Member.builder()
+                .role(ADMIN)
+                .email("admin@test.com")
+                .build();
+            memberRepository.save(admin);
+            Long videoId = video.getId();
+
+            // when
+            CommonResponse<VideoResponse> res = videoController.deleteVideo(videoId, admin);
+
+            // then
+            assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
         }
     }
 
