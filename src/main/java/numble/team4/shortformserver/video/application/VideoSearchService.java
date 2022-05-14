@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoListResponse;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -16,6 +17,9 @@ public class VideoSearchService {
     private final VideoRepository videoRepository;
 
     public List<VideoListResponse> searchByKeyword(Long lastId, String keyword, String sortBy) {
+        if (!StringUtils.hasText(sortBy)) {
+            sortBy = "";
+        }
         return videoRepository.searchVideoByKeyword(lastId, keyword, sortBy)
             .stream()
             .map(VideoListResponse::from)
@@ -23,6 +27,7 @@ public class VideoSearchService {
     }
 
     public List<VideoListResponse> getTopVideo(String sortBy, Integer limitNum) {
+
         return videoRepository.getTopVideo(sortBy, limitNum)
             .stream()
             .map(VideoListResponse::from)
