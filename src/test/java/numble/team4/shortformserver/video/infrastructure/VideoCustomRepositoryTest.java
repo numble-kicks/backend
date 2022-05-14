@@ -88,19 +88,25 @@ class VideoCustomRepositoryTest {
 
         // when
         List<Video> 키워드나이키최신순_id는_421순 = videoRepository.searchVideoByKeyword(null, "나이키", null);
-        List<Video> 키워드애플_id는_5 = videoRepository.searchVideoByKeyword(null, "애플", null);
         List<Video> 키워드아이폰_id는_5 = videoRepository.searchVideoByKeyword(null, "아이폰", null);
+        List<Video> 키워드신발최신순_id_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발", "");
 
         // then
-        assertThat(키워드애플_id는_5)
-            .hasSize(1)
-            .isEqualTo(키워드아이폰_id는_5);
-
+        assertThat(키워드아이폰_id는_5).hasSize(1);
         assertThat(키워드나이키최신순_id는_421순)
             .hasSize(3)
             .extracting("id")
             .containsExactly(
                 ids.get(4),
+                ids.get(2),
+                ids.get(1)
+            );
+
+        assertThat(키워드신발최신순_id_321순_커서적용)
+            .hasSize(3)
+            .extracting("id")
+            .containsExactly(
+                ids.get(3),
                 ids.get(2),
                 ids.get(1)
             );
@@ -122,8 +128,7 @@ class VideoCustomRepositoryTest {
         );
         // when
         List<Video> 키워드신발조회순_id는_4321순 = videoRepository.searchVideoByKeyword(null, "신발", "hits");
-        List<Video> 키워드신발조회순_id는_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발",
-            "hits");
+        List<Video> 키워드신발조회순_id는_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발", "hits");
 
         // then
         assertThat(키워드신발조회순_id는_4321순)
