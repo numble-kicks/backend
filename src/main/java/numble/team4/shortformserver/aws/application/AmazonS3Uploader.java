@@ -33,6 +33,10 @@ public class AmazonS3Uploader {
     private String bucket;
 
     public void deleteToS3(String url) {
+        if (!url.contains(cloudfrontUrl)) {
+            return;
+        }
+
         String key = url.substring(cloudfrontUrl.length());
 
         amazonS3Client.deleteObject(bucket, key);
