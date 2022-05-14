@@ -1,12 +1,6 @@
 spring:
   profiles:
-    include: "s3,oauth"
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/testdb?useSSL=false&useUnicode=true$serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: test
-    password: 1234
-
+    include: "test,s3,oauth"
   jpa:
     hibernate:
       ddl-auto: create
@@ -15,11 +9,6 @@ spring:
         format_sql: true
         default_batch_fetch_size: 100
     open-in-view: false
-
-  servlet:
-    multipart:
-      max-file-size: 200MB
-      max-request-size: 200MB
 
 logging:
   level:
