@@ -22,15 +22,11 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
 
     @Override
     public List<Video> searchVideoByKeyword(Long lastId, String keyword, String sortBy) {
-        String cursor = null;
-        if (Objects.nonNull(sortBy) && Objects.nonNull(lastId)) {
-            cursor = String.format("%010d", getHits(lastId)) + String.format("%010d", lastId);
-        }
         return factory
             .selectFrom(video)
             .where(likeTitle(keyword)
                     .or(likeDescription(keyword)),
-                cursorIsLessThan(cursor, sortBy, lastId))
+                cursorIsLessThan(sortBy, lastId))
             .orderBy(videoSort(sortBy), video.id.desc())
             .limit(LIMIT)
             .fetch();
@@ -45,26 +41,22 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
             .fetch();
     }
 
-    private Long getHits(Long cursorId) {
-        return Objects
-            .requireNonNull(factory.selectFrom(video).where(video.id.eq(cursorId)).fetchOne()).getViewCount();
-    }
-
     private BooleanExpression likeDescription(String keyword) {
-        return video.description.like("%" + keyword + "%");
+        return video.description.contains(keyword);
     }
 
     private BooleanExpression likeTitle(String keyword) {
-        return video.title.like("%" + keyword + "%");
+        return video.title.contains(keyword);
     }
 
-    private BooleanExpression cursorIsLessThan(String cursor, String sort, Long cursorId) {
-        if (Objects.isNull(cursor)) {
+    private BooleanExpression cursorIsLessThan(String sort, Long cursorId) {
+        if (Objects.isNull(cursorId)) {
             return null;
         }
 
         if (sort.equals("hits")) {
-            return algorithm().lt(cursor);
+            String cursor = String.format("%010d", getHits(cursorId)) + String.format("%010d", cursorId);
+            return convertToUniqueValue().lt(cursor);
         }
 
         return video.id.lt(cursorId);
@@ -74,8 +66,13 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
      * 조회수가 같다면 같은 조회수는 제외된다.
      * 따라서 조회수와 id를 활용해 공식을 만들어 Unique한 값을 생성하고 비교를 해야된다.
      */
-    private StringExpression algorithm() {
+    private StringExpression convertToUniqueValue() {
         return lpad(video.viewCount.stringValue(), 10, '0').concat(lpad(video.id.stringValue(), 10, '0'));
+    }
+
+    private Long getHits(Long cursorId) {
+        return Objects
+            .requireNonNull(factory.selectFrom(video).where(video.id.eq(cursorId)).fetchOne()).getViewCount();
     }
 
     private OrderSpecifier<?> videoSort(String sortBy) {
