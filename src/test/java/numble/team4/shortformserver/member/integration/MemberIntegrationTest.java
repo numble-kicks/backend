@@ -14,7 +14,6 @@ import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
-//import numble.team4.shortformserver.testCommon.mockUser.WithMockAdmin;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideoListResponse;
