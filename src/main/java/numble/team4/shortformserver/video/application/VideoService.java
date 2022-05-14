@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
@@ -20,15 +22,20 @@ import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VideoService {
 
+    private final MemberRepository memberRepository;
     private final VideoRepository videoRepository;
     private final CategoryRepository categoryRepository;
     private final AmazonS3Uploader amazonS3Uploader;
+
+    private final int pageSize = 18;
 
     @Transactional
     public VideoResponse uploadVideo(VideoRequest videoRequest, Member loggedInMember) {
@@ -50,11 +57,8 @@ public class VideoService {
     }
 
     @Transactional
-    public VideoResponse updateVideo(
-        VideoUpdateRequest videoUpdateRequest,
-        Member loggedInMember,
-        Long videoId
-    ) {
+    public VideoResponse updateVideo(VideoUpdateRequest videoUpdateRequest, Member loggedInMember, Long videoId) {
+
         Video findVideo = videoRepository.findById(videoId)
             .orElseThrow(NotExistVideoException::new);
 
@@ -83,6 +87,22 @@ public class VideoService {
         amazonS3Uploader.deleteToS3(findVideo.getThumbnailUrl());
 
         videoRepository.delete(findVideo);
+    }
+
+    public List<VideoListResponse> findAllVideosByMember(Long memberId, Long videoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotExistMemberException::new);
+
+        List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId, pageSize);
+        return VideoListResponse.from(videos);
+    }
+
+    public List<VideoListResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(NotExistMemberException::new);
+
+        List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId, pageSize);
+        return VideoListResponse.from(videos);
     }
 
     @Transactional

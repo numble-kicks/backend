@@ -118,6 +118,99 @@ class VideoCustomRepositoryTest {
         // given
         Long firstId = videos.get(0).getId();
 
+@BaseDataJpaTest
+class VideoCustomRepositoryTest {
+
+    @Autowired
+    private VideoRepository videoRepository;
+
+    @Autowired
+    private TestEntityManager testEntityManager;
+
+    private Member member;
+
+    @BeforeEach
+    void init() {
+        member = Member.builder().name("from").role(Role.MEMBER).build();
+        testEntityManager.persist(member);
+        createVideo();
+    }
+
+    void createVideo() {
+        for (int i = 0; i < 8; i++) {
+            Video build = Video.builder()
+                    .member(member)
+                    .videoUrl("videoUrl")
+                    .thumbnailUrl("thumnailUrl")
+                    .description("테스트 비디오")
+                    .price(5000)
+                    .usedStatus(true)
+                    .title("테스트 비디오")
+                    .build();
+            videoRepository.save(build);
+        }
+    }
+
+    void createLikeVideo() {
+        List<Video> all = videoRepository.findAll();
+        for (int i = 0; i < all.size(); i++) {
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, all.get(i));
+            testEntityManager.persist(likeVideo);
+        }
+    }
+
+    static Stream<Long> valueSources() {
+        return Stream.of(null, 3L, 8L, 30L);
+    }
+
+    @ParameterizedTest
+    @DisplayName("[성공] 사용자의 동영상 목록을 조회 (videoId가 null일 때)")
+    @MethodSource("valueSources")
+    void findAllByMemberAndMaxVideoId_returnListHasSizeLessThanAndEqualLimitNum_success(Long id) {
+        //given
+        long count = 5;
+        if (id != null) {
+            count = videoRepository.findAll().stream().map(x -> x.getId())
+                    .filter(x -> x < id)
+                    .count();
+        }
+
+        //when
+        List<Video> res = videoRepository.findAllByMemberAndMaxVideoId(member, id, 5);
+
+        //then
+        assertThat(res).hasSize((count > 5) ? 5: (int) count);
+
+        for (int i = 0; i < res.size() - 1; i++) {
+            assertTrue(res.get(i).getId() > res.get(i + 1).getId());
+        }
+    }
+
+    @ParameterizedTest
+    @DisplayName("[성공] 사용자가 좋아요한 동영상 목록을 조회")
+    @MethodSource("valueSources")
+    void findAllLikeVideoByMemberAndMaxVideoId_returnListHasSizeLessThanAndEqualLimitNum_success(Long id) {
+        //given
+        createLikeVideo();
+        long count = 5;
+        if (id != null) {
+            count = videoRepository.findAll().stream().map(x -> x.getId())
+                    .filter(x -> x < id)
+                    .count();
+        }
+
+        //when
+        List<Video> res = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, id, 5);
+
+        //then
+        assertThat(res).hasSize((count > 5) ? 5: (int) count);
+
+        for (int i = 0; i < res.size() - 1; i++) {
+            assertTrue(res.get(i).getId() > res.get(i + 1).getId());
+        }
+    }
+
+}
         List<Long> ids = List.of(
             firstId,
             firstId + 1, // 신발

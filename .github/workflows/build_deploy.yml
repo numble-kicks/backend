@@ -52,6 +52,8 @@ jobs:
           echo "KAKAO_CLIENT_ID=${{secrets.KAKAO_CLIENT_ID}}" >> .env
           echo "KAKAO_REDIRECT_URI=${{secrets.KAKAO_REDIRECT_URI}}" >> .env
           echo "KAKAO_REDIRECT_URL=${{secrets.KAKAO_REDIRECT_URL}}" >> .env
+          echo "SMTP_USERNAME=${{secrets.SMTP_USERNAME}}" >> .env
+          echo "SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}" >> .env
 
 
       # copy .env file

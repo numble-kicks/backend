@@ -1,30 +1,31 @@
 package numble.team4.shortformserver.video.dto;
 
-import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import numble.team4.shortformserver.video.domain.Video;
 
-@Getter
-@Builder
-@AllArgsConstructor(access = PRIVATE)
-@NoArgsConstructor(access = PROTECTED)
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static lombok.AccessLevel.PROTECTED;
+
+@Data
+@AllArgsConstructor(access = PROTECTED)
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class VideoListResponse {
 
     private Long id;
-
-    @JsonProperty("thumbnail_url")
     private String thumbnailUrl;
 
-    public static VideoListResponse from(Video video) {
-        return VideoListResponse.builder()
-            .id(video.getId())
-            .thumbnailUrl(video.getThumbnailUrl())
-            .build();
+    private static VideoListResponse from(Video video) {
+        return new VideoListResponse(video.getId(), video.getThumbnailUrl());
+    }
+
+    public static List<VideoListResponse> from(List<Video> videos) {
+        return videos.stream()
+                .map(VideoListResponse::from)
+                .collect(Collectors.toList());
     }
 }
