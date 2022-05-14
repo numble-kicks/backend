@@ -30,12 +30,12 @@ public class ChatRoomService {
     public void createChatRoom(Member buyer, Long sellerId) {
         Member seller = memberRepository.findById(sellerId)
                 .orElseThrow(NotExistMemberException::new);
-        chatRoomRepository.findChatRoomByBuyerOrSeller(buyer, seller)
+        chatRoomRepository.findExactlyMatchRoom(buyer, seller)
                         .orElseGet(() -> chatRoomRepository.save(ChatRoom.of(buyer, seller)));
     }
 
     public CommonResponse<List<ChatRoomResponse>> findChatRooms(Member member, Pageable pageable) {
-        Page<ChatRoomResponse> chatRooms = chatRoomRepository.findChatRoomByBuyer(member, pageable)
+        Page<ChatRoomResponse> chatRooms = chatRoomRepository.findMyRooms(member, pageable)
                 .map(ChatRoomResponse::from);
         return CommonResponse.of(chatRooms.getContent(), PageInfo.from(chatRooms), FIND_CHAT_ROOM.getMessage());
     }
