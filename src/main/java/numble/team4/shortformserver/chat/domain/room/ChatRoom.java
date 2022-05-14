@@ -8,6 +8,8 @@ import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 
 import javax.persistence.*;
 
+import java.util.Objects;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -40,5 +42,18 @@ public class ChatRoom extends BaseTimeEntity {
 
     public static ChatRoom of(Member buyer, Member seller) {
         return new ChatRoom(buyer, seller);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChatRoom chatRoom = (ChatRoom) o;
+        return Objects.equals(id, chatRoom.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
