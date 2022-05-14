@@ -43,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/videos").permitAll()
                 .antMatchers(HttpMethod.GET, "/v1/search/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/categories").permitAll()
                 .antMatchers("/oauth/**", "/renew").permitAll()
                 .anyRequest().authenticated();
     }
