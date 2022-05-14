@@ -64,9 +64,8 @@ jobs:
           env_CLOUDFRONT_URL=$CLOUD 
           env_JWT_SECRET_KEY=$JWT_SECRET_KEY 
           env_JWT_REFRESH_KEY=$JWT_REFRESH_KEY 
-          env_KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID 
-          env_KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI 
-          env_KAKAO_REDIRECT_URL=$KAKAO_REDIRECT_URL 
+          env_KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID
+          env_KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI
           env_SMTP_USERNAME=$SMTP_USERNAME 
           env_SMTP_PASSWORD=$SMTP_PASSWORD
           ./gradlew --info test
@@ -79,7 +78,6 @@ jobs:
           JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}
           KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
           KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
-          KAKAO_REDIRECT_URL: ${{ secrets.KAKAO_REDIRECT_URL }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
 
