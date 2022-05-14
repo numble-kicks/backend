@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.video.domain.Video;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
 public class VideoCustomRepositoryImpl implements VideoCustomRepository {
@@ -43,6 +46,18 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
             .orderBy(videoSort(sortBy), video.id.desc())
             .limit(10)
             .fetch();
+    }
+
+    @Override
+    public Page<Video> getAllVideo(Pageable page, Long total) {
+        List<Video> videos = factory
+            .selectFrom(video)
+            .orderBy(video.id.asc())
+            .offset(page.getOffset())
+            .limit(page.getPageSize())
+            .fetch();
+
+        return new PageImpl<>(videos, page, total);
     }
 
     private Long getHits(Long cursorId) {
