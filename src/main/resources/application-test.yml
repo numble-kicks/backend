@@ -18,6 +18,7 @@ spring:
     init:
       mode: always
       schema-locations: classpath:init.sql
+      data-locations: classpath:data.sql
 
 jwt:
   secretKey: ${env.JWT_SECRET_KEY}
