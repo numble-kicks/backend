@@ -4,10 +4,13 @@
 
 ### 컴포넌트 아키텍쳐
 
+![image](https://user-images.githubusercontent.com/50989437/168440847-85280d77-57bb-46db-8f4b-63b20b52d782.png)
+
 
 <hr>
 
 ### ERD Diagram
+![numble-db](https://user-images.githubusercontent.com/50989437/168441049-9b6f4d8e-87de-41c9-a14e-4ce2383021d7.png)
 
 
 <hr>
@@ -71,3 +74,11 @@
 ### API
 
 * api 문서 툴은 사용하지 않고, notion을 사용
+
+<img width="483" alt="image" src="https://user-images.githubusercontent.com/50989437/168441060-d9d364a9-92f2-4f2b-ab3b-4ce62f7b122e.png">
+<img width="486" alt="image" src="https://user-images.githubusercontent.com/50989437/168441073-f9384e62-4766-4ad8-b9a4-35d3ee22f430.png">
+<img width="497" alt="image" src="https://user-images.githubusercontent.com/50989437/168441085-404343a3-8d90-4741-8187-11549fc64b13.png">
+<img width="489" alt="image" src="https://user-images.githubusercontent.com/50989437/168441093-6f7318eb-6013-4591-b080-e2498e12379e.png">
+
+
+<br>
