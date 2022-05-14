@@ -13,13 +13,15 @@ import java.time.LocalDateTime;
 public class ChatMessageResponse {
 
     private Long userId;
+    private String userName;
     private String content;
     private LocalDateTime createAt;
 
     public static ChatMessageResponse from(ChatMessage chatMessage) {
         return new ChatMessageResponse(
                 chatMessage.getMember().getId(),
-                chatMessage.getContent(),
+                chatMessage.getMember().getName(),
+                chatMessage.getMessage(),
                 chatMessage.getCreateAt()
         );
     }
