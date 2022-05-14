@@ -120,6 +120,35 @@ class VideoSearchIntegrationTest {
     }
 
     @Test
+    @DisplayName("검색 기능 최신순 정렬 - 성공, 커서 기반")
+    void findByKey_sortById() {
+        // given
+        String keyword = "공통";
+        Object[] values = new Object[]{
+            ids.get(9),
+            ids.get(8),
+            ids.get(7),
+            ids.get(6),
+            ids.get(5),
+            ids.get(4),
+            ids.get(3),
+            ids.get(2),
+            ids.get(1),
+            ids.get(0)
+        };
+
+        // when
+        List<VideoListResponse> data = videoSearchController.searchVideoByKeyword(keyword,
+            ids.get(10), null).getData();
+
+        // then
+        assertThat(data)
+            .hasSize(values.length)
+            .extracting("id")
+            .containsExactly(values);
+    }
+
+    @Test
     @DisplayName("검색 기능 조회순 정렬 - 성공")
     void findByKeyword_sortByHits() {
         // given
