@@ -8,9 +8,11 @@ import numble.team4.shortformserver.chat.domain.room.ChatRoom;
 import numble.team4.shortformserver.chat.domain.room.ChatRoomRepository;
 import numble.team4.shortformserver.chat.exception.NotExistChatRoomException;
 import numble.team4.shortformserver.chat.ui.dto.ChatMessageRequest;
+import numble.team4.shortformserver.chat.ui.dto.FindChatMessageRequest;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,21 +29,21 @@ public class ChatMessageService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void saveMessage(ChatMessageRequest request) {
+    public void saveMessage(Long roomId, ChatMessageRequest request) {
         Member member = memberRepository.findById(request.getUserId())
                 .orElseThrow(NotExistMemberException::new);
-        ChatRoom chatRoom = chatRoomRepository.findById(request.getRoomId())
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(NotExistChatRoomException::new);
 
         chatMessageRepository.save(ChatMessage.of(member, chatRoom, request.getMessage()));
     }
 
-    public List<ChatMessageResponse> findAllChatMessages(Member member, Long roomId) {
+    public List<ChatMessageResponse> findAllChatMessages(Member member, Long roomId, FindChatMessageRequest request) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(NotExistChatRoomException::new);
         chatRoom.validateAuthorization(member);
 
-        return chatMessageRepository.findByChatRoomId(roomId).stream()
+        return chatMessageRepository.searchLastMessages(request.getMessageId(), chatRoom, Pageable.ofSize(request.getSize())).stream()
                 .map(ChatMessageResponse::from)
                 .collect(Collectors.toList());
     }
