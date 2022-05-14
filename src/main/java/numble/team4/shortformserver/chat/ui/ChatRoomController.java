@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static numble.team4.shortformserver.chat.ui.ChatRoomResponseMessage.CREATE_CHAT_ROOM;
@@ -24,7 +25,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping("/rooms")
-    public CommonResponse<Void> createChatRoom(@LoginUser Member member, @RequestBody CreateChatRoomRequest request) {
+    public CommonResponse<Void> createChatRoom(@LoginUser Member member, @Valid @RequestBody CreateChatRoomRequest request) {
         chatRoomService.createChatRoom(member, request.getSellerId());
         return CommonResponse.from(CREATE_CHAT_ROOM.getMessage());
     }
