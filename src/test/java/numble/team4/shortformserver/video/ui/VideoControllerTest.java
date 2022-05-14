@@ -206,7 +206,7 @@ class VideoControllerTest {
             );
 
             // then
-            res.andExpect(status().isUnauthorized())
+            res.andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
                 .andDo(print());
         }
@@ -253,7 +253,7 @@ class VideoControllerTest {
             );
 
             // then
-            res.andExpect(status().isUnauthorized())
+            res.andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
                 .andDo(print());
         }

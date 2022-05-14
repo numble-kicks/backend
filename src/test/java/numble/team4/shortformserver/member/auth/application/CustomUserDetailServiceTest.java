@@ -15,6 +15,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
+import static numble.team4.shortformserver.member.auth.domain.OauthProvider.KAKAO;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static org.mockito.BDDMockito.given;
 
@@ -30,7 +31,7 @@ class CustomUserDetailServiceTest {
     @DisplayName("유저 이메일로 해당 유저가 존재하는지 조회한 후 있으면 기존 유저를, 없으면 새로운 유저를 등록해서 반환")
     @Test
     void loadUserByUsernameTest() {
-        Member member = new Member("numble@numble.com", "numble", MEMBER, true);
+        Member member = new Member(1234L, "numble@numble.com", "numble", MEMBER, KAKAO, true);
         ReflectionTestUtils.setField(member, "id", 1L);
         given(memberRepository.findById(1L)).willReturn(Optional.of(member));
 
@@ -41,7 +42,7 @@ class CustomUserDetailServiceTest {
     @DisplayName("유저 이메일이 없으면 예외 발생")
     @Test
     void loadUserByUsernameTestFail() {
-        Member member = new Member(null, "numble", MEMBER, false);
+        Member member = new Member(1234L, null, "numble", MEMBER, KAKAO, false);
         ReflectionTestUtils.setField(member, "id", 1L);
         given(memberRepository.findById(1L)).willReturn(Optional.of(member));
         Assertions.assertThatThrownBy(() -> userDetailService.loadUserByUsername(String.valueOf(1L)))
