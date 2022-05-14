@@ -16,6 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 @BaseDataJpaTest
 class VideoCustomRepositoryTest {
@@ -215,5 +217,20 @@ class VideoCustomRepositoryTest {
         assertThat(likes)
             .extracting("id")
             .containsExactly(likesRes);
+    }
+
+    @Test
+    @DisplayName("admin 영상 리스트 페이징 테스트")
+    void admin_video_() {
+        // given
+        long total = videoRepository.count();
+
+        // when
+        Page<Video> page0size3 = videoRepository.getAllVideo(PageRequest.of(0, 3), total);
+        Page<Video> page1size3 = videoRepository.getAllVideo(PageRequest.of(1, 3), total);
+
+        // then
+        assertThat(page0size3.getContent().get(0).getTitle()).isEqualTo("우르오스");
+        assertThat(page1size3.getContent().get(0).getTitle()).isEqualTo("뉴발 992");
     }
 }
