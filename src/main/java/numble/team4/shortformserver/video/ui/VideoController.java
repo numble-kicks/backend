@@ -22,7 +22,7 @@ import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -81,14 +80,10 @@ public class VideoController {
         return CommonResponse.of(videoService.getAllVideo(), GET_ALL_VIDEO.getMessage());
     }
 
-    @GetMapping("/admin")
-    public CommonResponse<List<AdminPageVideoListResponse>> getAllVideo(
-        @LoginUser Member admin,
-        @RequestParam int page,
-        @RequestParam int size
-    ) {
+    @GetMapping("/admin-page")
+    public CommonResponse<List<AdminPageVideoListResponse>> getAllVideo(@LoginUser Member admin, Pageable pageable) {
 
-        Page<AdminPageVideoListResponse> videos = videoService.getAdminPageVideoList(PageRequest.of(page, size), admin);
+        Page<AdminPageVideoListResponse> videos = videoService.getAdminPageVideoList(pageable, admin);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
     }
 }
