@@ -23,13 +23,13 @@ public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
 
-    @PostMapping("/chat-rooms")
+    @PostMapping("/rooms")
     public CommonResponse<Void> createChatRoom(@LoginUser Member member, @RequestBody CreateChatRoomRequest request) {
         chatRoomService.createChatRoom(member, request.getSellerId());
         return CommonResponse.from(CREATE_CHAT_ROOM.getMessage());
     }
 
-    @GetMapping("/chat-rooms")
+    @GetMapping("/rooms")
     public CommonResponse<List<ChatRoomResponse>> findChatRooms(@LoginUser Member member, Pageable pageable) {
         return chatRoomService.findChatRooms(member, pageable);
     }
