@@ -1,6 +1,5 @@
 package numble.team4.shortformserver.chat.domain.message;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.chat.domain.room.ChatRoom;
@@ -29,12 +28,12 @@ public class ChatMessage extends BaseTimeEntity {
     @JoinColumn(name = "chat_room_id")
     private ChatRoom chatRoom;
 
-    private String content;
+    private String message;
 
-    private ChatMessage(Member member, ChatRoom chatRoom, String content) {
+    private ChatMessage(Member member, ChatRoom chatRoom, String message) {
         this.member = member;
         this.chatRoom = chatRoom;
-        this.content = content;
+        this.message = message;
     }
 
     public static ChatMessage of(Member member, ChatRoom chatRoom, String content) {
