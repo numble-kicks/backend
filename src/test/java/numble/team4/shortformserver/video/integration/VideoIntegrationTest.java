@@ -218,7 +218,7 @@ public class VideoIntegrationTest {
             int size = videoRepository.findAll().size();
 
             // when
-            List<VideoListResponse> all = videoController.getAllVideo().getData();
+            List<VideoListResponse> all = videoController.getAllVideos().getData();
 
             // then
             assertThat(all).hasSize(size);

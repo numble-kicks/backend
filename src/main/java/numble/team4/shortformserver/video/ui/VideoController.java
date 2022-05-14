@@ -70,7 +70,7 @@ public class VideoController {
     }
 
     @GetMapping
-    public CommonResponse<List<VideoListResponse>> getAllVideo() {
-        return CommonResponse.of(videoService.getAllVideo(), GET_ALL_VIDEO.getMessage());
+    public CommonResponse<List<VideoListResponse>> getAllVideos() {
+        return CommonResponse.of(videoService.getAllVideos(), GET_ALL_VIDEO.getMessage());
     }
 }

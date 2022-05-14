@@ -93,7 +93,7 @@ public class VideoService {
         return VideoResponse.from(findVideo);
     }
 
-    public List<VideoListResponse> getAllVideo() {
+    public List<VideoListResponse> getAllVideos() {
         return videoRepository.findAll()
             .stream()
             .map(VideoListResponse::from)
