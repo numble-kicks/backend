@@ -33,8 +33,8 @@ public class VideoSearchController {
     }
 
     @GetMapping
-    public CommonResponse<List<VideoListResponse>> getVideoTop10(@RequestParam String sortBy) {
-        return CommonResponse.of(videoSearchService.getVideoTop10(sortBy),
+    public CommonResponse<List<VideoListResponse>> getTopVideo(@RequestParam String sortBy, @RequestParam(required = false) Integer limitNum) {
+        return CommonResponse.of(videoSearchService.getTopVideo(sortBy, 10),
             GET_VIDEO_TOP_10.getMessage());
     }
 }

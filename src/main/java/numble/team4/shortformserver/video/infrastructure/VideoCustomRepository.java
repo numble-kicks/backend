@@ -7,5 +7,5 @@ public interface VideoCustomRepository {
 
     List<Video> searchVideoByKeyword(Long lastId, String keyword, String sortBy);
 
-    List<Video> getVideoTop10(String sortBy);
+    List<Video> getTopVideo(String sortBy, Integer limitNum);
 }

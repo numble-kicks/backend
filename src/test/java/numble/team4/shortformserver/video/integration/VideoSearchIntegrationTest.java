@@ -221,8 +221,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideoListResponse> hits = videoSearchController.getVideoTop10("hits").getData();
-        List<VideoListResponse> likes = videoSearchController.getVideoTop10("likes").getData();
+        List<VideoListResponse> hits = videoSearchController.getTopVideo("hits", 10).getData();
+        List<VideoListResponse> likes = videoSearchController.getTopVideo("likes", 10).getData();
 
         // then
         assertThat(hits)

@@ -37,11 +37,11 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     }
 
     @Override
-    public List<Video> getVideoTop10(String sortBy) {
+    public List<Video> getTopVideo(String sortBy, Integer limitNum) {
         return factory
             .selectFrom(video)
             .orderBy(videoSort(sortBy), video.id.desc())
-            .limit(10)
+            .limit(limitNum)
             .fetch();
     }
 

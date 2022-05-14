@@ -204,8 +204,8 @@ class VideoCustomRepositoryTest {
         };
 
         // when
-        List<Video> hits = videoRepository.getVideoTop10("hits");
-        List<Video> likes = videoRepository.getVideoTop10("likes");
+        List<Video> hits = videoRepository.getTopVideo("hits", 10);
+        List<Video> likes = videoRepository.getTopVideo("likes", 10);
 
         // then
         assertThat(hits)

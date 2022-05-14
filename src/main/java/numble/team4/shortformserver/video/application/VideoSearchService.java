@@ -22,8 +22,8 @@ public class VideoSearchService {
             .collect(Collectors.toList());
     }
 
-    public List<VideoListResponse> getVideoTop10(String sortBy) {
-        return videoRepository.getVideoTop10(sortBy)
+    public List<VideoListResponse> getTopVideo(String sortBy, Integer limitNum) {
+        return videoRepository.getTopVideo(sortBy, limitNum)
             .stream()
             .map(VideoListResponse::from)
             .collect(Collectors.toList());
