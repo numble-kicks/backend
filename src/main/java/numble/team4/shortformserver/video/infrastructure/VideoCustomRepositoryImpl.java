@@ -50,7 +50,18 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     @Override
     public List<Video> findAllByMemberAndMaxVideoId(Member member, Long maxVideoId, int limitNum) {
 
-        return jpaQueryFactory.selectFrom(video)
+        return factory.selectFrom(video)
+            .orderBy(video.id.desc())
+            .where(videoIdIsLessThan(maxVideoId))
+            .limit(limitNum)
+            .fetch();
+    }
+
+    public List<Video> findAllLikeVideoByMemberAndMaxVideoId(Member member, Long maxVideoId, int limitNum) {
+
+        return factory.selectFrom(video)
+            .join(likeVideo)
+            .on(likeVideo.member.eq(member).and(likeVideo.video.id.eq(video.id)))
             .orderBy(video.id.desc())
             .where(videoIdIsLessThan(maxVideoId))
             .limit(limitNum)
@@ -78,31 +89,19 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
         return lpad(video.viewCount.stringValue(), 10, '0').concat(
             lpad(video.id.stringValue(), 10, '0'));
     }
-
+    
     private Long getHits(Long cursorId) {
         return Objects
             .requireNonNull(factory.selectFrom(video).where(video.id.eq(cursorId)).fetchOne())
             .getViewCount();
     }
+
     private OrderSpecifier<?> videoSort(String sortBy) {
         if (!hasText(sortBy)) {
             return new OrderSpecifier<>(DESC, video.id);
         }
         return new OrderSpecifier<>(DESC,
             (sortBy.equals("hits") ? video.viewCount : video.likeCount));
-    }
-
-    private final JPAQueryFactory jpaQueryFactory;
-
-    public List<Video> findAllLikeVideoByMemberAndMaxVideoId(Member member, Long maxVideoId, int limitNum) {
-
-        return jpaQueryFactory.selectFrom(video)
-                .join(likeVideo)
-                .on(likeVideo.member.eq(member).and(likeVideo.video.id.eq(video.id)))
-                .orderBy(video.id.desc())
-                .where(videoIdIsLessThan(maxVideoId))
-                .limit(limitNum)
-                .fetch();
     }
 
     public BooleanBuilder videoIdIsLessThan(Long videoId) {
