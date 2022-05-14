@@ -12,7 +12,8 @@ public enum VideoResponseMessage {
     GET_ALL_VIDEO("전체 영상 조회 성공"),
     GET_VIDEO_BY_ID("영상 정보 조회 성공"),
     GET_VIDEO_LIST_BY_KEYWORD("영상 검색 성공"),
-    GET_VIDEO_TOP_10("영상 top10 조회 성공");
+    GET_VIDEO_TOP_10("영상 top10 조회 성공"),
+    GET_ADMIN_PAGE_VIDEO_LIST("관리자 페이지 영상 목록 가져오기 성공");
 
 
     private final String message;
