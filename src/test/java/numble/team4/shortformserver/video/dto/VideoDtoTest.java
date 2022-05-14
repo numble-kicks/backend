@@ -23,7 +23,7 @@ class VideoDtoTest {
 
     @Test
     @DisplayName("VideoUpdate DTO 테스트")
-    void videoUpdateRequestValidateTest() throws Exception {
+    void videoUpdateRequestValidateTest() {
         // given
         VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
             .title(null)
@@ -43,7 +43,7 @@ class VideoDtoTest {
 
     @Test
     @DisplayName("VideoRequest DTO 테스트")
-    void videoRequestValidateTest() throws Exception {
+    void videoRequestValidateTest() {
         // given
         VideoRequest videoRequest = new VideoRequest(null, null, null, null, null, null, null);
 
@@ -51,6 +51,6 @@ class VideoDtoTest {
         Set<ConstraintViolation<VideoRequest>> violations = validator.validate(videoRequest);
 
         // then
-        assertThat(violations).hasSize(4);
+        assertThat(violations).hasSize(6);
     }
 }
