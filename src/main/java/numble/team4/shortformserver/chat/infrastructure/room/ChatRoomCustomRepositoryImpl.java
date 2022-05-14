@@ -1,10 +1,9 @@
-package numble.team4.shortformserver.chat.infrastructure;
+package numble.team4.shortformserver.chat.infrastructure.room;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.chat.domain.room.ChatRoom;
-import numble.team4.shortformserver.chat.domain.room.ChatRoomCustomRepository;
 import numble.team4.shortformserver.member.member.domain.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,12 +15,12 @@ import java.util.Optional;
 import static numble.team4.shortformserver.chat.domain.room.QChatRoom.chatRoom;
 
 @RequiredArgsConstructor
-public class ChatRoomRepositoryImpl implements ChatRoomCustomRepository {
+public class ChatRoomCustomRepositoryImpl implements ChatRoomCustomRepository {
 
     private final JPAQueryFactory factory;
 
     @Override
-    public Page<ChatRoom> findChatRoomByBuyer(Member findMember, Pageable pageable) {
+    public Page<ChatRoom> findMyRooms(Member findMember, Pageable pageable) {
         List<ChatRoom> chatRooms = factory.selectFrom(chatRoom)
                 .where(containsMember(findMember))
                 .orderBy(chatRoom.modifiedAt.desc())
@@ -32,7 +31,7 @@ public class ChatRoomRepositoryImpl implements ChatRoomCustomRepository {
     }
 
     @Override
-    public Optional<ChatRoom> findChatRoomByBuyerOrSeller(Member buyer, Member seller) {
+    public Optional<ChatRoom> findExactlyMatchRoom(Member buyer, Member seller) {
         return Optional.ofNullable(factory.selectFrom(chatRoom)
                 .where(matchAllMember(buyer, seller))
                 .fetchOne());
