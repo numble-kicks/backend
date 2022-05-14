@@ -39,21 +39,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .sessionManagement().sessionCreationPolicy(STATELESS)
             .and()
             .authorizeRequests()
-            .antMatchers(HttpMethod.GET, "/v1/users/following/from", "/v1/users/following/to")
-            .permitAll()
-            .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}").permitAll()
-            .antMatchers(HttpMethod.PUT, "/v1/videos/{videoId}")
-            .hasAnyRole(MEMBER.name(), ADMIN.name())
-            .antMatchers(HttpMethod.DELETE, "/v1/videos/{videoId}")
-            .hasAnyRole(MEMBER.name(), ADMIN.name())
-            .antMatchers(HttpMethod.GET, "/v1/videos").permitAll()
-            .antMatchers(HttpMethod.GET, "/v1/search/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}",
-                "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
-            .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}",
-                "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
-            .antMatchers(HttpMethod.GET, "/v1/admin/**").hasAnyRole(ADMIN.name())
+            .antMatchers(HttpMethod.GET,
+                "/v1/users/following/from",
+                "/v1/users/following/to",
+                "/v1/videos/{videoId}",
+                "/v1/videos",
+                "/v1/videos/search-condition",
+                "/vi/videos/status-condition").permitAll()
             .antMatchers("/oauth/**", "/renew").permitAll()
+            .antMatchers(HttpMethod.POST,
+                "/v1/users/following/{followId}",
+                "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.PUT, "/v1/videos/{videoId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.DELETE,
+        "/v1/videos/likes/{likesId}",
+        "/v1/users/following/{toMemberId}",
+        "/v1/videos/{videoId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers("v1/videos/admin-page").hasAnyRole(ADMIN.name())
             .anyRequest().authenticated();
     }
 
