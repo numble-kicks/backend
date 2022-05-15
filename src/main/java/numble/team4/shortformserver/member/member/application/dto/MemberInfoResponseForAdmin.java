@@ -19,6 +19,8 @@ public class MemberInfoResponseForAdmin {
     private String name;
     private Role role;
     private OauthProvider provider;
+    private LocalDateTime createAt;
+    private LocalDateTime modifiedAt;
     private LocalDateTime lastLoginDate;
     private String profileImageUrl;
     private boolean emailVerified;
@@ -31,6 +33,8 @@ public class MemberInfoResponseForAdmin {
                 member.getName(),
                 member.getRole(),
                 member.getProvider(),
+                member.getCreateAt(),
+                member.getModifiedAt(),
                 member.getLastLoginDate(),
                 member.getProfileImageUrl(),
                 member.isEmailVerified()
