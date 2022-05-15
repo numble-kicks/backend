@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.member.member.ui.dto;
+package numble.team4.shortformserver.member.member.application.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
