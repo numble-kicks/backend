@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.exception.BaseErrorResponse;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setStatus(FORBIDDEN.value());
         response.setContentType(APPLICATION_JSON);
         objectMapper.getFactory().configure(ESCAPE_NON_ASCII.mappedFeature(), true);
-        String responseData = objectMapper.writeValueAsString(BaseErrorResponse.from(new NotAuthorException()));
+        String responseData = objectMapper.writeValueAsString(BaseErrorResponse.from(new NoAccessPermissionException()));
 
         try{
             response.getWriter().write(responseData);
