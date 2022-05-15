@@ -113,4 +113,18 @@ public class VideoService {
         long count = videoRepository.count();
         return videoRepository.getAllVideo(page, count).map(AdminPageVideosResponse::from);
     }
+
+    public List<VideosResponse> searchByKeyword(Long lastId, String keyword, String sortBy) {
+        return videoRepository.searchVideoByKeyword(lastId, keyword, sortBy)
+            .stream()
+            .map(VideosResponse::from)
+            .collect(Collectors.toList());
+    }
+
+    public List<VideosResponse> getVideoTop10(String sortBy) {
+        return videoRepository.getVideoTop10(sortBy)
+            .stream()
+            .map(VideosResponse::from)
+            .collect(Collectors.toList());
+    }
 }

@@ -14,7 +14,7 @@ import numble.team4.shortformserver.video.category.exception.NotFoundCategoryExc
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
 import numble.team4.shortformserver.video.dto.VideosResponse;
-import numble.team4.shortformserver.video.ui.VideoSearchController;
+import numble.team4.shortformserver.video.ui.VideoController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 class VideoSearchIntegrationTest {
 
     @Autowired
-    private VideoSearchController videoSearchController;
+    private VideoController videoController;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -109,7 +109,7 @@ class VideoSearchIntegrationTest {
         Object[] values = ids.stream().sorted(Collections.reverseOrder()).toArray();
 
         // when
-        List<VideosResponse> res = videoSearchController.searchVideoByKeyword(keyword, null, null)
+        List<VideosResponse> res = videoController.searchVideoByKeyword(keyword, null, null)
             .getData();
 
         // then
@@ -140,7 +140,7 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> lastId가_null = videoSearchController.searchVideoByKeyword(keyword, null,
+        List<VideosResponse> lastId가_null = videoController.searchVideoByKeyword(keyword, null,
             "hits").getData();
 
         // then
@@ -162,7 +162,7 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> lastId는8 = videoSearchController.searchVideoByKeyword(keyword, ids.get(7),
+        List<VideosResponse> lastId는8 = videoController.searchVideoByKeyword(keyword, ids.get(7),
             "hits").getData();
 
         // then
@@ -180,7 +180,7 @@ class VideoSearchIntegrationTest {
         Object[] value = new Object[] {ids.get(2), ids.get(1), ids.get(4)};
 
         // when
-        List<VideosResponse> 정렬_순서_325 = videoSearchController.searchVideoByKeyword(keyword, ids.get(0),
+        List<VideosResponse> 정렬_순서_325 = videoController.searchVideoByKeyword(keyword, ids.get(0),
             "hits").getData();
 
         // then
@@ -221,8 +221,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> hits = videoSearchController.getVideoTop10("hits").getData();
-        List<VideosResponse> likes = videoSearchController.getVideoTop10("likes").getData();
+        List<VideosResponse> hits = videoController.getVideoTop10("hits").getData();
+        List<VideosResponse> likes = videoController.getVideoTop10("likes").getData();
 
         // then
         assertThat(hits)

@@ -4,6 +4,8 @@ import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ADMIN_PAGE_VIDEO_LIST;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_LIST_BY_KEYWORD;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_TOP_10;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
 
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -62,7 +65,7 @@ public class VideoController {
         return CommonResponse.of(updatedVideoId, UPDATE_VIDEO.getMessage());
     }
 
-    @DeleteMapping(BASE_URI + "{video_id}")
+    @DeleteMapping(BASE_URI + "/{video_id}")
     public CommonResponse<VideoResponse> deleteVideo(
         @PathVariable("video_id") Long videoId,
         @LoginUser Member loggedInMember) {
@@ -71,7 +74,7 @@ public class VideoController {
         return CommonResponse.from(DELETE_VIDEO.getMessage());
     }
 
-    @GetMapping(BASE_URI + "{video_id}")
+    @GetMapping(BASE_URI + "/{video_id}")
     public CommonResponse<VideoResponse> findVideoById(@PathVariable("video_id") Long videoId) {
 
         return CommonResponse.of(videoService.findVideoById(videoId), GET_VIDEO_BY_ID.getMessage());
@@ -87,5 +90,21 @@ public class VideoController {
 
         Page<AdminPageVideosResponse> videos = videoService.getAdminPageVideoList(pageable, admin);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
+    }
+
+    @GetMapping(BASE_URI + "/search-condition")
+    public CommonResponse<List<VideosResponse>> searchVideoByKeyword(
+        @RequestParam String keyword,
+        @RequestParam(required = false) Long lastId,
+        @RequestParam(required = false) String sortBy
+    ) {
+        return CommonResponse.of(videoService.searchByKeyword(lastId, keyword, sortBy),
+            GET_VIDEO_LIST_BY_KEYWORD.getMessage());
+    }
+
+    @GetMapping(BASE_URI + "/status-condition")
+    public CommonResponse<List<VideosResponse>> getVideoTop10(@RequestParam String sortBy) {
+        return CommonResponse.of(videoService.getVideoTop10(sortBy),
+            GET_VIDEO_TOP_10.getMessage());
     }
 }
