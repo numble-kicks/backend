@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         "/v1/videos/likes/{likesId}",
         "/v1/users/following/{toMemberId}",
         "/v1/videos/{videoId}").hasAnyRole(MEMBER.name(), ADMIN.name())
-            .antMatchers("v1/videos/admin-page").hasAnyRole(ADMIN.name())
+            .antMatchers("v1/admin/videos").hasAnyRole(ADMIN.name())
             .anyRequest().authenticated();
     }
 
