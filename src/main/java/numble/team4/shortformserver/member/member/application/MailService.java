@@ -50,7 +50,7 @@ public class MailService {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < 6; i++) {
-            sb.append(Integer.toString(rand.nextInt(10)));
+            sb.append(rand.nextInt(10));
         }
         return sb.toString();
     }

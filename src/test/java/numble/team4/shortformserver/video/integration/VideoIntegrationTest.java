@@ -200,7 +200,6 @@ public class VideoIntegrationTest {
     @Nested
     @DisplayName("영상 조회 테스트")
     class GetVideoTest {
-
         @Test
         @DisplayName("특정 영상 조회 실패, 존재하지 않는 영상은 조회할 수 없다.")
         void findById_notExistVideo()  {

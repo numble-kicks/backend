@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.application.MailService;
+import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.application.MemberService;
+import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponseForAdmin;
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.ui.dto.EmailAuthResponse;
-import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
-import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
-import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
+import numble.team4.shortformserver.member.member.ui.dto.*;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideosResponse;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +27,17 @@ public class MemberController {
     private final MemberService memberService;
     private final VideoService videoService;
     private final MailService mailService;
+
+    @GetMapping
+    public CommonResponse<List<MemberInfoResponseForAdmin>> findAllMember(AllMemberInfoRequest request, Pageable pageable) {
+        return memberService.getAllMemberInfo(request, pageable);
+    }
+
+    @DeleteMapping("/{memberId}")
+    public CommonResponse<Void> deleteMemberById(@PathVariable Long memberId) {
+        memberService.deleteMemberById(memberId);
+        return CommonResponse.from(DELETE_MEMBER_INFO.getMessage());
+    }
 
     @GetMapping("/{memberId}")
     public CommonResponse<MemberInfoResponse> findMemberInfo(@PathVariable Long memberId) {
@@ -50,19 +60,19 @@ public class MemberController {
     }
 
     @PutMapping("/image")
-    public CommonResponse updateProfileImage(@LoginUser Member member, MultipartFile file) {
+    public CommonResponse<Void> updateProfileImage(@LoginUser Member member, MultipartFile file) {
         memberService.saveProfileImage(member, file);
         return CommonResponse.from(SAVE_PROFILE_IMAGE.getMessage());
     }
 
     @PutMapping("/name")
-    public CommonResponse updateUserName(@LoginUser Member member, @RequestBody @Valid MemberNameUpdateRequest request) {
+    public CommonResponse<Void> updateUserName(@LoginUser Member member, @RequestBody @Valid MemberNameUpdateRequest request) {
         memberService.updateUserName(member, request);
         return CommonResponse.from(UPDATE_USER_NAME.getMessage());
     }
 
     @PostMapping("/email")
-    public CommonResponse saveEmail(@LoginUser Member member, @RequestBody @Valid MemberEmailRequest request) {
+    public CommonResponse<Void> saveEmail(@LoginUser Member member, @RequestBody @Valid MemberEmailRequest request) {
         memberService.updateUserEmail(member, request);
         return CommonResponse.from(SAVE_MEMBER_EMAIL.getMessage());
     }
@@ -72,5 +82,4 @@ public class MemberController {
         EmailAuthResponse response = mailService.sendAuthMail(request);
         return CommonResponse.of(response, GET_MAIL_AUTH_NUMBER.getMessage());
     }
-
 }
