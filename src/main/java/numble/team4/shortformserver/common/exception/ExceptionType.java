@@ -8,7 +8,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import java.util.Arrays;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import numble.team4.shortformserver.member.auth.exception.BeNotAnAdminException;
 import numble.team4.shortformserver.aws.exception.AmazonClientException;
 import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
@@ -24,7 +23,7 @@ import numble.team4.shortformserver.member.auth.exception.JwtTokenExpiredExcepti
 import numble.team4.shortformserver.member.auth.exception.KakaoLoginFailException;
 import numble.team4.shortformserver.member.auth.exception.NotExistProviderException;
 import numble.team4.shortformserver.member.auth.exception.WrongPasswordException;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
@@ -52,8 +51,7 @@ public enum ExceptionType {
     ALREADY_EXIST_LIKE_VIDEO("이미 좋아요를 등록한 동영상입니다.", BAD_REQUEST, AlreadyExistLikeVideoException.class),
     NOT_EXIST_LIKE_VIDEO("존재하지 않는 좋아요입니다.", BAD_REQUEST, NotExistLikeVideoException.class),
     NOT_MEMBER_OF_LIKE_VIDEO("본인이 등록한 좋아요만 취소할 수 있습니다.", BAD_REQUEST, NotMemberOfLikeVideoException.class),
-    NOT_AUTHOR_EXCEPTION("접근 권한이 없습니다.",UNAUTHORIZED, NotAuthorException.class),
-    BE_NOT_AN_ADMIN("관리자만 접근할 수 있습니다.", FORBIDDEN, BeNotAnAdminException.class),
+    NO_ACCESS_PERMISSION("접근 권한이 없습니다.", FORBIDDEN, NoAccessPermissionException.class),
     NOT_FOUND_CATEGORY("카테고리를 찾을 수 없습니다.", BAD_REQUEST, NotFoundCategoryException.class);
 
     private final String message;

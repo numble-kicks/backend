@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -84,7 +84,7 @@ public class Video extends BaseTimeEntity {
 
     public void validateAuthor(Member member) {
         if (member.getRole().equals(MEMBER) && !this.member.equals(member)) {
-            throw new NotAuthorException();
+            throw new NoAccessPermissionException();
         }
     }
 }

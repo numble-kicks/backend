@@ -14,7 +14,7 @@ import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.domain.Video;
@@ -179,7 +179,7 @@ class VideoServiceTest {
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoService.updateVideo(videoUpdateRequest, notAuthor, anyLong()));
         }
 
@@ -220,7 +220,7 @@ class VideoServiceTest {
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoService.deleteVideo(video.getId(), otherMember));
         }
 

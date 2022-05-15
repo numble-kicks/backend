@@ -7,9 +7,9 @@ import numble.team4.shortformserver.video.dto.*;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import numble.team4.shortformserver.member.auth.exception.BeNotAnAdminException;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
@@ -122,7 +122,7 @@ public class VideoService {
 
     public Page<AdminPageVideosResponse> getAdminPageVideos(Pageable page, Member admin) {
         if (!admin.getRole().equals(Role.ADMIN)) {
-            throw new BeNotAnAdminException();
+            throw new NoAccessPermissionException();
         }
 
         long count = videoRepository.count();

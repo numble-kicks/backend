@@ -1,6 +1,6 @@
 package numble.team4.shortformserver.video.ui;
 
-import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_AUTHOR_EXCEPTION;
+import static numble.team4.shortformserver.common.exception.ExceptionType.NO_ACCESS_PERMISSION;
 import static numble.team4.shortformserver.common.exception.ExceptionType.NOT_EXIST_VIDEO;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import numble.team4.shortformserver.common.config.SecurityConfig;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.testCommon.mockUser.WithMockCustomUser;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.category.domain.Category;
@@ -195,7 +195,7 @@ class VideoControllerTest {
                 .build();
 
             // when
-            doThrow(new NotAuthorException()).when(videoService)
+            doThrow(new NoAccessPermissionException()).when(videoService)
                 .updateVideo(any(VideoUpdateRequest.class), any(Member.class), anyLong());
 
             ResultActions res = mockMvc.perform(
@@ -207,7 +207,7 @@ class VideoControllerTest {
 
             // then
             res.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(NO_ACCESS_PERMISSION.getMessage()))
                 .andDo(print());
         }
     }
@@ -245,7 +245,7 @@ class VideoControllerTest {
                 .build();
 
             // when
-            doThrow(new NotAuthorException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
+            doThrow(new NoAccessPermissionException()).when(videoService).deleteVideo(anyLong(), any(Member.class));
 
             ResultActions res = mockMvc.perform(
                 delete(VIDEO_URI + VIDEO_ID, video.getId())
@@ -254,7 +254,7 @@ class VideoControllerTest {
 
             // then
             res.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value(NOT_AUTHOR_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(NO_ACCESS_PERMISSION.getMessage()))
                 .andDo(print());
         }
 

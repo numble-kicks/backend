@@ -16,7 +16,7 @@ import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
@@ -142,7 +142,7 @@ public class VideoIntegrationTest {
             Long videoId = video.getId();
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, tester,
                     videoId));
         }
@@ -186,7 +186,7 @@ public class VideoIntegrationTest {
             Long videoId = video.getId();
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoController.deleteVideo(videoId, tester));
         }
 
