@@ -13,7 +13,7 @@ import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -87,22 +87,22 @@ public class VideoService {
         videoRepository.delete(findVideo);
     }
 
-    public List<VideoListResponse> findAllVideosByMember(Long memberId, Long videoId) {
+    public List<VideosResponse> findAllVideosByMember(Long memberId, Long videoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId,
             PAZE_SIZE);
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
     }
 
-    public List<VideoListResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
+    public List<VideosResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId,
             PAZE_SIZE);
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
     }
 
     @Transactional
@@ -113,9 +113,9 @@ public class VideoService {
         return VideoResponse.from(findVideo);
     }
 
-    public List<VideoListResponse> getAllVideos() {
+    public List<VideosResponse> getAllVideos() {
         List<Video> videos = videoRepository.findAll();
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
 
     }
 }

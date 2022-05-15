@@ -11,7 +11,7 @@ import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.video.application.VideoService;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,16 +36,16 @@ public class MemberController {
     }
 
     @GetMapping("/{memberId}/videos")
-    public CommonResponse<List<VideoListResponse>> findAllVideosByMember(@PathVariable Long memberId,
+    public CommonResponse<List<VideosResponse>> findAllVideosByMember(@PathVariable Long memberId,
                                                                          @RequestParam(value = "last_video_id", required = false) Long videoId) {
-        List<VideoListResponse> videos = videoService.findAllVideosByMember(memberId, videoId);
+        List<VideosResponse> videos = videoService.findAllVideosByMember(memberId, videoId);
         return CommonResponse.of(videos, GET_ALL_VIDEOS_OF_MEMBER.getMessage());
     }
 
     @GetMapping("/{memberId}/likes")
-    public CommonResponse<List<VideoListResponse>> findAllLikeVideosByMember(@PathVariable Long memberId,
+    public CommonResponse<List<VideosResponse>> findAllLikeVideosByMember(@PathVariable Long memberId,
                                                                              @RequestParam(value = "last_video_id", required = false) Long videoId) {
-        List<VideoListResponse> videos = videoService.findAllLikeVideosByMember(memberId, videoId);
+        List<VideosResponse> videos = videoService.findAllLikeVideosByMember(memberId, videoId);
         return CommonResponse.of(videos, GET_ALL_LIKE_VIDEOS_OF_MEMBER.getMessage());
     }
 

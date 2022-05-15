@@ -18,7 +18,7 @@ import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -218,7 +218,7 @@ public class VideoIntegrationTest {
             int size = videoRepository.findAll().size();
 
             // when
-            List<VideoListResponse> all = videoController.getAllVideos().getData();
+            List<VideosResponse> all = videoController.getAllVideos().getData();
 
             // then
             assertThat(all).hasSize(size);

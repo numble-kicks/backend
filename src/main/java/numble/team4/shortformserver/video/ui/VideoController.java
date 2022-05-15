@@ -14,7 +14,7 @@ import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.application.VideoService;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -70,7 +70,7 @@ public class VideoController {
     }
 
     @GetMapping
-    public CommonResponse<List<VideoListResponse>> getAllVideos() {
+    public CommonResponse<List<VideosResponse>> getAllVideos() {
         return CommonResponse.of(videoService.getAllVideos(), GET_ALL_VIDEO.getMessage());
     }
 }
