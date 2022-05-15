@@ -11,20 +11,20 @@ import java.util.Set;
 import static numble.team4.shortformserver.member.auth.domain.OauthProvider.findMatchProvider;
 
 @Component
-public class OauthClientFactory {
+public class OAuthClientFactory {
 
-    private final Map<OauthProvider, OauthClient> providers = new HashMap<>();
+    private final Map<OauthProvider, OAuthClient> providers = new HashMap<>();
 
     @Autowired
-    public OauthClientFactory(Set<OauthClient> clients) {
+    public OAuthClientFactory(Set<OAuthClient> clients) {
         registerClient(clients);
     }
 
-    public OauthClient findOauthClient(String providerName) {
+    public OAuthClient findOauthClient(String providerName) {
         return providers.get(findMatchProvider(providerName));
     }
 
-    private void registerClient(Set<OauthClient> clients) {
+    private void registerClient(Set<OAuthClient> clients) {
         clients.forEach(client -> providers.put(client.getProviderName(), client));
     }
 }
