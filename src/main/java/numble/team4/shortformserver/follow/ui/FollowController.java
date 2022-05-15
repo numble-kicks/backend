@@ -20,13 +20,13 @@ public class FollowController {
     private final FollowService followService;
 
     @GetMapping("/from")
-    public CommonResponse getAllFollowings(@RequestParam("from_member") Long memberId) {
+    public CommonResponse<List<FollowResponse>> getAllFollowings(@RequestParam("from_member") Long memberId) {
         List<FollowResponse> followings = followService.getAllFollowings(memberId);
         return CommonResponse.of(followings, GET_FOLLOWINGS.getMessage());
     }
 
     @GetMapping("/to")
-    public CommonResponse getAllFollowers(@RequestParam("to_member") Long memberId) {
+    public CommonResponse<List<FollowResponse>> getAllFollowers(@RequestParam("to_member") Long memberId) {
         List<FollowResponse> followers = followService.getAllFollowers(memberId);
         return CommonResponse.of(followers, GET_FOLLOWERS.getMessage());
     }
