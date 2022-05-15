@@ -18,6 +18,9 @@ import numble.team4.shortformserver.video.domain.Video;
 
 import java.util.List;
 import java.util.Objects;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     }
 
     @Override
-    public List<Video> getTopVideo(String sortBy, Integer limitNum) {
+    public List<Video> getTopVideos(String sortBy, Integer limitNum) {
         return factory
             .selectFrom(video)
             .orderBy(videoSort(sortBy), video.id.desc())
@@ -66,6 +69,18 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
             .where(videoIdIsLessThan(maxVideoId))
             .limit(limitNum)
             .fetch();
+    }
+
+    @Override
+    public Page<Video> getAllVideos(Pageable page, Long total) {
+        List<Video> videos = factory
+            .selectFrom(video)
+            .orderBy(video.id.asc())
+            .offset(page.getOffset())
+            .limit(page.getPageSize())
+            .fetch();
+
+        return new PageImpl<>(videos, page, total);
     }
 
     private BooleanExpression cursorIsLessThan(String sort, Long cursorId) {

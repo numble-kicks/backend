@@ -26,7 +26,7 @@ public class VideoSearchService {
 
     public List<VideosResponse> getTopVideo(String sortBy, Integer limitNum) {
 
-        return VideosResponse.from(videoRepository.getTopVideo(sortBy, limitNum));
+        return VideosResponse.from(videoRepository.getTopVideos(sortBy, limitNum));
     }
 
 }
