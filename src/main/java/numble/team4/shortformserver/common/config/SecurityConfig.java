@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/v1/users/following/to",
                 "/v1/users/{memberId}/videos",
                 "/v1/users/{memberId}/likes",
-                "/v1/users/{memberId}"
+                "/v1/users/{memberId}",
                 "/v1/videos",
                 "/v1/videos/{videoId}",
                 "/v1/videos/search-condition",
@@ -54,11 +54,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/v1/categories").permitAll()
             .antMatchers("/login/oauth2/code/**", "/oauth/**", "/renew", "/v1/users/email/auth").permitAll()
             .antMatchers(HttpMethod.POST,
-                "/v1/users/email"
+                "/v1/users/email",
                 "/v1/users/following/{followId}",
                 "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
             .antMatchers(HttpMethod.PUT,
-                "/v1/videos/{videoId}"
+                "/v1/videos/{videoId}",
                 "/v1/users/image",
                 "/v1/users/name").hasAnyRole(MEMBER.name(), ADMIN.name())
             .antMatchers(HttpMethod.DELETE,
