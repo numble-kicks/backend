@@ -45,9 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}", "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/v1/users").hasRole(ADMIN.name())
                 .antMatchers(HttpMethod.DELETE, "/v1/users/**").hasRole(ADMIN.name())
-                .antMatchers("/login/oauth2/code/**", "/renew", "/v1/users/email/auth").permitAll()
+                .antMatchers("/login/oauth2/code/**", "/oauth/**", "/ws-connection/**", "/renew", "/v1/users/email/auth").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}", "/v1/videos").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/search/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/v1/categories").permitAll()
                 .anyRequest().authenticated()
-      
                 .and()
                 .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
     }

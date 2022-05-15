@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import numble.team4.shortformserver.video.category.dto.CategoryDto;
+import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -18,21 +18,21 @@ import numble.team4.shortformserver.video.domain.Video;
 public class VideoResponse {
 
     private Long id;
+    private String category;
     private String title;
     private String description;
-    @JsonProperty("video_url")
-    private String videoUrl;
+    private Integer price;
     @JsonProperty("thumbnail_url")
     private String thumbnailUrl;
-    private Integer price;
+    @JsonProperty("video_url")
+    private String videoUrl;
     @JsonProperty("view_count")
     private Long viewCount;
     @JsonProperty("like_count")
     private Long likeCount;
-    private MemberDto member;
-    private CategoryDto category;
     @JsonProperty("used_status")
     private Boolean usedStatus;
+    private MemberDto user;
 
     public static VideoResponse from(Video video) {
         return VideoResponse.builder()
@@ -45,18 +45,23 @@ public class VideoResponse {
             .thumbnailUrl(video.getThumbnailUrl())
             .viewCount(video.getViewCount())
             .likeCount(video.getLikeCount())
-            .category(CategoryDto.from(video.getCategory()))
-            .member(MemberDto.from(video.getMember().getName()))
+            .category(video.getCategory().getName())
+            .user(MemberDto.from(video.getMember()))
             .build();
     }
 
     @AllArgsConstructor(access = PRIVATE)
     @Getter
     static class MemberDto {
+        private Long id;
+
         private String name;
 
-        private static MemberDto from(String name) {
-            return new MemberDto(name);
+        @JsonProperty("profile_image_url")
+        private String profileImageUrl;
+
+        private static MemberDto from(Member member) {
+            return new MemberDto(member.getId(), member.getName(), member.getProfileImageUrl());
         }
     }
 }
