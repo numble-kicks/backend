@@ -13,7 +13,7 @@ import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.ui.VideoSearchController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -109,7 +109,7 @@ class VideoSearchIntegrationTest {
         Object[] values = ids.stream().sorted(Collections.reverseOrder()).toArray();
 
         // when
-        List<VideoListResponse> res = videoSearchController.searchVideoByKeyword(keyword, null, null)
+        List<VideosResponse> res = videoSearchController.searchVideoByKeyword(keyword, null, null)
             .getData();
 
         // then
@@ -140,7 +140,7 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideoListResponse> lastId가_null = videoSearchController.searchVideoByKeyword(keyword, null,
+        List<VideosResponse> lastId가_null = videoSearchController.searchVideoByKeyword(keyword, null,
             "hits").getData();
 
         // then
@@ -162,7 +162,7 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideoListResponse> lastId는8 = videoSearchController.searchVideoByKeyword(keyword, ids.get(7),
+        List<VideosResponse> lastId는8 = videoSearchController.searchVideoByKeyword(keyword, ids.get(7),
             "hits").getData();
 
         // then
@@ -180,7 +180,7 @@ class VideoSearchIntegrationTest {
         Object[] value = new Object[] {ids.get(2), ids.get(1), ids.get(4)};
 
         // when
-        List<VideoListResponse> 정렬_순서_325 = videoSearchController.searchVideoByKeyword(keyword, ids.get(0),
+        List<VideosResponse> 정렬_순서_325 = videoSearchController.searchVideoByKeyword(keyword, ids.get(0),
             "hits").getData();
 
         // then
@@ -221,8 +221,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideoListResponse> hits = videoSearchController.getVideoTop10("hits").getData();
-        List<VideoListResponse> likes = videoSearchController.getVideoTop10("likes").getData();
+        List<VideosResponse> hits = videoSearchController.getVideoTop10("hits").getData();
+        List<VideosResponse> likes = videoSearchController.getVideoTop10("likes").getData();
 
         // then
         assertThat(hits)

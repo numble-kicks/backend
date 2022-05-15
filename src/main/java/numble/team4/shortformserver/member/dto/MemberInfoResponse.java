@@ -7,7 +7,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 
 @Getter
 @AllArgsConstructor
-public class MemberEmbeddedDto {
+public class MemberInfoResponse {
     private Long id;
 
     private String name;
@@ -15,7 +15,7 @@ public class MemberEmbeddedDto {
     @JsonProperty("profile_image_url")
     private String profileImageUrl;
 
-    public static MemberEmbeddedDto from(Member member) {
-        return new MemberEmbeddedDto(member.getId(), member.getName(), member.getProfileImageUrl());
+    public static MemberInfoResponse from(Member member) {
+        return new MemberInfoResponse(member.getId(), member.getName(), member.getProfileImageUrl());
     }
 }

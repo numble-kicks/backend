@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.video.application.VideoSearchService;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +23,7 @@ public class VideoSearchController {
     private final VideoSearchService videoSearchService;
 
     @GetMapping("/videos")
-    public CommonResponse<List<VideoListResponse>> searchVideoByKeyword(
+    public CommonResponse<List<VideosResponse>> searchVideoByKeyword(
         @RequestParam String keyword,
         @RequestParam(required = false) Long lastId,
         @RequestParam(required = false) String sortBy
@@ -33,7 +33,7 @@ public class VideoSearchController {
     }
 
     @GetMapping
-    public CommonResponse<List<VideoListResponse>> getVideoTop10(@RequestParam String sortBy) {
+    public CommonResponse<List<VideosResponse>> getVideoTop10(@RequestParam String sortBy) {
         return CommonResponse.of(videoSearchService.getVideoTop10(sortBy),
             GET_VIDEO_TOP_10.getMessage());
     }

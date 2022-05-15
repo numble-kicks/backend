@@ -14,15 +14,15 @@ import numble.team4.shortformserver.video.domain.Video;
 @Builder
 @AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
-public class VideoListResponse {
+public class VideosResponse {
 
     private Long id;
 
     @JsonProperty("thumbnail_url")
     private String thumbnailUrl;
 
-    public static VideoListResponse from(Video video) {
-        return VideoListResponse.builder()
+    public static VideosResponse from(Video video) {
+        return VideosResponse.builder()
             .id(video.getId())
             .thumbnailUrl(video.getThumbnailUrl())
             .build();

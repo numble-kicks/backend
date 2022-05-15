@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import numble.team4.shortformserver.member.dto.MemberEmbeddedDto;
+import numble.team4.shortformserver.member.dto.MemberInfoResponse;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -31,7 +31,7 @@ public class VideoResponse {
     private Long likeCount;
     @JsonProperty("used_status")
     private Boolean usedStatus;
-    private MemberEmbeddedDto user;
+    private MemberInfoResponse user;
 
     public static VideoResponse from(Video video) {
         return VideoResponse.builder()
@@ -45,7 +45,7 @@ public class VideoResponse {
             .viewCount(video.getViewCount())
             .likeCount(video.getLikeCount())
             .category(video.getCategory().getName())
-            .user(MemberEmbeddedDto.from(video.getMember()))
+            .user(MemberInfoResponse.from(video.getMember()))
             .build();
     }
 }

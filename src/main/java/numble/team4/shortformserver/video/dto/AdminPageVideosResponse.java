@@ -9,14 +9,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import numble.team4.shortformserver.member.dto.MemberEmbeddedDto;
+import numble.team4.shortformserver.member.dto.MemberInfoResponse;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
 @Builder
 @AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
-public class AdminPageVideoListResponse {
+public class AdminPageVideosResponse {
 
     private Long id;
 
@@ -25,14 +25,14 @@ public class AdminPageVideoListResponse {
 
     private String title;
 
-    private MemberEmbeddedDto user;
+    private MemberInfoResponse user;
 
-    public static AdminPageVideoListResponse from(Video video) {
-        return AdminPageVideoListResponse.builder()
+    public static AdminPageVideosResponse from(Video video) {
+        return AdminPageVideosResponse.builder()
             .id(video.getId())
             .thumbnailUrl(video.getThumbnailUrl())
             .title(video.getTitle())
-            .user(MemberEmbeddedDto.from(video.getMember()))
+            .user(MemberInfoResponse.from(video.getMember()))
             .build();
     }
 
