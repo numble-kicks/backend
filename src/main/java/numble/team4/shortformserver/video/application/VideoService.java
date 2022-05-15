@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -123,6 +124,9 @@ public class VideoService {
     }
 
     public List<VideosResponse> searchByKeyword(Long lastId, String keyword, String sortBy) {
+        if (!StringUtils.hasText(sortBy)) {
+            sortBy = "";
+        }
         return VideosResponse.from(videoRepository.searchVideoByKeyword(lastId, keyword, sortBy));
     }
 
