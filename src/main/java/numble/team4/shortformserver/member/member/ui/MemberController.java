@@ -37,14 +37,14 @@ public class MemberController {
 
     @GetMapping("/{memberId}/videos")
     public CommonResponse<List<VideosResponse>> findAllVideosByMember(@PathVariable Long memberId,
-                                                                         @RequestParam(value = "last_video_id", required = false) Long videoId) {
+                                                                         @RequestParam(value = "last_id", required = false) Long videoId) {
         List<VideosResponse> videos = videoService.findAllVideosByMember(memberId, videoId);
         return CommonResponse.of(videos, GET_ALL_VIDEOS_OF_MEMBER.getMessage());
     }
 
     @GetMapping("/{memberId}/likes")
     public CommonResponse<List<VideosResponse>> findAllLikeVideosByMember(@PathVariable Long memberId,
-                                                                             @RequestParam(value = "last_video_id", required = false) Long videoId) {
+                                                                             @RequestParam(value = "last_id", required = false) Long videoId) {
         List<VideosResponse> videos = videoService.findAllLikeVideosByMember(memberId, videoId);
         return CommonResponse.of(videos, GET_ALL_LIKE_VIDEOS_OF_MEMBER.getMessage());
     }
