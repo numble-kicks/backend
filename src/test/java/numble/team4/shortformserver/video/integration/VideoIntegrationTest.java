@@ -3,9 +3,13 @@ package numble.team4.shortformserver.video.integration;
 
 import static numble.team4.shortformserver.member.member.domain.Role.ADMIN;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
+import numble.team4.shortformserver.video.category.domain.*;
+import numble.team4.shortformserver.video.domain.*;
+import numble.team4.shortformserver.video.dto.*;
 
 import java.util.List;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
@@ -14,15 +18,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotAuthorException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
-import numble.team4.shortformserver.video.category.domain.Category;
-import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
-import numble.team4.shortformserver.video.domain.Video;
-import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideosResponse;
-import numble.team4.shortformserver.video.dto.VideoRequest;
-import numble.team4.shortformserver.video.dto.VideoResponse;
-import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import numble.team4.shortformserver.video.ui.VideoController;
 import org.junit.jupiter.api.BeforeEach;
@@ -219,7 +215,7 @@ public class VideoIntegrationTest {
             int size = videoRepository.findAll().size();
 
             // when
-            List<VideosResponse> all = videoController.getAllVideo().getData();
+            List<VideoListResponse> all = videoController.getAllVideos().getData();
 
             // then
             assertThat(all).hasSize(size);

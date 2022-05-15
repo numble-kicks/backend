@@ -3,17 +3,15 @@ package numble.team4.shortformserver.video.integration;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import numble.team4.shortformserver.video.category.domain.*;
+import numble.team4.shortformserver.member.member.domain.*;
+import numble.team4.shortformserver.video.domain.*;
+import numble.team4.shortformserver.video.dto.*;
+
 import java.util.Collections;
 import java.util.List;
-import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
-import numble.team4.shortformserver.video.category.domain.Category;
-import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
-import numble.team4.shortformserver.video.domain.Video;
-import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.ui.VideoController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -120,6 +118,34 @@ class VideoSearchIntegrationTest {
     }
 
     @Test
+    @DisplayName("검색 기능 최신순 정렬 - 성공, 커서 기반")
+    void findByKey_sortById() {
+        // given
+        String keyword = "공통";
+        Object[] values = new Object[]{
+            ids.get(9),
+            ids.get(8),
+            ids.get(7),
+            ids.get(6),
+            ids.get(5),
+            ids.get(4),
+            ids.get(3),
+            ids.get(2),
+            ids.get(1),
+            ids.get(0)
+        };
+
+        // when
+        List<VideoListResponse> data = videoSearchController.searchByKeyword(new VideoSearchRequest(keyword, ids.get(10), null)).getData();
+
+        // then
+        assertThat(data)
+            .hasSize(values.length)
+            .extracting("id")
+            .containsExactly(values);
+    }
+
+    @Test
     @DisplayName("검색 기능 조회순 정렬 - 성공")
     void findByKeyword_sortByHits() {
         // given
@@ -221,8 +247,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> hits = videoController.getVideoTop10("hits").getData();
-        List<VideosResponse> likes = videoController.getVideoTop10("likes").getData();
+        List<VideosResponse> hits = videoController.getTopVideos("hits").getData();
+        List<VideosResponse> likes = videoController.getTopVideos("likes").getData();
 
         // then
         assertThat(hits)

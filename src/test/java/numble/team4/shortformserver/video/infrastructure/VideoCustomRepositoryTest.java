@@ -1,8 +1,11 @@
 package numble.team4.shortformserver.video.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.stream.Stream;
+import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
@@ -15,6 +18,11 @@ import numble.team4.shortformserver.video.domain.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +31,10 @@ import org.springframework.data.domain.PageRequest;
 class VideoCustomRepositoryTest {
 
     private static final int PAGE = 18;
+
+    @Autowired
+    private TestEntityManager testEntityManager;
+
     @Autowired
     private MemberRepository memberRepository;
 
@@ -34,6 +46,10 @@ class VideoCustomRepositoryTest {
 
     private Member member;
     private List<Video> videos;
+
+    static Stream<Long> valueSources() {
+        return Stream.of(null, 3L, 8L, 30L);
+    }
 
     @BeforeEach
     void setUp() {
@@ -73,6 +89,61 @@ class VideoCustomRepositoryTest {
             .build();
     }
 
+    void createLikeVideo() {
+        List<Video> all = videoRepository.findAll();
+        for (Video video : all) {
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            testEntityManager.persist(likeVideo);
+        }
+    }
+
+    @ParameterizedTest
+    @DisplayName("[성공] 사용자의 동영상 목록을 조회 (videoId가 null일 때)")
+    @MethodSource("valueSources")
+    void findAllByMemberAndMaxVideoId_returnListHasSizeLessThanAndEqualLimitNum_success(Long id) {
+        //given
+        long count = 5;
+        if (id != null) {
+            count = videoRepository.findAll().stream().map(Video::getId)
+                .filter(x -> x < id)
+                .count();
+        }
+
+        //when
+        List<Video> res = videoRepository.findAllByMemberAndMaxVideoId(member, id, 5);
+
+        //then
+        assertThat(res).hasSize((count > 5) ? 5: (int) count);
+
+        for (int i = 0; i < res.size() - 1; i++) {
+            assertTrue(res.get(i).getId() > res.get(i + 1).getId());
+        }
+    }
+
+    @ParameterizedTest
+    @DisplayName("[성공] 사용자가 좋아요한 동영상 목록을 조회")
+    @MethodSource("valueSources")
+    void findAllLikeVideoByMemberAndMaxVideoId_returnListHasSizeLessThanAndEqualLimitNum_success(Long id) {
+        //given
+        createLikeVideo();
+        long count = 5;
+        if (id != null) {
+            count = videoRepository.findAll().stream().map(Video::getId)
+                .filter(x -> x < id)
+                .count();
+        }
+
+        //when
+        List<Video> res = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, id, 5);
+
+        //then
+        assertThat(res).hasSize((count > 5) ? 5: (int) count);
+
+        for (int i = 0; i < res.size() - 1; i++) {
+            assertTrue(res.get(i).getId() > res.get(i + 1).getId());
+        }
+    }
+
     @Test
     @DisplayName("검색 조회 - 성공, 최신순 정렬(default)")
     void findByKeyword() {
@@ -90,19 +161,25 @@ class VideoCustomRepositoryTest {
 
         // when
         List<Video> 키워드나이키최신순_id는_421순 = videoRepository.searchVideoByKeyword(null, "나이키", null);
-        List<Video> 키워드애플_id는_5 = videoRepository.searchVideoByKeyword(null, "애플", null);
         List<Video> 키워드아이폰_id는_5 = videoRepository.searchVideoByKeyword(null, "아이폰", null);
+        List<Video> 키워드신발최신순_id_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발", "");
 
         // then
-        assertThat(키워드애플_id는_5)
-            .hasSize(1)
-            .isEqualTo(키워드아이폰_id는_5);
-
+        assertThat(키워드아이폰_id는_5).hasSize(1);
         assertThat(키워드나이키최신순_id는_421순)
             .hasSize(3)
             .extracting("id")
             .containsExactly(
                 ids.get(4),
+                ids.get(2),
+                ids.get(1)
+            );
+
+        assertThat(키워드신발최신순_id_321순_커서적용)
+            .hasSize(3)
+            .extracting("id")
+            .containsExactly(
+                ids.get(3),
                 ids.get(2),
                 ids.get(1)
             );
@@ -124,8 +201,7 @@ class VideoCustomRepositoryTest {
         );
         // when
         List<Video> 키워드신발조회순_id는_4321순 = videoRepository.searchVideoByKeyword(null, "신발", "hits");
-        List<Video> 키워드신발조회순_id는_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발",
-            "hits");
+        List<Video> 키워드신발조회순_id는_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발", "hits");
 
         // then
         assertThat(키워드신발조회순_id는_4321순)
@@ -206,8 +282,8 @@ class VideoCustomRepositoryTest {
         };
 
         // when
-        List<Video> hits = videoRepository.getVideoTop10("hits");
-        List<Video> likes = videoRepository.getVideoTop10("likes");
+        List<Video> hits = videoRepository.getTopVideos("hits", 10);
+        List<Video> likes = videoRepository.getTopVideos("likes", 10);
 
         // then
         assertThat(hits)
@@ -226,8 +302,8 @@ class VideoCustomRepositoryTest {
         long total = videoRepository.count();
 
         // when
-        Page<Video> page0size3 = videoRepository.getAllVideo(PageRequest.of(0, 3), total);
-        Page<Video> page1size3 = videoRepository.getAllVideo(PageRequest.of(1, 3), total);
+        Page<Video> page0size3 = videoRepository.getAllVideos(PageRequest.of(0, 3), total);
+        Page<Video> page1size3 = videoRepository.getAllVideos(PageRequest.of(1, 3), total);
 
         // then
         assertThat(page0size3.getContent().get(0).getTitle()).isEqualTo("우르오스");

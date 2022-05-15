@@ -1,32 +1,21 @@
 package numble.team4.shortformserver.video.ui;
 
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.DELETE_VIDEO;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ADMIN_PAGE_VIDEO_LIST;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_ALL_VIDEO;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_BY_ID;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_LIST_BY_KEYWORD;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.GET_VIDEO_TOP_10;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPDATE_VIDEO;
-import static numble.team4.shortformserver.video.ui.VideoResponseMessage.UPLOAD_VIDEO;
+import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
+import numble.team4.shortformserver.common.dto.*;
+import numble.team4.shortformserver.video.dto.*;
 
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import numble.team4.shortformserver.common.dto.CommonResponse;
-import numble.team4.shortformserver.common.dto.PageInfo;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.application.VideoService;
-import numble.team4.shortformserver.video.dto.AdminPageVideosResponse;
-import numble.team4.shortformserver.video.dto.VideoRequest;
-import numble.team4.shortformserver.video.dto.VideoResponse;
-import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
-import numble.team4.shortformserver.video.dto.VideosResponse;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -47,21 +36,20 @@ public class VideoController {
 
     @PostMapping(BASE_URI)
     public CommonResponse<Long> saveVideo(
-        @Valid VideoRequest videoRequest,
+        @Valid VideoRequest request,
         @LoginUser Member loggedInMember) {
 
-        Long savedVideoId = videoService.uploadVideo(videoRequest, loggedInMember).getId();
+        Long savedVideoId = videoService.uploadVideo(request, loggedInMember).getId();
         return CommonResponse.of(savedVideoId, UPLOAD_VIDEO.getMessage());
     }
 
     @PutMapping(BASE_URI + "/{video_id}")
     public CommonResponse<Long> updateVideo(
-        @RequestBody @Valid VideoUpdateRequest videoUpdateRequest,
+        @RequestBody @Valid VideoUpdateRequest request,
         @LoginUser Member loggedInMember,
         @PathVariable("video_id") Long videoId) {
 
-        Long updatedVideoId = videoService.updateVideo(videoUpdateRequest, loggedInMember, videoId)
-            .getId();
+        Long updatedVideoId = videoService.updateVideo(request, loggedInMember, videoId).getId();
         return CommonResponse.of(updatedVideoId, UPDATE_VIDEO.getMessage());
     }
 
@@ -86,7 +74,7 @@ public class VideoController {
     }
 
     @GetMapping("/admin" + BASE_URI)
-    public CommonResponse<List<AdminPageVideosResponse>> getAllVideo(@LoginUser Member admin, Pageable pageable) {
+    public CommonResponse<List<AdminPageVideosResponse>> getAllVideos(@LoginUser Member admin, Pageable pageable) {
 
         Page<AdminPageVideosResponse> videos = videoService.getAdminPageVideoList(pageable, admin);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
@@ -94,17 +82,15 @@ public class VideoController {
 
     @GetMapping(BASE_URI + "/search-condition")
     public CommonResponse<List<VideosResponse>> searchVideoByKeyword(
-        @RequestParam String keyword,
-        @RequestParam(required = false) Long lastId,
-        @RequestParam(required = false) String sortBy
+        @ModelAttribute VideoSearchRequest request
     ) {
-        return CommonResponse.of(videoService.searchByKeyword(lastId, keyword, sortBy),
+        return CommonResponse.of(videoService.searchByKeyword(request.getId(), request.getKeyword(), request.getSortBy()),
             GET_VIDEO_LIST_BY_KEYWORD.getMessage());
     }
 
     @GetMapping(BASE_URI + "/status-condition")
-    public CommonResponse<List<VideosResponse>> getVideoTop10(@RequestParam String sortBy) {
-        return CommonResponse.of(videoService.getVideoTop10(sortBy),
+    public CommonResponse<List<VideosResponse>> getTopVideos((@ModelAttribute VideoSearchRequest request) {
+        return CommonResponse.of(videoService.getTopVideos((request.getSortBy(), 10),
             GET_VIDEO_TOP_10.getMessage());
     }
 }
