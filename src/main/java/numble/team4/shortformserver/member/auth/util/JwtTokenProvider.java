@@ -35,8 +35,8 @@ public class JwtTokenProvider {
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
     private static final String TOKEN_DELIMITER = " ";
-    private static final long ACCESS_TOKEN_VALID_TIME = 30 * 60 * 1000L;
-    private static final long REFRESH_TOKEN_VALID_TIME  = 30 * 60 * 1000L * 2 * 24;
+    private static final long ACCESS_TOKEN_VALID_TIME = 6 * 60 * 60 * 1000L;
+    private static final long REFRESH_TOKEN_VALID_TIME  = 60 * 24 * 60 * 60 * 1000L;
 
     public JwtTokenDto createTokens(Member member) {
         String accessToken = createToken(member, SECRET_KEY, ACCESS_TOKEN_VALID_TIME);

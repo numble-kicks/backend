@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.Collections;
 import java.util.Set;
 
+import static numble.team4.shortformserver.member.auth.domain.OauthProvider.KAKAO;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -35,7 +36,7 @@ class JwtTokenProviderTest {
 
     @BeforeEach
     void init() {
-        member = new Member("numble@numble.com", "numble", MEMBER, true);
+        member = new Member(1234L, "numble@numble.com", "numble", MEMBER, KAKAO, true);
         ReflectionTestUtils.setField(member, "id", 1L);
         ReflectionTestUtils.setField(jwtTokenProvider, "SECRET_KEY", "test");
         ReflectionTestUtils.setField(jwtTokenProvider, "REFRESH_KEY", "test123");

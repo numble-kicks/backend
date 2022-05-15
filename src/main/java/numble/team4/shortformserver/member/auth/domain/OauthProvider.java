@@ -9,7 +9,8 @@ import java.util.Arrays;
 @Getter
 @RequiredArgsConstructor
 public enum OauthProvider {
-    KAKAO("kakao");
+    KAKAO("kakao"),
+    NORMAL("일반 회원가입");
 
     private final String providerName;
 
