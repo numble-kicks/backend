@@ -1,6 +1,5 @@
 package numble.team4.shortformserver.video.dto;
 
-import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import numble.team4.shortformserver.member.member.domain.Member;
+import numble.team4.shortformserver.member.member.dto.MemberInfoResponseForVideo;
 import numble.team4.shortformserver.video.domain.Video;
 
 @Getter
@@ -32,7 +31,7 @@ public class VideoResponse {
     private Long likeCount;
     @JsonProperty("used_status")
     private Boolean usedStatus;
-    private MemberDto user;
+    private MemberInfoResponseForVideo user;
 
     public static VideoResponse from(Video video) {
         return VideoResponse.builder()
@@ -46,22 +45,8 @@ public class VideoResponse {
             .viewCount(video.getViewCount())
             .likeCount(video.getLikeCount())
             .category(video.getCategory().getName())
-            .user(MemberDto.from(video.getMember()))
+            .user(MemberInfoResponseForVideo.from(video.getMember()))
             .build();
     }
 
-    @AllArgsConstructor(access = PRIVATE)
-    @Getter
-    static class MemberDto {
-        private Long id;
-
-        private String name;
-
-        @JsonProperty("profile_image_url")
-        private String profileImageUrl;
-
-        private static MemberDto from(Member member) {
-            return new MemberDto(member.getId(), member.getName(), member.getProfileImageUrl());
-        }
-    }
 }

@@ -7,7 +7,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 
 @Getter
 @AllArgsConstructor
-public class MemberInfoResponse {
+public class MemberInfoResponseForVideo {
     private Long id;
 
     private String name;
@@ -15,7 +15,7 @@ public class MemberInfoResponse {
     @JsonProperty("profile_image_url")
     private String profileImageUrl;
 
-    public static MemberInfoResponse from(Member member) {
-        return new MemberInfoResponse(member.getId(), member.getName(), member.getProfileImageUrl());
+    public static MemberInfoResponseForVideo from(Member member) {
+        return new MemberInfoResponseForVideo(member.getId(), member.getName(), member.getProfileImageUrl());
     }
 }
