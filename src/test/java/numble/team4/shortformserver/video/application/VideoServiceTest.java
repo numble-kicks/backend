@@ -167,6 +167,7 @@ class VideoServiceTest {
             Member notAuthor = Member.builder()
                 .id(100L)
                 .email("notAuthor@test.com")
+                .role(Role.MEMBER)
                 .build();
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("t")
@@ -214,14 +215,16 @@ class VideoServiceTest {
             // given
             Member otherMember = Member.builder()
                 .id(100L)
+                .role(Role.MEMBER)
                 .email("otherMember@test.com")
                 .build();
+            Long videoId = video.getId();
 
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
             // when, then
             assertThrows(NoAccessPermissionException.class,
-                () -> videoService.deleteVideo(video.getId(), otherMember));
+                () -> videoService.deleteVideo(videoId, otherMember));
         }
 
         @Test
