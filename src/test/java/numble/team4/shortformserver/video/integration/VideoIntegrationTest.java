@@ -204,7 +204,6 @@ public class VideoIntegrationTest {
     @Nested
     @DisplayName("영상 조회 테스트")
     class GetVideoTest {
-
         @Test
         @DisplayName("특정 영상 조회 실패, 존재하지 않는 영상은 조회할 수 없다.")
         void findById_notExistVideo()  {
@@ -221,14 +220,7 @@ public class VideoIntegrationTest {
             List<VideoListResponse> all = videoController.getAllVideos().getData();
 
             // then
-            assertThat(response.getMessage()).isEqualTo(GET_VIDEO_BY_ID.getMessage());
-            assertThat(viewCount + 1).isEqualTo(data.getViewCount());
-        }
-
-        @Test
-        @DisplayName("특정 영상 조회 실패, 존재하지 않는 영상은 조회할 수 없다.")
-        void findById_notExistVideo() throws Exception {
-            assertThrows(NotExistVideoException.class, () -> videoController.findById(3000L));
+            assertThat(all).hasSize(size);
         }
     }
 
