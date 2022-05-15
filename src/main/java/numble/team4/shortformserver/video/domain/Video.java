@@ -4,6 +4,7 @@ import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -82,7 +83,7 @@ public class Video extends BaseTimeEntity {
     }
 
     public void validateAuthor(Member member) {
-        if (!this.member.equals(member)) {
+        if (member.getRole().equals(MEMBER) && !this.member.equals(member)) {
             throw new NotAuthorException();
         }
     }
