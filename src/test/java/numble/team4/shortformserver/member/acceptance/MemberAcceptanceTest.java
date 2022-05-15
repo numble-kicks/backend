@@ -91,7 +91,7 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         //when
         ResultActions res = mockMvc.perform(
                 get("/v1/users/{memberId}/videos", member.getId())
-                        .param("last_video_id", (id == null) ? null : String.format("%s", id))
+                        .param("last_id", (id == null) ? null : String.format("%s", id))
         );
 
 
@@ -108,7 +108,7 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         //when
         ResultActions res = mockMvc.perform(
                 get("/v1/users/{memberId}/videos", 88979L)
-                        .param("last_video_id", "1")
+                        .param("last_id", "1")
         );
 
         //then
@@ -133,7 +133,7 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         //when
         ResultActions res = mockMvc.perform(
                 get("/v1/users/{memberId}/likes", member.getId())
-                        .param("last_video_id", (id == null) ? null : String.format("%s", id))
+                        .param("last_id", (id == null) ? null : String.format("%s", id))
         );
 
 
@@ -150,7 +150,7 @@ public class MemberAcceptanceTest extends BaseAcceptanceTest {
         //when
         ResultActions res = mockMvc.perform(
                 get("/v1/users/{memberId}/likes", 98798798L)
-                        .param("last_video_id", "1")
+                        .param("last_id", "1")
         );
 
         //then
