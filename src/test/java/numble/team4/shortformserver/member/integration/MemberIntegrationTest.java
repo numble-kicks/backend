@@ -3,12 +3,15 @@ package numble.team4.shortformserver.member.integration;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
+import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponseForAdmin;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.member.member.ui.MemberController;
+import numble.team4.shortformserver.member.member.ui.dto.AllMemberInfoRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
-import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
+import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.domain.Video;
@@ -20,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
 import javax.persistence.EntityManager;
@@ -28,7 +32,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static numble.team4.shortformserver.member.auth.domain.OauthProvider.KAKAO;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @BaseIntegrationTest
@@ -60,7 +67,22 @@ public class MemberIntegrationTest {
                 .name("user2").role(Role.MEMBER).emailVerified(true)
                 .build();
         memberRepository.save(member);
+        createMember();
         createVideo();
+    }
+
+    void createMember() {
+        for (int i = 0; i < 20; i++) {
+            Member member = new Member(
+                    Integer.toUnsignedLong(i),
+                    "numble" + i + "@numble.com",
+                    "numble" + i,
+                    MEMBER,
+                    KAKAO,
+                    true
+            );
+            memberRepository.save(member);
+        }
     }
 
     void createVideo() {
@@ -77,6 +99,7 @@ public class MemberIntegrationTest {
             videoRepository.save(video);
         }
     }
+
     void createLikeVideo() {
         List<Video> all = videoRepository.findAll();
         for (int i = 0; i < all.size(); i++) {
@@ -88,8 +111,6 @@ public class MemberIntegrationTest {
     static Stream<Long> valueSources() {
         return Stream.of(null, 3L, 8L, 30L);
     }
-
-
 
     @ParameterizedTest
     @DisplayName("[성공] 마이비디오 목록 조회 (videoId가 null일 때)")
@@ -207,5 +228,43 @@ public class MemberIntegrationTest {
         assertThat(memberRepository.getById(member.getId()).getEmail()).isEqualTo(testEmail);
     }
 
+    @Test
+    @DisplayName("[성공] 어드민 페이지에서 키워드를 포함하는 모든 사용자 정보 조회")
+    void getAllMemberInfo_notException_success() {
+        //when
+        List<MemberInfoResponseForAdmin> res = memberController.findAllMember(
+                new AllMemberInfoRequest("numble"),
+                PageRequest.of(0, 30)).getData();
 
+        //then
+        assertThat(res).hasSize(20);
+    }
+
+    @Test
+    @DisplayName("[성공] 어드민 페이지에서 키워드를 포함하는 모든 사용자 정보 조회 - 키워드가 없는 경우")
+    void getAllMemberInfo_notException_success_notKeyword() {
+        //given
+        entityManager.flush();
+        entityManager.clear();
+
+        //when
+        List<MemberInfoResponseForAdmin> res = memberController.findAllMember(
+                new AllMemberInfoRequest(null),
+                PageRequest.of(0, 30)).getData();
+
+        //then
+        assertThat(res).hasSize(21);
+    }
+
+    @Test
+    @DisplayName("[실패] 어드민 페이지에서 사용자 정보 삭제")
+    void delteMemberInfo_notException_fail() {
+        //given
+        entityManager.flush();
+        entityManager.clear();
+
+        //when, then
+        assertThatThrownBy(() -> memberController.deleteMemberById(2000L))
+                .isInstanceOf(NotExistMemberException.class);
+    }
 }

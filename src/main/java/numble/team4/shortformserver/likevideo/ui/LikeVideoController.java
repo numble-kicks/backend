@@ -18,7 +18,7 @@ public class LikeVideoController {
     private final LikeVideoService likeVideoService;
 
     @GetMapping("/{videoId}/likes")
-    public CommonResponse existLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
+    public CommonResponse<LikeVideoExistResponse> existLikeVideo(@LoginUser Member member, @PathVariable Long videoId) {
         LikeVideoExistResponse existLikeVideo = likeVideoService.existLikeVideo(member, videoId);
         return CommonResponse.of(existLikeVideo, GET_IS_EXIST_LIKE_VIDEO.getMessage());
     }

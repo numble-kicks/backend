@@ -3,19 +3,28 @@ package numble.team4.shortformserver.member.member.application;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
+import numble.team4.shortformserver.common.dto.CommonResponse;
+import numble.team4.shortformserver.common.dto.PageInfo;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
+import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponse;
+import numble.team4.shortformserver.member.member.application.dto.MemberInfoResponseForAdmin;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
+import numble.team4.shortformserver.member.member.ui.dto.AllMemberInfoRequest;
 import numble.team4.shortformserver.member.member.ui.dto.MemberEmailRequest;
-import numble.team4.shortformserver.member.member.ui.dto.MemberInfoResponse;
 import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest;
 import numble.team4.shortformserver.video.domain.VideoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
+import static numble.team4.shortformserver.member.member.ui.MemberResponseMessage.GET_MEMBER_INFO;
 
 @Service
 @Transactional(readOnly = true)
@@ -60,5 +69,17 @@ public class MemberService {
         memberRepository.save(member);
     }
 
+    public CommonResponse<List<MemberInfoResponseForAdmin>> getAllMemberInfo(AllMemberInfoRequest request, Pageable pageable) {
+        Page<MemberInfoResponseForAdmin> members = memberRepository.findAllMembersByKeyword(request.getKeyword(), pageable)
+                .map(MemberInfoResponseForAdmin::from);
+        return CommonResponse.of(members.getContent(), PageInfo.from(members), GET_MEMBER_INFO.getMessage());
+    }
+
+    @Transactional
+    public void deleteMemberById(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(NotExistMemberException::new);
+        memberRepository.delete(member);
+    }
 }
 
