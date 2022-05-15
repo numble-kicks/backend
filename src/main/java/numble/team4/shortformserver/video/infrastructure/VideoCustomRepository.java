@@ -14,8 +14,6 @@ public interface VideoCustomRepository {
 
     List<Video> findAllLikeVideoByMemberAndMaxVideoId(Member member, Long videoId, int limitNum);
 
-    List<Video> searchVideoByKeyword(Long lastId, String keyword, String sortBy);
-
     List<Video> getTopVideos(String sortBy, Integer limitNum);
 
     Page<Video> getAllVideos(Pageable page, Long total);

@@ -89,22 +89,22 @@ public class VideoService {
         videoRepository.delete(findVideo);
     }
 
-    public List<VideoListResponse> findAllVideosByMember(Long memberId, Long videoId) {
+    public List<VideosResponse> findAllVideosByMember(Long memberId, Long videoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId,
             PAZE_SIZE);
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
     }
 
-    public List<VideoListResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
+    public List<VideosResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId,
             PAZE_SIZE);
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
     }
 
     @Transactional
@@ -117,22 +117,23 @@ public class VideoService {
 
     public List<VideosResponse> getAllVideos() {
         List<Video> videos = videoRepository.findAll();
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
+    }
 
-    public Page<AdminPageVideosResponse> getAdminPageVideoList(Pageable page, Member admin) {
+    public Page<AdminPageVideosResponse> getAdminPageVideos(Pageable page, Member admin) {
         if (!admin.getRole().equals(Role.ADMIN)) {
             throw new BeNotAnAdminException();
         }
 
         long count = videoRepository.count();
-        return videoRepository.getAllVideo(page, count).map(AdminPageVideosResponse::from);
+        return videoRepository.getAllVideos(page, count).map(AdminPageVideosResponse::from);
     }
 
     public List<VideosResponse> searchByKeyword(Long lastId, String keyword, String sortBy) {
         return VideosResponse.from(videoRepository.searchVideoByKeyword(lastId, keyword, sortBy));
     }
 
-    public List<VideosResponse> getTopVideos(String sortBy) {
-        return VideosResponse.from(videoRepository.getTopVideos(sortBy));
+    public List<VideosResponse> getTopVideos(String sortBy, Integer limitNum) {
+        return VideosResponse.from(videoRepository.getTopVideos(sortBy, limitNum));
     }
 }

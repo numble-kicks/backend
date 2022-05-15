@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -69,14 +68,14 @@ public class VideoController {
     }
 
     @GetMapping(BASE_URI)
-    public CommonResponse<List<VideosResponse>> getAllVideo() {
-        return CommonResponse.of(videoService.getAllVideo(), GET_ALL_VIDEO.getMessage());
+    public CommonResponse<List<VideosResponse>> getAllVideos() {
+        return CommonResponse.of(videoService.getAllVideos(), GET_ALL_VIDEO.getMessage());
     }
 
     @GetMapping("/admin" + BASE_URI)
-    public CommonResponse<List<AdminPageVideosResponse>> getAllVideos(@LoginUser Member admin, Pageable pageable) {
+    public CommonResponse<List<AdminPageVideosResponse>> getAdminPageVideos(@LoginUser Member admin, Pageable pageable) {
 
-        Page<AdminPageVideosResponse> videos = videoService.getAdminPageVideoList(pageable, admin);
+        Page<AdminPageVideosResponse> videos = videoService.getAdminPageVideos(pageable, admin);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
     }
 
@@ -84,13 +83,13 @@ public class VideoController {
     public CommonResponse<List<VideosResponse>> searchVideoByKeyword(
         @ModelAttribute VideoSearchRequest request
     ) {
-        return CommonResponse.of(videoService.searchByKeyword(request.getId(), request.getKeyword(), request.getSortBy()),
+        return CommonResponse.of(videoService.searchByKeyword(request.getLastId(), request.getKeyword(), request.getSortBy()),
             GET_VIDEO_LIST_BY_KEYWORD.getMessage());
     }
 
     @GetMapping(BASE_URI + "/status-condition")
-    public CommonResponse<List<VideosResponse>> getTopVideos((@ModelAttribute VideoSearchRequest request) {
-        return CommonResponse.of(videoService.getTopVideos((request.getSortBy(), 10),
+    public CommonResponse<List<VideosResponse>> getTopVideos(@ModelAttribute VideoListRequest request) {
+        return CommonResponse.of(videoService.getTopVideos(request.getSortBy(), 10),
             GET_VIDEO_TOP_10.getMessage());
     }
 }
