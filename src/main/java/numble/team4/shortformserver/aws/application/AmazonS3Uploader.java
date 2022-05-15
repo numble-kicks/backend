@@ -33,6 +33,9 @@ public class AmazonS3Uploader {
     private String bucket;
 
     public void deleteToS3(String url) {
+        if (!url.contains(cloudfrontUrl)) {
+            return;
+        }
         String key = url.substring(cloudfrontUrl.length());
 
         amazonS3Client.deleteObject(bucket, key);
@@ -42,10 +45,10 @@ public class AmazonS3Uploader {
         validateFileExist(file);
 
         String key = dirName + "/" + UUID.randomUUID() + "_" + file.getName();
-        return putS3(file, key);
+        return convertFile(file, key);
     }
 
-    private S3UploadDto putS3(MultipartFile file, String key) throws RuntimeException {
+    private S3UploadDto convertFile(MultipartFile file, String key) {
         try {
             InputStream inputStream = file.getInputStream();
 
@@ -57,18 +60,23 @@ public class AmazonS3Uploader {
 
             ByteArrayInputStream uploadFile = new ByteArrayInputStream(bytes);
 
-            try {
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, uploadFile,
-                    objectMetadata);
-                amazonS3Client.putObject(
-                    putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
-            } catch (RuntimeException e) {
-                throw new AmazonClientException();
-            }
+            putS3(key, objectMetadata, uploadFile);
 
             return new S3UploadDto(key, cloudfrontUrl + key);
         } catch (IOException e){
             throw new NotExistFileException();
+        }
+    }
+
+    private void putS3(String key, ObjectMetadata objectMetadata,
+        ByteArrayInputStream uploadFile) {
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucket, key, uploadFile,
+                objectMetadata);
+            amazonS3Client.putObject(
+                putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (RuntimeException e) {
+            throw new AmazonClientException();
         }
     }
 
