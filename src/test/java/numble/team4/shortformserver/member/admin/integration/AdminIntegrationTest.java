@@ -28,7 +28,7 @@ import org.springframework.test.web.servlet.ResultActions;
 @AutoConfigureMockMvc(addFilters = false)
 class AdminIntegrationTest {
 
-    private static final String URI = "/v1/videos/admin";
+    private static final String URI = "/v1/admin/videos";
 
     @Autowired
     MockMvc mockMvc;
@@ -121,6 +121,7 @@ class AdminIntegrationTest {
             get(URI)
                 .queryParam("page", "1")
                 .queryParam("size", "3")
+                .queryParam("sort", "")
         );
 
         // then
