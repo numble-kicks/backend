@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 
 import javax.persistence.*;
 
@@ -36,7 +36,7 @@ public class ChatRoom extends BaseTimeEntity {
 
     public void validateAuthorization(Member member) {
         if (!(buyer.equals(member) || seller.equals(member))) {
-            throw new NotAuthorException();
+            throw new NoAccessPermissionException();
         }
     }
 

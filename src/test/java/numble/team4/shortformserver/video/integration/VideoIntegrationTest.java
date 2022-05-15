@@ -1,6 +1,7 @@
 package numble.team4.shortformserver.video.integration;
 
 
+import static numble.team4.shortformserver.member.member.domain.Role.ADMIN;
 import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 import static numble.team4.shortformserver.video.ui.VideoResponseMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,14 +12,14 @@ import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
@@ -145,7 +146,7 @@ public class VideoIntegrationTest {
             Long videoId = video.getId();
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoController.updateVideo(videoUpdateRequest, tester,
                     videoId));
         }
@@ -167,12 +168,7 @@ public class VideoIntegrationTest {
         @DisplayName("영상 삭제 성공")
         void deleteVideo_success() {
             // given
-            MockMultipartFile videoFile = new MockMultipartFile("video", "video".getBytes());
-            MockMultipartFile thumbnailFile = new MockMultipartFile("thumbnail",
-                "thumbnail".getBytes());
-            VideoRequest req = new VideoRequest(videoFile, thumbnailFile, "제목", 100, false, "기타", "");
-
-            Long videoId = videoController.saveVideo(req, author).getData();
+            Long videoId = video.getId();
 
             // when
             CommonResponse<VideoResponse> res = videoController.deleteVideo(videoId, author);
@@ -189,7 +185,7 @@ public class VideoIntegrationTest {
             Long videoId = video.getId();
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoController.deleteVideo(videoId, tester));
         }
 
@@ -217,12 +213,55 @@ public class VideoIntegrationTest {
             int size = videoRepository.findAll().size();
 
             // when
-            List<VideoListResponse> all = videoController.getAllVideos().getData();
+            List<VideosResponse> all = videoController.getAllVideos().getData();
 
             // then
             assertThat(all).hasSize(size);
         }
     }
+
+    @Nested
+    @DisplayName("관리자 권한 테스트")
+    class AdminPermissionTest {
+
+        @Test
+        @DisplayName("관리자가 영상을 수정한다.")
+        void updateVideoByAdmin() {
+            // given
+            Member admin = Member.builder()
+                .role(ADMIN)
+                .email("admin@test.com")
+                .build();
+            memberRepository.save(admin);
+            Long videoId = video.getId();
+
+            // when
+            CommonResponse<Long> res = videoController.updateVideo(
+                videoUpdateRequest, admin, videoId);
+
+            // then
+            assertThat(res.getMessage()).isEqualTo(UPDATE_VIDEO.getMessage());
+        }
+
+        @Test
+        @DisplayName("관리자가 영상을 식제한다.")
+        void deleteVideoByAdmin() {
+            // given
+            Member admin = Member.builder()
+                .role(ADMIN)
+                .email("admin@test.com")
+                .build();
+            memberRepository.save(admin);
+            Long videoId = video.getId();
+
+            // when
+            CommonResponse<VideoResponse> res = videoController.deleteVideo(videoId, admin);
+
+            // then
+            assertThat(res.getMessage()).isEqualTo(DELETE_VIDEO.getMessage());
+        }
+    }
+
 
     private Member createMember(String name) {
         return Member.builder()

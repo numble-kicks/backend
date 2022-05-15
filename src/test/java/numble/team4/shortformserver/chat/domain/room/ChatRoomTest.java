@@ -1,7 +1,7 @@
 package numble.team4.shortformserver.chat.domain.room;
 
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,6 +24,6 @@ class ChatRoomTest {
 
         ChatRoom chatRoom = ChatRoom.of(buyer, seller);
         assertThatThrownBy(() -> chatRoom.validateAuthorization(tester))
-                        .isInstanceOf(NotAuthorException.class);
+                        .isInstanceOf(NoAccessPermissionException.class);
     }
 }

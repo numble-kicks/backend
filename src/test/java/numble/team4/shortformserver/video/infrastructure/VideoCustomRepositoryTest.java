@@ -22,6 +22,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 @BaseDataJpaTest
 class VideoCustomRepositoryTest {
@@ -278,8 +280,8 @@ class VideoCustomRepositoryTest {
         };
 
         // when
-        List<Video> hits = videoRepository.getTopVideo("hits", 10);
-        List<Video> likes = videoRepository.getTopVideo("likes", 10);
+        List<Video> hits = videoRepository.getTopVideos("hits", 10);
+        List<Video> likes = videoRepository.getTopVideos("likes", 10);
 
         // then
         assertThat(hits)
@@ -289,5 +291,20 @@ class VideoCustomRepositoryTest {
         assertThat(likes)
             .extracting("id")
             .containsExactly(likesRes);
+    }
+
+    @Test
+    @DisplayName("admin 영상 리스트 페이징 테스트")
+    void admin_video_() {
+        // given
+        long total = videoRepository.count();
+
+        // when
+        Page<Video> page0size3 = videoRepository.getAllVideos(PageRequest.of(0, 3), total);
+        Page<Video> page1size3 = videoRepository.getAllVideos(PageRequest.of(1, 3), total);
+
+        // then
+        assertThat(page0size3.getContent().get(0).getTitle()).isEqualTo("우르오스");
+        assertThat(page1size3.getContent().get(0).getTitle()).isEqualTo("뉴발 992");
     }
 }
