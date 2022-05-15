@@ -97,9 +97,6 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
         return video.id.lt(cursorId);
     }
 
-    /**
-     * 조회수가 같다면 같은 조회수는 제외된다. 따라서 조회수와 id를 활용해 공식을 만들어 Unique한 값을 생성하고 비교를 해야된다.
-     */
     private StringExpression convertToUniqueValue() {
         return lpad(video.viewCount.stringValue(), 10, '0').concat(
             lpad(video.id.stringValue(), 10, '0'));
