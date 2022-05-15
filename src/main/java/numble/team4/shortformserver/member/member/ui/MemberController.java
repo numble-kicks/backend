@@ -11,6 +11,7 @@ import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.ui.dto.*;
 import numble.team4.shortformserver.video.application.VideoService;
 import numble.team4.shortformserver.video.dto.VideosResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
