@@ -74,7 +74,7 @@ public class VideoService {
             videoUpdateRequest.getTitle(),
             videoUpdateRequest.getDescription(),
             videoUpdateRequest.getPrice(),
-            videoUpdateRequest.getUsedStatus(),
+            videoUpdateRequest.getUsed_status(),
             category
         );
         return VideoResponse.from(findVideo);
