@@ -1,5 +1,6 @@
 package numble.team4.shortformserver.video.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ public class VideoSearchRequest {
     @Length(min = 2, max = 20, message = "최대 20자까지 입력할 수 있어요.")
     private String keyword;
 
+    @JsonProperty("last_id")
     private Long lastId;
     private String sortBy;
 }

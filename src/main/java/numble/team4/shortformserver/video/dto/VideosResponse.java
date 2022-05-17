@@ -14,18 +14,18 @@ import static lombok.AccessLevel.PROTECTED;
 @Data
 @AllArgsConstructor(access = PROTECTED)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class VideoListResponse {
+public class VideosResponse {
 
     private Long id;
     private String thumbnailUrl;
 
-    private static VideoListResponse from(Video video) {
-        return new VideoListResponse(video.getId(), video.getThumbnailUrl());
+    private static VideosResponse from(Video video) {
+        return new VideosResponse(video.getId(), video.getThumbnailUrl());
     }
 
-    public static List<VideoListResponse> from(List<Video> videos) {
+    public static List<VideosResponse> from(List<Video> videos) {
         return videos.stream()
-                .map(VideoListResponse::from)
+                .map(VideosResponse::from)
                 .collect(Collectors.toList());
     }
 }

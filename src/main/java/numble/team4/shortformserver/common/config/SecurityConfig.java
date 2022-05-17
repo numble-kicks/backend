@@ -31,27 +31,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
-                .httpBasic().disable()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtExceptionHandleFilter(objectMapper), JwtAuthenticationFilter.class)
-                .sessionManagement().sessionCreationPolicy(STATELESS)
-                .and()
-                .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}", "/v1/users/following/from", "/v1/users/following/to", "/v1/users/{memberId}/videos", "/v1/users/{memberId}/likes", "/v1/users/{memberId}").permitAll()
-                .antMatchers(HttpMethod.POST, "/v1/users/following/{followId}", "/v1/users/email", "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.PUT, "/v1/users/image", "/v1/users/name").hasAnyRole(MEMBER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/v1/videos/likes/{likesId}", "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/v1/users").hasRole(ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/v1/users/**").hasRole(ADMIN.name())
-                .antMatchers("/login/oauth2/code/**", "/oauth/**", "/ws-connection/**", "/renew", "/v1/users/email/auth").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/videos/{videoId}", "/v1/videos").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/search/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/v1/categories").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
+            .cors().and()
+            .csrf().disable()
+            .httpBasic().disable()
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JwtExceptionHandleFilter(objectMapper), JwtAuthenticationFilter.class)
+            .sessionManagement().sessionCreationPolicy(STATELESS)
+            .and()
+            .authorizeRequests()
+            .antMatchers(HttpMethod.GET,
+                "/v1/videos/{videoId}",
+                "/v1/videos",
+                "/v1/videos/{videoId}",
+                "/v1/videos/search-condition",
+                "/vi/videos/status-condition",
+                "/v1/categories",
+                "/v1/users/following/from",
+                "/v1/users/following/to",
+                "/v1/users/{memberId}/videos",
+                "/v1/users/{memberId}/likes",
+                "/v1/users/{memberId}").permitAll()
+            .antMatchers(HttpMethod.POST,
+                "/v1/users/following/{followId}",
+                "/v1/users/email",
+                "/v1/videos/{videoId}/likes").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.PUT,
+                "/v1/users/image",
+                "/v1/users/name",
+                "/v1/videos/{videoId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(HttpMethod.DELETE,
+                "/v1/videos/{videoId}",
+                "/v1/videos/likes/{likesId}",
+                "/v1/users/following/{toMemberId}").hasAnyRole(MEMBER.name(), ADMIN.name())
+            .antMatchers(
+                "/login/oauth2/code/**",
+                "/oauth/**",
+                "/ws-connection/**",
+                "/renew",
+                "/v1/users/email/auth").permitAll()
+            .antMatchers("/v1/admin/videos").hasAnyRole(ADMIN.name())
+            .antMatchers(HttpMethod.GET, "/v1/users").hasRole(ADMIN.name())
+            .antMatchers(HttpMethod.DELETE, "/v1/users/**").hasRole(ADMIN.name())
+            .anyRequest().authenticated()
+            .and()
+            .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint);
     }
 
     @Bean

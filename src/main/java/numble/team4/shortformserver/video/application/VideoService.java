@@ -7,19 +7,25 @@ import numble.team4.shortformserver.aws.application.AmazonS3Uploader;
 import numble.team4.shortformserver.aws.dto.S3UploadDto;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
+import numble.team4.shortformserver.member.member.domain.Role;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.AdminPageVideosResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
 import numble.team4.shortformserver.video.dto.VideoUpdateRequest;
 import numble.team4.shortformserver.video.exception.NotExistVideoException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -87,22 +93,22 @@ public class VideoService {
         videoRepository.delete(findVideo);
     }
 
-    public List<VideoListResponse> findAllVideosByMember(Long memberId, Long videoId) {
+    public List<VideosResponse> findAllVideosByMember(Long memberId, Long videoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId,
             PAZE_SIZE);
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
     }
 
-    public List<VideoListResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
+    public List<VideosResponse> findAllLikeVideosByMember(Long memberId, Long videoId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId,
             PAZE_SIZE);
-        return VideoListResponse.from(videos);
+        return VideosResponse.from(videos);
     }
 
     @Transactional
@@ -113,9 +119,27 @@ public class VideoService {
         return VideoResponse.from(findVideo);
     }
 
-    public List<VideoListResponse> getAllVideos() {
-        List<Video> videos = videoRepository.findAll();
-        return VideoListResponse.from(videos);
+    public List<VideosResponse> getAllVideos() {
+        return VideosResponse.from(videoRepository.findAll());
+    }
 
+    public List<VideosResponse> searchByKeyword(Long lastId, String keyword, String sortBy) {
+        if (!StringUtils.hasText(sortBy)) {
+            sortBy = "";
+        }
+        return VideosResponse.from(videoRepository.searchVideoByKeyword(lastId, keyword, sortBy));
+    }
+
+    public List<VideosResponse> getTopVideos(String sortBy, Integer limitNum) {
+        return VideosResponse.from(videoRepository.getTopVideos(sortBy, limitNum));
+    }
+
+    public Page<AdminPageVideosResponse> getAdminPageVideos(Pageable page, Member admin) {
+        if (!admin.getRole().equals(Role.ADMIN)) {
+            throw new NoAccessPermissionException();
+        }
+
+        long count = videoRepository.count();
+        return videoRepository.getAllVideos(page, count).map(AdminPageVideosResponse::from);
     }
 }

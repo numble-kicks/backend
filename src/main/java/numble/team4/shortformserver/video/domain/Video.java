@@ -4,6 +4,7 @@ import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
+import static numble.team4.shortformserver.member.member.domain.Role.MEMBER;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import numble.team4.shortformserver.common.domain.BaseTimeEntity;
 import numble.team4.shortformserver.member.member.domain.Member;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -82,8 +83,8 @@ public class Video extends BaseTimeEntity {
     }
 
     public void validateAuthor(Member member) {
-        if (!this.member.equals(member)) {
-            throw new NotAuthorException();
+        if (member.getRole().equals(MEMBER) && !this.member.equals(member)) {
+            throw new NoAccessPermissionException();
         }
     }
 }

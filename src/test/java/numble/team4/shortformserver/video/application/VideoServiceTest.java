@@ -14,7 +14,7 @@ import numble.team4.shortformserver.aws.exception.NotExistFileException;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
-import numble.team4.shortformserver.member.member.exception.NotAuthorException;
+import numble.team4.shortformserver.member.member.exception.NoAccessPermissionException;
 import numble.team4.shortformserver.video.category.domain.Category;
 import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.domain.Video;
@@ -167,6 +167,7 @@ class VideoServiceTest {
             Member notAuthor = Member.builder()
                 .id(100L)
                 .email("notAuthor@test.com")
+                .role(Role.MEMBER)
                 .build();
             VideoUpdateRequest videoUpdateRequest = VideoUpdateRequest.builder()
                 .title("t")
@@ -179,7 +180,7 @@ class VideoServiceTest {
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
             // when, then
-            assertThrows(NotAuthorException.class,
+            assertThrows(NoAccessPermissionException.class,
                 () -> videoService.updateVideo(videoUpdateRequest, notAuthor, anyLong()));
         }
 
@@ -214,14 +215,16 @@ class VideoServiceTest {
             // given
             Member otherMember = Member.builder()
                 .id(100L)
+                .role(Role.MEMBER)
                 .email("otherMember@test.com")
                 .build();
+            Long videoId = video.getId();
 
             given(videoRepository.findById(anyLong())).willReturn(Optional.of(video));
 
             // when, then
-            assertThrows(NotAuthorException.class,
-                () -> videoService.deleteVideo(video.getId(), otherMember));
+            assertThrows(NoAccessPermissionException.class,
+                () -> videoService.deleteVideo(videoId, otherMember));
         }
 
         @Test

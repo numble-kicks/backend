@@ -16,7 +16,7 @@ import numble.team4.shortformserver.member.member.ui.dto.MemberNameUpdateRequest
 import numble.team4.shortformserver.testCommon.BaseIntegrationTest;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.VideoListResponse;
+import numble.team4.shortformserver.video.dto.VideosResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -127,7 +127,7 @@ public class MemberIntegrationTest {
         }
 
         //when
-        List<VideoListResponse> res = memberController.findAllVideosByMember(member.getId(), value).getData();
+        List<VideosResponse> res = memberController.findAllVideosByMember(member.getId(), value).getData();
 
         //then
         assertThat(res).hasSize((count > 18) ? 18 : (int) count);
@@ -151,7 +151,7 @@ public class MemberIntegrationTest {
         }
 
         //when
-        List<VideoListResponse> res = memberController.findAllLikeVideosByMember(member.getId(), value).getData();
+        List<VideosResponse> res = memberController.findAllLikeVideosByMember(member.getId(), value).getData();
 
         //then
         assertThat(res).hasSize((count > 18) ? 18 : (int) count);
