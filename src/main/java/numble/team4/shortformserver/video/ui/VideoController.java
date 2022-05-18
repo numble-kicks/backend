@@ -18,7 +18,6 @@ import numble.team4.shortformserver.common.dto.PageInfo;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.video.application.VideoService;
-import numble.team4.shortformserver.video.dto.AdminPageVideosResponse;
 import numble.team4.shortformserver.video.dto.VideoListRequest;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
@@ -88,9 +87,9 @@ public class VideoController {
     }
 
     @GetMapping("/admin" + BASE_URI)
-    public CommonResponse<List<AdminPageVideosResponse>> getAdminPageVideos(@LoginUser Member admin, Pageable pageable) {
+    public CommonResponse<List<VideoResponse>> getAdminPageVideos(@LoginUser Member admin, Pageable pageable) {
 
-        Page<AdminPageVideosResponse> videos = videoService.getAdminPageVideos(pageable, admin);
+        Page<VideoResponse> videos = videoService.getAdminPageVideos(pageable, admin);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
     }
 
