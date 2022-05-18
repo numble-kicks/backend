@@ -3,6 +3,7 @@ package numble.team4.shortformserver.member.admin.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -42,44 +43,51 @@ class AdminIntegrationTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private Member user;
+    private Member user2;
 
     @BeforeEach
     void setUp() {
-        user = Member.builder()
-            .name("user")
+        Member user1 = Member.builder()
+            .name("user1")
             .role(Role.MEMBER)
-            .email("user@test.com")
+            .email("user1@test.com")
             .emailVerified(true)
             .build();
 
-        memberRepository.save(user);
+        user2 = Member.builder()
+            .name("user2")
+            .role(Role.MEMBER)
+            .email("user2@test.com")
+            .emailVerified(true)
+            .build();
 
+        memberRepository.saveAll(List.of(user1, user2));
 
         List<Video> videoList = List.of(
-            createVideo(10L, 1L),
-            createVideo(8L, 2L),
-            createVideo(8L, 2L),
-            createVideo(8L, 3L),
-            createVideo(5L, 3L),
-            createVideo(5L, 3L),
-            createVideo(5L, 5L),
-            createVideo(3L, 5L),
-            createVideo(3L, 5L),
-            createVideo(2L, 8L),
-            createVideo(2L, 8L),
-            createVideo(1L, 10L)
+            createVideo(10L, 1L, user1),
+            createVideo(8L, 2L, user1),
+            createVideo(8L, 2L, user1),
+            createVideo(8L, 3L, user1),
+            createVideo(5L, 3L, user1),
+            createVideo(5L, 3L, user2),
+            createVideo(5L, 5L, user2),
+            createVideo(3L, 5L, user2),
+            createVideo(3L, 5L, user2),
+            createVideo(2L, 8L, user2),
+            createVideo(2L, 8L, user2),
+            createVideo(1L, 10L, user2)
         );
         videoRepository.saveAll(videoList);
     }
 
-    private Video createVideo(long hits, Long likes) {
+    private Video createVideo(long hits, Long likes,
+        Member member) {
         Category category = categoryRepository.findByName("구두/로퍼")
             .orElseThrow(NotFoundCategoryException::new);
         return Video.builder()
             .title("제목")
             .description("공통")
-            .member(user)
+            .member(member)
             .videoUrl("VIDEO_URL")
             .thumbnailUrl("THUMBNAIL_URL")
             .price(1000)
@@ -127,6 +135,27 @@ class AdminIntegrationTest {
         // then
         assertThat(count).isEqualTo(12);
         res.andExpect(status().isOk())
+            .andDo(print());
+    }
+
+    @Test
+    @DisplayName("관리자 페이지 유저의 영상 목록")
+    @WithMockCustomUser(role = Role.ADMIN)
+    void adminPageGetVideoListByMember() throws Exception {
+        // given
+        long count = videoRepository.count();
+
+        // when
+        ResultActions res = mockMvc.perform(
+            get(URI)
+                .queryParam("page", "0")
+                .queryParam("size", "10")
+                .queryParam("member_id", String.valueOf(user2.getId()))
+        );
+
+        // then
+        res.andExpect(status().isOk())
+            .andExpect(jsonPath("$.data.size()").value(7))
             .andDo(print());
     }
 }
