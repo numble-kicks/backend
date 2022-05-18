@@ -18,5 +18,5 @@ public interface VideoCustomRepository {
 
     List<Video> getTopVideos(String sortBy, Integer limitNum);
 
-    Page<Video> getAllVideos(Pageable page, Long total);
+    Page<Video> getAllVideos(Pageable page, Long total, Long memberId);
 }

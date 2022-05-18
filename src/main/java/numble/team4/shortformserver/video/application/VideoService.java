@@ -133,12 +133,13 @@ public class VideoService {
         return VideosResponse.from(videoRepository.getTopVideos(sortBy, limitNum));
     }
 
-    public Page<VideoResponse> getAdminPageVideos(Pageable page, Member admin) {
+    public Page<VideoResponse> getAdminPageVideos(Pageable page, Member admin,
+        Long memberId) {
         if (!admin.getRole().equals(Role.ADMIN)) {
             throw new NoAccessPermissionException();
         }
 
         long count = videoRepository.count();
-        return videoRepository.getAllVideos(page, count).map(VideoResponse::from);
+        return videoRepository.getAllVideos(page, count, memberId).map(VideoResponse::from);
     }
 }
