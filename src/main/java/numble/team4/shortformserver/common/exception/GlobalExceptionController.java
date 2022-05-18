@@ -7,7 +7,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -20,19 +19,11 @@ public class GlobalExceptionController {
         return new ResponseEntity<>(BaseErrorResponse.from(exception), exception.getStatus());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseErrorResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<BaseErrorResponse> handleValidationExceptions(BindException exception) {
         Map<String, String> errors = new HashMap<>();
         exception.getBindingResult().getAllErrors()
                 .forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
-        return new ResponseEntity<>(BaseErrorResponse.of(VALID_ERROR_MESSAGE, errors), BAD_REQUEST);
-    }
-
-    @ExceptionHandler(BindException.class)
-    public ResponseEntity<BaseErrorResponse> validationBindExceptions(BindException exception) {
-        Map<String, String> errors = new HashMap<>();
-        exception.getBindingResult().getAllErrors()
-            .forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
         return new ResponseEntity<>(BaseErrorResponse.of(VALID_ERROR_MESSAGE, errors), BAD_REQUEST);
     }
 }
