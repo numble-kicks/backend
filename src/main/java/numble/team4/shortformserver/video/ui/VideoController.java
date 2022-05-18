@@ -88,9 +88,9 @@ public class VideoController {
     }
 
     @GetMapping("/admin" + BASE_URI)
-    public CommonResponse<List<AdminPageVideosResponse>> getAdminPageVideos(@LoginUser Member admin, Pageable pageable) {
+    public CommonResponse<List<VideoResponse>> getAdminPageVideos(@LoginUser Member admin, Pageable pageable) {
 
-        Page<AdminPageVideosResponse> videos = videoService.getAdminPageVideos(pageable, admin);
+        Page<VideoResponse> videos = videoService.getAdminPageVideos(pageable, admin);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
     }
 

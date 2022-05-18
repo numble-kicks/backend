@@ -15,7 +15,6 @@ import numble.team4.shortformserver.video.category.domain.CategoryRepository;
 import numble.team4.shortformserver.video.category.exception.NotFoundCategoryException;
 import numble.team4.shortformserver.video.domain.Video;
 import numble.team4.shortformserver.video.domain.VideoRepository;
-import numble.team4.shortformserver.video.dto.AdminPageVideosResponse;
 import numble.team4.shortformserver.video.dto.VideosResponse;
 import numble.team4.shortformserver.video.dto.VideoRequest;
 import numble.team4.shortformserver.video.dto.VideoResponse;
@@ -33,7 +32,7 @@ import org.springframework.util.StringUtils;
 @Transactional(readOnly = true)
 public class VideoService {
 
-    private static final int PAZE_SIZE = 18;
+    private static final int PAGE_SIZE = 18;
 
     private final MemberRepository memberRepository;
     private final VideoRepository videoRepository;
@@ -98,7 +97,7 @@ public class VideoService {
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllByMemberAndMaxVideoId(member, videoId,
-            PAZE_SIZE);
+            PAGE_SIZE);
         return VideosResponse.from(videos);
     }
 
@@ -107,7 +106,7 @@ public class VideoService {
                 .orElseThrow(NotExistMemberException::new);
 
         List<Video> videos = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, videoId,
-            PAZE_SIZE);
+            PAGE_SIZE);
         return VideosResponse.from(videos);
     }
 
@@ -134,12 +133,12 @@ public class VideoService {
         return VideosResponse.from(videoRepository.getTopVideos(sortBy, limitNum));
     }
 
-    public Page<AdminPageVideosResponse> getAdminPageVideos(Pageable page, Member admin) {
+    public Page<VideoResponse> getAdminPageVideos(Pageable page, Member admin) {
         if (!admin.getRole().equals(Role.ADMIN)) {
             throw new NoAccessPermissionException();
         }
 
         long count = videoRepository.count();
-        return videoRepository.getAllVideos(page, count).map(AdminPageVideosResponse::from);
+        return videoRepository.getAllVideos(page, count).map(VideoResponse::from);
     }
 }
