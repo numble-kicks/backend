@@ -99,7 +99,7 @@ public class VideoController {
     @GetMapping(BASE_URI + "/search-condition")
     public CommonResponse<List<VideosResponse>> searchVideoByKeyword(
         @Valid @ModelAttribute VideoSearchRequest request,
-        @RequestParam("last_id") Long lastId) {
+        @RequestParam(value = "last_id", required = false) Long lastId) {
         return CommonResponse.of(videoService.searchByKeyword(lastId, request.getKeyword(), request.getSortBy()),
             GET_VIDEO_LIST_BY_KEYWORD.getMessage());
     }
