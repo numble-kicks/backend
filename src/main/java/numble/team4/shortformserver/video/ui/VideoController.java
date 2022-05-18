@@ -90,9 +90,9 @@ public class VideoController {
     public CommonResponse<List<VideoResponse>> getAdminPageVideos(
         @LoginUser Member admin,
         Pageable pageable,
-        @RequestParam(value = "member_id", required = false) Long memberId) {
+        @RequestParam(value = "user_id", required = false) Long userId) {
 
-        Page<VideoResponse> videos = videoService.getAdminPageVideos(pageable, admin, memberId);
+        Page<VideoResponse> videos = videoService.getAdminPageVideos(pageable, admin, userId);
         return CommonResponse.of(videos.getContent(), PageInfo.from(videos), GET_ADMIN_PAGE_VIDEO_LIST.getMessage());
     }
 

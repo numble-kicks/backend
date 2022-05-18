@@ -134,12 +134,12 @@ public class VideoService {
     }
 
     public Page<VideoResponse> getAdminPageVideos(Pageable page, Member admin,
-        Long memberId) {
+        Long userId) {
         if (!admin.getRole().equals(Role.ADMIN)) {
             throw new NoAccessPermissionException();
         }
 
         long count = videoRepository.count();
-        return videoRepository.getAllVideos(page, count, memberId).map(VideoResponse::from);
+        return videoRepository.getAllVideos(page, count, userId).map(VideoResponse::from);
     }
 }

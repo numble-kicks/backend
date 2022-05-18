@@ -73,10 +73,10 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     }
 
     @Override
-    public Page<Video> getAllVideos(Pageable page, Long total, Long memberId) {
+    public Page<Video> getAllVideos(Pageable page, Long total, Long userId) {
         List<Video> videos = factory
             .selectFrom(video)
-            .where(existMemberId(memberId))
+            .where(existUserId(userId))
             .orderBy(video.id.asc())
             .offset(page.getOffset())
             .limit(page.getPageSize())
@@ -85,7 +85,7 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
         return new PageImpl<>(videos, page, total);
     }
 
-    private Predicate existMemberId(Long memberId) {
+    private Predicate existUserId(Long memberId) {
         if (Objects.isNull(memberId)) {
             return null;
         }

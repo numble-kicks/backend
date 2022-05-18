@@ -150,7 +150,7 @@ class AdminIntegrationTest {
             get(URI)
                 .queryParam("page", "0")
                 .queryParam("size", "10")
-                .queryParam("member_id", String.valueOf(user2.getId()))
+                .queryParam("user_id", String.valueOf(user2.getId()))
         );
 
         // then
