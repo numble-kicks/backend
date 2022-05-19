@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long>, FollowCustomRepository {
 
-    @Query("select f from Follow f where f.fromMember=:fromMember and f.toMember.id=:toMemberId")
+    @Query("select f.id from Follow f where f.fromMember=:fromMember and f.toMember.id=:toMemberId")
     Optional<Long> findIdByFromMemberIdAndToMemberId(@Param("fromMember") Member fromMember, @Param("toMemberId") Long toMemberId);
 
     boolean existsByFromMember_IdAndToMember_Id(Long fromMember, Long toMember);
