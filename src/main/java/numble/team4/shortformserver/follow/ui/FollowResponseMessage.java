@@ -9,7 +9,8 @@ public enum FollowResponseMessage {
     CREATE_FOLLOW("팔로우 생성 성공"),
     DELETE_FOLLOW("팔로우 취소 성공"),
     GET_FOLLOWERS("팔로워 목록 조회 성공"),
-    GET_FOLLOWINGS("팔로잉 목록 조회 성공");
+    GET_FOLLOWINGS("팔로잉 목록 조회 성공"),
+    GET_IS_EXIST_FOLLOW("특정 사용자 팔로잉 여부 조회 성공");
 
     private final String message;
 }
