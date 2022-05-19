@@ -128,7 +128,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
             .description("설명 수정")
             .category("구두/로퍼")
             .price(100000)
-            .usedStatus(true)
+            .used_status(true)
             .build();
 
         // when
@@ -181,7 +181,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
                         .description("")
                         .category("기타")
                         .price(100000)
-                        .usedStatus(false)
+                        .used_status(false)
                         .build()
                 )));
 
@@ -209,7 +209,7 @@ class VideoAcceptanceTest extends BaseAcceptanceTest {
             .file(VIDEO_FILE)
             .file(THUMBNAIL_FILE)
             .param("price", "1000")
-            .param("usedStatus", "false")
+            .param("used_status", "false")
             .param("category", "기타")
             .param("title", TITLE)
             .param("description", DESCRIPTION)
