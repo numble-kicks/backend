@@ -14,6 +14,8 @@ import numble.team4.shortformserver.video.exception.NotExistVideoException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class LikeVideoService {
@@ -22,8 +24,8 @@ public class LikeVideoService {
     private final VideoRepository videoRepository;
 
     public LikeVideoExistResponse existLikeVideo(Member member, Long videoId) {
-        boolean exists = likeVideoRepository.existsByMember_IdAndVideo_Id(member.getId(), videoId);
-        return LikeVideoExistResponse.from(exists);
+        Optional<Long> existLikeVideoInfo = likeVideoRepository.findIdByMemberAndVideoId(member, videoId);
+        return LikeVideoExistResponse.from(existLikeVideoInfo);
     }
 
     @Transactional
