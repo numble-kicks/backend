@@ -49,6 +49,44 @@ public class FollowingAcceptanceTest extends BaseAcceptanceTest {
 
     @Nested
     @WithMockCustomUser
+    @DisplayName("팔로잉 여부 확인 테스트")
+    class ExistFollowTest {
+
+        @Test
+        @DisplayName("[성공] 팔로잉하고 있는 사용자에 대해 팔로우 여부 확인")
+        void existFollow_existFollow_isok_success() throws Exception {
+            //given
+            Member member = ((MemberAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getMember();
+            Follow follow = Follow.fromMembers(member, toMember);
+            followRepository.save(follow);
+
+            //when
+            ResultActions res = mockMvc.perform(
+                    get("/v1/users/following/{toUserId}", toMember.getId())
+            );
+
+            //then
+            res.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(GET_IS_EXIST_FOLLOW.getMessage()));
+        }
+
+
+        @Test
+        @DisplayName("[성공] 팔로잉하고 있지 않는 사용자에 대해 팔로우 여부 확인")
+        void existFollow_notExistFollow_isok_success() throws Exception {
+            //when
+            ResultActions res = mockMvc.perform(
+                    get("/v1/users/following/{toUserId}", 23049823)
+            );
+
+            //then
+            res.andExpect(status().isOk())
+                    .andExpect(jsonPath("$.message").value(GET_IS_EXIST_FOLLOW.getMessage()));
+        }
+    }
+
+    @Nested
+    @WithMockCustomUser
     @DisplayName("팔로우 생성 테스트")
     class CreateFollowTest {
 
