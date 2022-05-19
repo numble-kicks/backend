@@ -21,7 +21,7 @@ public class FollowController {
     private final FollowService followService;
 
     @GetMapping("/{toUserId}")
-    public CommonResponse<?> existFollow(@LoginUser Member member, @PathVariable Long toUserId) {
+    public CommonResponse<FollowExistResponse> existFollow(@LoginUser Member member, @PathVariable Long toUserId) {
         FollowExistResponse followExistResponse = followService.existFollow(member, toUserId);
         return CommonResponse.of(followExistResponse, GET_IS_EXIST_FOLLOW.getMessage());
     }
