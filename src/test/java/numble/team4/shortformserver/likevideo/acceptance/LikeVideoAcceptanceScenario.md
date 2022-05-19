@@ -26,7 +26,7 @@
         user1의 토큰으로 요청  
         video_id를 video1의 아이디로 하여 좋아요 여부 확인 요청
     * then  
-        body에 exist_like_video : true를 포함하며 성공
+        body에 exist_like_video : true, likes_id를 포함하며 성공
 
 <br>
 
