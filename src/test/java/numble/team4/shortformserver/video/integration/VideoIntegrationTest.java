@@ -87,7 +87,7 @@ public class VideoIntegrationTest {
             .description("설명 수정")
             .category("기타")
             .price(100)
-            .usedStatus(false)
+            .used_status(false)
             .build();
     }
 

@@ -24,7 +24,7 @@ public class VideoUpdateRequest {
     private Integer price;
 
     @NotNull
-    private Boolean usedStatus;
+    private Boolean used_status;
 
     @NotNull
     private String category;
@@ -36,7 +36,7 @@ public class VideoUpdateRequest {
             .title(title)
             .description(description)
             .price(price)
-            .usedStatus(usedStatus)
+            .usedStatus(used_status)
             .category(category)
             .build();
     }

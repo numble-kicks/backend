@@ -126,7 +126,7 @@ class VideoControllerTest {
                 .description("description")
                 .category("기타")
                 .price(100000)
-                .usedStatus(false)
+                .used_status(false)
                 .build();
 
             VideoResponse videoResponse = VideoResponse.from(video);
@@ -160,7 +160,7 @@ class VideoControllerTest {
                 .title("update title")
                 .description("description")
                 .price(10000)
-                .usedStatus(false)
+                .used_status(false)
                 .category("기타")
                 .build();
 
@@ -190,7 +190,7 @@ class VideoControllerTest {
                 .title("update title")
                 .description("description")
                 .category("기타")
-                .usedStatus(false)
+                .used_status(false)
                 .price(99999)
                 .build();
 

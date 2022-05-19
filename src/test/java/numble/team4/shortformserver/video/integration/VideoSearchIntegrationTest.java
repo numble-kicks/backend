@@ -111,7 +111,8 @@ class VideoSearchIntegrationTest {
         Object[] values = ids.stream().sorted(Collections.reverseOrder()).toArray();
 
         // when
-        List<VideosResponse> res = videoController.searchVideoByKeyword(new VideoSearchRequest(keyword, null, null))
+        List<VideosResponse> res = videoController.searchVideoByKeyword(
+                new VideoSearchRequest(keyword, null), null)
             .getData();
 
         // then
@@ -140,7 +141,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> data = videoController.searchVideoByKeyword(new VideoSearchRequest(keyword, ids.get(10), null)).getData();
+        List<VideosResponse> data = videoController.searchVideoByKeyword(
+            new VideoSearchRequest(keyword, null), ids.get(10)).getData();
 
         // then
         assertThat(data)
@@ -170,7 +172,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> lastId가_null = videoController.searchVideoByKeyword(new VideoSearchRequest(keyword, null, "hits")).getData();
+        List<VideosResponse> lastId가_null = videoController.searchVideoByKeyword(
+            new VideoSearchRequest(keyword, "hits"), null).getData();
 
         // then
         assertThat(lastId가_null)
@@ -191,7 +194,8 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> lastId는8 = videoController.searchVideoByKeyword(new VideoSearchRequest(keyword, ids.get(7), "hits")).getData();
+        List<VideosResponse> lastId는8 = videoController.searchVideoByKeyword(
+            new VideoSearchRequest(keyword,"hits"), ids.get(7)).getData();
 
         // then
         assertThat(lastId는8)
@@ -205,10 +209,11 @@ class VideoSearchIntegrationTest {
     void findByKeyword_cursor_id_exist() {
         // given
         String keyword = "나이키";
-        Object[] value = new Object[] {ids.get(2), ids.get(1), ids.get(4)};
+        Object[] value = new Object[]{ids.get(2), ids.get(1), ids.get(4)};
 
         // when
-        List<VideosResponse> 정렬_순서_325 = videoController.searchVideoByKeyword(new VideoSearchRequest(keyword, null, "hits")).getData();
+        List<VideosResponse> 정렬_순서_325 = videoController.searchVideoByKeyword(
+            new VideoSearchRequest(keyword, "hits"), null).getData();
 
         // then
         assertThat(정렬_순서_325)
@@ -248,8 +253,10 @@ class VideoSearchIntegrationTest {
         };
 
         // when
-        List<VideosResponse> hits = videoController.getTopVideos(new VideoListRequest("hits", 10)).getData();
-        List<VideosResponse> likes = videoController.getTopVideos(new VideoListRequest("likes", 10)).getData();
+        List<VideosResponse> hits = videoController.getTopVideos(new VideoListRequest("hits", 10))
+            .getData();
+        List<VideosResponse> likes = videoController.getTopVideos(new VideoListRequest("likes", 10))
+            .getData();
 
         // then
         assertThat(hits)
