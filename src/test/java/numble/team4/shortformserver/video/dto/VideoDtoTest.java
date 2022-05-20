@@ -30,7 +30,7 @@ class VideoDtoTest {
             .description(null)
             .category(null)
             .price(null)
-            .usedStatus(null)
+            .used_status(null)
             .build();
 
         // when

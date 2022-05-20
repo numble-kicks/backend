@@ -7,6 +7,7 @@ import static org.springframework.util.StringUtils.hasText;
 import static numble.team4.shortformserver.likevideo.domain.QLikeVideo.likeVideo;
 
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 
@@ -72,15 +73,24 @@ public class VideoCustomRepositoryImpl implements VideoCustomRepository {
     }
 
     @Override
-    public Page<Video> getAllVideos(Pageable page, Long total) {
+    public Page<Video> getAllVideos(Pageable page, Long total, Long userId) {
         List<Video> videos = factory
             .selectFrom(video)
+            .where(existUserId(userId))
             .orderBy(video.id.asc())
             .offset(page.getOffset())
             .limit(page.getPageSize())
             .fetch();
 
         return new PageImpl<>(videos, page, total);
+    }
+
+    private Predicate existUserId(Long memberId) {
+        if (Objects.isNull(memberId)) {
+            return null;
+        }
+
+        return video.member.id.eq(memberId);
     }
 
     private BooleanExpression cursorIsLessThan(String sort, Long cursorId) {

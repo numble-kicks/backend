@@ -143,7 +143,7 @@ class VideoServiceTest {
                 .description("")
                 .category("기타")
                 .price(1000)
-                .usedStatus(true)
+                .used_status(true)
                 .build();
 
             given(videoRepository.findById(video.getId())).willReturn(Optional.of(video));
@@ -173,7 +173,7 @@ class VideoServiceTest {
                 .title("t")
                 .description("")
                 .price(1000)
-                .usedStatus(false)
+                .used_status(false)
                 .category("기타")
                 .build();
 

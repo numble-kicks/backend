@@ -42,7 +42,7 @@ class VideoCustomRepositoryTest {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private Member member;
+    private Member member1, member2;
     private List<Video> videos;
 
     static Stream<Long> valueSources() {
@@ -51,26 +51,33 @@ class VideoCustomRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        member = Member.builder()
+        member2 = Member.builder()
+            .name("member2")
+            .role(Role.MEMBER)
+            .emailVerified(true)
+            .email("tester1@email.com")
+            .build();
+        member1 = Member.builder()
             .name("tester")
             .role(Role.MEMBER)
             .emailVerified(true)
             .email("tester@email.com")
             .build();
-        memberRepository.save(member);
+        memberRepository.saveAll(List.of(member1, member2));
 
         videos = List.of(
-            createVideo(1L, 1L, "우르오스", "우르오스"),
-            createVideo(3L, 1L, "나이키", "나이키 신발"),
-            createVideo(3L, 1L, "범고래", "나이키 덩크로우 범고래, 드로우 신발 상품"),
-            createVideo(5L, 1L, "뉴발 992", "뉴발란스 992 신발"),
-            createVideo(5L, 1L, "에어맥스", "나이키 에어맥스95 신발"),
-            createVideo(10L, 1L, "아이폰", "애플")
+            createVideo(1L, 1L, "우르오스", "우르오스", member1),
+            createVideo(3L, 1L, "나이키", "나이키 신발", member1),
+            createVideo(3L, 1L, "범고래", "나이키 덩크로우 범고래, 드로우 신발 상품", member1),
+            createVideo(5L, 1L, "뉴발 992", "뉴발란스 992 신발", member1),
+            createVideo(5L, 1L, "에어맥스", "나이키 에어맥스95 신발", member2),
+            createVideo(10L, 1L, "아이폰", "애플", member2)
         );
         videoRepository.saveAll(videos);
     }
 
-    private Video createVideo(long hits, Long likes, String title, String des) {
+    private Video createVideo(long hits, Long likes, String title, String des,
+        Member member) {
         Category category = categoryRepository.findByName("구두/로퍼")
             .orElseThrow(NotFoundCategoryException::new);
         return Video.builder()
@@ -90,7 +97,7 @@ class VideoCustomRepositoryTest {
     void createLikeVideo() {
         List<Video> all = videoRepository.findAll();
         for (Video video : all) {
-            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
+            LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member1, video);
             testEntityManager.persist(likeVideo);
         }
     }
@@ -108,10 +115,10 @@ class VideoCustomRepositoryTest {
         }
 
         //when
-        List<Video> res = videoRepository.findAllByMemberAndMaxVideoId(member, id, 5);
+        List<Video> res = videoRepository.findAllByMemberAndMaxVideoId(member1, id, 5);
 
         //then
-        assertThat(res).hasSize((count > 5) ? 5: (int) count);
+        assertThat(res).hasSize((count > 5) ? 5 : (int) count);
 
         for (int i = 0; i < res.size() - 1; i++) {
             assertTrue(res.get(i).getId() > res.get(i + 1).getId());
@@ -121,7 +128,8 @@ class VideoCustomRepositoryTest {
     @ParameterizedTest
     @DisplayName("[성공] 사용자가 좋아요한 동영상 목록을 조회")
     @MethodSource("valueSources")
-    void findAllLikeVideoByMemberAndMaxVideoId_returnListHasSizeLessThanAndEqualLimitNum_success(Long id) {
+    void findAllLikeVideoByMemberAndMaxVideoId_returnListHasSizeLessThanAndEqualLimitNum_success(
+        Long id) {
         //given
         createLikeVideo();
         long count = 5;
@@ -132,10 +140,10 @@ class VideoCustomRepositoryTest {
         }
 
         //when
-        List<Video> res = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member, id, 5);
+        List<Video> res = videoRepository.findAllLikeVideoByMemberAndMaxVideoId(member1, id, 5);
 
         //then
-        assertThat(res).hasSize((count > 5) ? 5: (int) count);
+        assertThat(res).hasSize((count > 5) ? 5 : (int) count);
 
         for (int i = 0; i < res.size() - 1; i++) {
             assertTrue(res.get(i).getId() > res.get(i + 1).getId());
@@ -160,7 +168,8 @@ class VideoCustomRepositoryTest {
         // when
         List<Video> 키워드나이키최신순_id는_421순 = videoRepository.searchVideoByKeyword(null, "나이키", null);
         List<Video> 키워드아이폰_id는_5 = videoRepository.searchVideoByKeyword(null, "아이폰", null);
-        List<Video> 키워드신발최신순_id_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발", "");
+        List<Video> 키워드신발최신순_id_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발",
+            "");
 
         // then
         assertThat(키워드아이폰_id는_5).hasSize(1);
@@ -199,7 +208,8 @@ class VideoCustomRepositoryTest {
         );
         // when
         List<Video> 키워드신발조회순_id는_4321순 = videoRepository.searchVideoByKeyword(null, "신발", "hits");
-        List<Video> 키워드신발조회순_id는_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발", "hits");
+        List<Video> 키워드신발조회순_id는_321순_커서적용 = videoRepository.searchVideoByKeyword(ids.get(4), "신발",
+            "hits");
 
         // then
         assertThat(키워드신발조회순_id는_4321순)
@@ -238,18 +248,18 @@ class VideoCustomRepositoryTest {
         // given
         videoRepository.deleteAll(videos);
         List<Video> videoList = List.of(
-            createVideo(10L, 1L, "제목", "공통"),
-            createVideo(8L, 2L, "제목", "공통"),
-            createVideo(8L, 2L, "제목", "공통"),
-            createVideo(8L, 3L, "제목", "공통"),
-            createVideo(5L, 3L, "제목", "공통"),
-            createVideo(5L, 3L, "제목", "공통"),
-            createVideo(5L, 5L, "제목", "공통"),
-            createVideo(3L, 5L, "제목", "공통"),
-            createVideo(3L, 5L, "제목", "공통"),
-            createVideo(2L, 8L, "제목", "공통"),
-            createVideo(2L, 8L, "제목", "공통"),
-            createVideo(1L, 10L, "제목", "공통")
+            createVideo(10L, 1L, "제목", "공통", member1),
+            createVideo(8L, 2L, "제목", "공통", member1),
+            createVideo(8L, 2L, "제목", "공통", member1),
+            createVideo(8L, 3L, "제목", "공통", member1),
+            createVideo(5L, 3L, "제목", "공통", member1),
+            createVideo(5L, 3L, "제목", "공통", member1),
+            createVideo(5L, 5L, "제목", "공통", member1),
+            createVideo(3L, 5L, "제목", "공통", member1),
+            createVideo(3L, 5L, "제목", "공통", member1),
+            createVideo(2L, 8L, "제목", "공통", member1),
+            createVideo(2L, 8L, "제목", "공통", member1),
+            createVideo(1L, 10L, "제목", "공통", member1)
         );
         videoRepository.saveAll(videoList);
 
@@ -300,11 +310,29 @@ class VideoCustomRepositoryTest {
         long total = videoRepository.count();
 
         // when
-        Page<Video> page0size3 = videoRepository.getAllVideos(PageRequest.of(0, 3), total);
-        Page<Video> page1size3 = videoRepository.getAllVideos(PageRequest.of(1, 3), total);
+        Page<Video> page0size3 = videoRepository.getAllVideos(PageRequest.of(0, 3), total, null);
+        Page<Video> page1size3 = videoRepository.getAllVideos(PageRequest.of(1, 3), total, null);
 
         // then
         assertThat(page0size3.getContent().get(0).getTitle()).isEqualTo("우르오스");
         assertThat(page1size3.getContent().get(0).getTitle()).isEqualTo("뉴발 992");
+    }
+
+
+    @Test
+    @DisplayName("admin 영상 리스트 사용자별 영상 목록 조회 테스트")
+    void adminVideoByMember() {
+        // given
+        long total = videoRepository.count();
+
+        // when
+        Page<Video> member1Videos = videoRepository.getAllVideos(PageRequest.of(0, 10), total,
+            member1.getId());
+        Page<Video> member2Videos = videoRepository.getAllVideos(PageRequest.of(0, 10), total,
+            member2.getId());
+
+        // then
+        assertThat(member1Videos.getContent()).hasSize(4);
+        assertThat(member2Videos.getContent()).hasSize(2);
     }
 }

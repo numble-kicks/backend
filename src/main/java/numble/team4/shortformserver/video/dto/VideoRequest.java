@@ -3,7 +3,6 @@ package numble.team4.shortformserver.video.dto;
 import static lombok.AccessLevel.PROTECTED;
 import static lombok.AccessLevel.PUBLIC;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -31,9 +30,8 @@ public class VideoRequest {
     @NotNull(message = "가격은 비어있을 수 없습니다.")
     private Integer price;
 
-    @JsonProperty("used_status")
     @NotNull(message = "중고여부는 필수 항목입니다.")
-    private Boolean usedStatus;
+    private Boolean used_status;
 
     @NotBlank(message = "카테고리는 필수 항목입니다.")
     private String category;
@@ -49,7 +47,7 @@ public class VideoRequest {
             .likeCount(0L)
             .viewCount(0L)
             .price(price)
-            .usedStatus((usedStatus))
+            .usedStatus((used_status))
             .member(member)
             .category(category)
             .build();

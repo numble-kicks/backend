@@ -1,15 +1,14 @@
 package numble.team4.shortformserver.common.exception;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionController {
@@ -20,8 +19,8 @@ public class GlobalExceptionController {
         return new ResponseEntity<>(BaseErrorResponse.from(exception), exception.getStatus());
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<BaseErrorResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<BaseErrorResponse> handleValidationExceptions(BindException exception) {
         Map<String, String> errors = new HashMap<>();
         exception.getBindingResult().getAllErrors()
                 .forEach(error -> errors.put(((FieldError) error).getField(), error.getDefaultMessage()));
