@@ -1,7 +1,9 @@
 package numble.team4.shortformserver.event.domain;
 
+import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
+@Getter
 public class FcmTokenPushingEvent extends ApplicationEvent {
 
     private Long currentMemberId;
