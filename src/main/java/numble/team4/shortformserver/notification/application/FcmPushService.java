@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FcmPushService {
 
-    public static final FirebaseMessaging instance = FirebaseMessaging.getInstance();
+    public final FirebaseMessaging instance;
     private final StringRedisTemplate stringRedisTemplate;
 
     public void sendMessage(Long memberId, Long destinationId, FcmEventDomain domain) {
@@ -21,7 +21,7 @@ public class FcmPushService {
     }
 
     private String getFcmToken(Long memberId) {
-        return stringRedisTemplate.opsForValue().get(memberId);
+        return stringRedisTemplate.opsForValue().get(String.valueOf(memberId));
     }
 
 }

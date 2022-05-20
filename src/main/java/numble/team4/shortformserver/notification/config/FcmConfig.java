@@ -3,8 +3,10 @@ package numble.team4.shortformserver.notification.config;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.messaging.FirebaseMessaging;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
@@ -18,7 +20,8 @@ public class FcmConfig {
     @Value("${firebase.config}")
     private String configPath;
 
-    public void init() throws IOException {
+    @Bean
+    public FirebaseApp init() throws IOException {
 
         ClassPathResource resource = new ClassPathResource(configPath);
 
@@ -28,11 +31,17 @@ public class FcmConfig {
                     .setCredentials(GoogleCredentials.fromStream(inputStream))
                     .build();
 
-            FirebaseApp.initializeApp(options);
             log.warn("FirebaseApp initialization complete");
+            return FirebaseApp.initializeApp(options);
         } catch (Exception e) {
             log.warn(e.getClass().toString());
             log.warn("FirebaseApp initialization failed");
+            throw new NullPointerException();
         }
+    }
+
+    @Bean
+    public FirebaseMessaging initFirebaseMessaging(FirebaseApp firebaseApp) {
+        return FirebaseMessaging.getInstance(firebaseApp);
     }
 }
