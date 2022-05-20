@@ -7,6 +7,7 @@ import numble.team4.shortformserver.follow.exception.NotExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotFollowingException;
 import numble.team4.shortformserver.follow.exception.NotSelfFollowableException;
 import numble.team4.shortformserver.follow.ui.FollowController;
+import numble.team4.shortformserver.follow.ui.dto.FollowExistResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.domain.Role;
@@ -18,11 +19,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @BaseIntegrationTest
 public class FollowIntegrationTest {
@@ -36,6 +38,9 @@ public class FollowIntegrationTest {
     @Autowired
     private FollowRepository followRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     private Member fromMember;
     private Member toMember;
 
@@ -45,6 +50,40 @@ public class FollowIntegrationTest {
         toMember = Member.builder().name("to").role(Role.MEMBER).build();
 
         memberRepository.saveAll(Arrays.asList(fromMember, toMember));
+    }
+    
+    @Nested
+    @DisplayName("특정 사용자 팔로우 여부 확인 테스트")
+    class ExistFollowTest {
+
+        @Test
+        @DisplayName("[성공] 팔로우하고 있을 때")
+        void existFollow_returnValueIsTrueAndHasId_success() {
+            //given
+            Follow follow = Follow.fromMembers(fromMember, toMember);
+            followRepository.save(follow);
+            entityManager.flush();
+            entityManager.clear();
+
+            //when
+            FollowExistResponse existFollowInfo = followController.existFollow(fromMember, toMember.getId()).getData();
+
+            //then
+            assertTrue(existFollowInfo.isExistFollow());
+            assertThat(existFollowInfo.getFollowId()).isEqualTo(follow.getId());
+        }
+
+
+        @Test
+        @DisplayName("[성공] 팔로우하고 있지 않을 때")
+        void existFollow_returnValueIsFalse_success() {
+            //when
+            FollowExistResponse existFollowInfo = followController.existFollow(fromMember, 2309489023L).getData();
+
+            //then
+            assertFalse(existFollowInfo.isExistFollow());
+            assertThat(existFollowInfo.getFollowId()).isNull();
+        }
     }
 
     @Nested

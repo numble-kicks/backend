@@ -1,4 +1,4 @@
-package numble.team4.shortformserver.likevideo.ui.dto;
+package numble.team4.shortformserver.follow.ui.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
@@ -15,12 +15,12 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @JsonInclude(NON_NULL)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikeVideoExistResponse {
+public class FollowExistResponse {
 
-    private final boolean existLikeVideo;
-    private final Long likesId;
+    private final boolean existFollow;
+    private final Long followId;
 
-    public static LikeVideoExistResponse from(Optional<Long> existVideoInfo) {
-        return new LikeVideoExistResponse(existVideoInfo.isPresent(), existVideoInfo.orElseGet(() -> null));
+    public static FollowExistResponse from(Optional<Long> existFollowInfo) {
+        return new FollowExistResponse(existFollowInfo.isPresent(), existFollowInfo.orElseGet(() -> null));
     }
 }

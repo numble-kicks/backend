@@ -75,13 +75,14 @@ public class LikeVideoIntegrationTest {
     class GetExistLikeVideoTest {
 
         @Test
-        @DisplayName("[성공] 좋아요를 등록하지 않트은 영상에 대해 테스트")
+        @DisplayName("[성공] 좋아요를 등록하지 않은 영상에 대해 테스트")
         void existLikeVideo_likeVideoExistsFalse_success() {
             //when
             CommonResponse<LikeVideoExistResponse> existLikeVideo = likeVideoController.existLikeVideo(member, 19823012L);
 
             //then
             assertThat(existLikeVideo.getData().isExistLikeVideo()).isFalse();
+            assertThat(existLikeVideo.getData().getLikesId()).isNull();
         }
 
         @Test
@@ -96,6 +97,7 @@ public class LikeVideoIntegrationTest {
 
             //then
             assertThat(existLikeVideo.getData().isExistLikeVideo()).isTrue();
+            assertThat(existLikeVideo.getData().getLikesId()).isEqualTo(likeVideo.getId());
         }
 
     }

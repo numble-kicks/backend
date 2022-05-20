@@ -3,6 +3,7 @@ package numble.team4.shortformserver.follow.ui;
 import lombok.RequiredArgsConstructor;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.follow.application.FollowService;
+import numble.team4.shortformserver.follow.ui.dto.FollowExistResponse;
 import numble.team4.shortformserver.follow.ui.dto.FollowResponse;
 import numble.team4.shortformserver.member.auth.util.LoginUser;
 import numble.team4.shortformserver.member.member.domain.Member;
@@ -18,6 +19,12 @@ import static numble.team4.shortformserver.follow.ui.FollowResponseMessage.*;
 public class FollowController {
 
     private final FollowService followService;
+
+    @GetMapping("/{toUserId}")
+    public CommonResponse<FollowExistResponse> existFollow(@LoginUser Member member, @PathVariable Long toUserId) {
+        FollowExistResponse followExistResponse = followService.existFollow(member, toUserId);
+        return CommonResponse.of(followExistResponse, GET_IS_EXIST_FOLLOW.getMessage());
+    }
 
     @GetMapping("/from")
     public CommonResponse<List<FollowResponse>> getAllFollowings(@RequestParam("from_member") Long memberId) {
