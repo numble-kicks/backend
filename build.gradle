@@ -47,6 +47,7 @@ dependencies {
 	implementation 'com.querydsl:querydsl-apt:5.0.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 def querydslDir = "$buildDir/generated/querydsl"
