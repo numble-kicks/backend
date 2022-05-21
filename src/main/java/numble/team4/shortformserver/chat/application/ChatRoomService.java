@@ -6,6 +6,8 @@ import numble.team4.shortformserver.chat.domain.room.ChatRoom;
 import numble.team4.shortformserver.chat.domain.room.ChatRoomRepository;
 import numble.team4.shortformserver.common.dto.CommonResponse;
 import numble.team4.shortformserver.common.dto.PageInfo;
+import numble.team4.shortformserver.event.domain.FcmEventDomain;
+import numble.team4.shortformserver.event.util.FcmEventPublisher;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
 import numble.team4.shortformserver.member.member.exception.NotExistMemberException;
@@ -25,13 +27,18 @@ public class ChatRoomService {
 
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
+    private final FcmEventPublisher fcmEventPublisher;
 
     @Transactional
     public void createChatRoom(Member buyer, Long sellerId) {
         Member seller = memberRepository.findById(sellerId)
                 .orElseThrow(NotExistMemberException::new);
         chatRoomRepository.findExactlyMatchRoom(buyer, seller)
-                        .orElseGet(() -> chatRoomRepository.save(ChatRoom.of(buyer, seller)));
+                        .orElseGet(() -> {
+                            ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.of(buyer, seller));
+                            fcmEventPublisher.publishFcmTokenPushingEvent(buyer.getId(), sellerId, FcmEventDomain.CHATTING);
+                            return chatRoom;
+                        });
     }
 
     public CommonResponse<List<ChatRoomResponse>> findChatRooms(Member member, Pageable pageable) {
