@@ -67,7 +67,11 @@ jobs:
           env_KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID
           env_KAKAO_REDIRECT_URI=$KAKAO_REDIRECT_URI
           env_SMTP_USERNAME=$SMTP_USERNAME 
-          env_SMTP_PASSWORD=$SMTP_PASSWORD
+          env_SMTP_PASSWORD=$SMTP_PASSWORD 
+          env_FIREBASE_PRIVATE_KEY_ID=$FIREBASE_PRIVATE_KEY_ID 
+          env_FIREBASE_PRIVATE_KEY=$FIREBASE_PRIVATE_KEY 
+          env_FIREBASE_CLIENT_EMAIL=$FIREBASE_CLIENT_EMAIL 
+          env_FIREBASE_CLIENT_ID=$FIREBASE_CLIENT_ID 
           ./gradlew --info test
         env: 
           SECRET: ${{ secrets.S3_SECRET_KEY }}
@@ -80,6 +84,10 @@ jobs:
           KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          FIREBASE_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_PRIVATE_KEY_ID }}
+          FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+          FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
+          FIREBASE_CLIENT_ID: ${{ secrets.FIREBASE_CLIENT_ID }}
 
 
       - name: Publish Unit Test Results # test 후 result를 보기 위해 추가
