@@ -11,3 +11,7 @@ spring:
     multipart:
       max-request-size: 200MB
       max-file-size: 200MB
+
+  redis:
+    host: localhost
+    port: 6379
