@@ -9,6 +9,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Shutdown Ubuntu MySQL
@@ -39,6 +48,15 @@ jobs:
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE USER test@localhost IDENTIFIED BY "1234"'
           mysql -uroot -h127.0.0.1 -proot -e 'CREATE DATABASE testdb'
           mysql -uroot -h127.0.0.1 -proot -e 'GRANT ALL PRIVILEGES ON testdb.* TO test@localhost'
+          
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Connect to Redis
+        run: node client.js
+        env:
+          REDIS_HOST: redis
+          REDIS_PORT: 6379
 
       # Gradle wrapper 파일 실행 권한주기
       - name: Grant execute permission for gradlew
