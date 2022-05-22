@@ -1,8 +1,6 @@
 package numble.team4.shortformserver.follow.application;
 
 import lombok.RequiredArgsConstructor;
-import numble.team4.shortformserver.event.domain.FcmEventDomain;
-import numble.team4.shortformserver.event.util.FcmEventPublisher;
 import numble.team4.shortformserver.follow.domain.Follow;
 import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
@@ -26,7 +24,6 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
-    private final FcmEventPublisher fcmEventPublisher;
 
     public FollowExistResponse existFollow(Member fromMember, Long toMember) {
         Optional<Long> existFollowInfo = followRepository.findIdByFromMemberIdAndToMemberId(fromMember, toMember);
@@ -57,7 +54,6 @@ public class FollowService {
 
         Follow newFollow = Follow.fromMembers(member, toMember);
         followRepository.save(newFollow);
-        fcmEventPublisher.publishFcmTokenPushingEvent(member.getId(), toMemberId, FcmEventDomain.FOLLOW);
     }
 
     @Transactional
