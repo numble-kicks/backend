@@ -42,6 +42,7 @@ src/test/resources/**
 !src/main/resources/application-s3.yml
 !src/main/resources/application-test.yml
 !src/main/resources/application-oauth.yml
+!src/main/resources/application-firebase.yml
 !src/main/resources/*.sql
 .gradle/
 .env
