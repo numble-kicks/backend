@@ -6,6 +6,7 @@ import numble.team4.shortformserver.follow.domain.FollowRepository;
 import numble.team4.shortformserver.follow.exception.AlreadyExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotExistFollowException;
 import numble.team4.shortformserver.follow.exception.NotFollowingException;
+import numble.team4.shortformserver.follow.ui.dto.FollowExistResponse;
 import numble.team4.shortformserver.follow.ui.dto.FollowResponse;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.MemberRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -22,6 +24,11 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
+
+    public FollowExistResponse existFollow(Member fromMember, Long toMember) {
+        Optional<Long> existFollowInfo = followRepository.findIdByFromMemberIdAndToMemberId(fromMember, toMember);
+        return FollowExistResponse.from(existFollowInfo);
+    }
 
     public List<FollowResponse> getAllFollowings(Long memberId) {
         if (!memberRepository.existsById(memberId)) {

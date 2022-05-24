@@ -11,11 +11,12 @@ import numble.team4.shortformserver.member.member.domain.Member;
 @AllArgsConstructor
 public class LoginResponse {
 
+    private Long id;
     private String email;
     private String name;
     private JwtTokenDto token;
 
     public static LoginResponse of(Member member, JwtTokenDto token) {
-        return new LoginResponse(member.getEmail(), member.getName(), token);
+        return new LoginResponse(member.getId(), member.getEmail(), member.getName(), token);
     }
 }

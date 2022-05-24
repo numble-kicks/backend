@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import javax.persistence.EntityManager;
 import numble.team4.shortformserver.likevideo.domain.LikeVideo;
 import numble.team4.shortformserver.likevideo.domain.LikeVideoRepository;
+import numble.team4.shortformserver.member.auth.domain.MemberAdapter;
 import numble.team4.shortformserver.member.member.domain.Member;
 import numble.team4.shortformserver.member.member.domain.Role;
 import numble.team4.shortformserver.testCommon.BaseAcceptanceTest;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.ResultActions;
 
 public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
@@ -92,15 +94,17 @@ public class LikeVideoAcceptanceTest extends BaseAcceptanceTest {
         @DisplayName("[성공] 등록")
         void existLikeVideo_true_isok_success() throws Exception {
             //given
+            Member member = ((MemberAdapter) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getMember();
             LikeVideo likeVideo = LikeVideo.fromMemberAndVideo(member, video);
             likeVideoRepository.save(likeVideo);
 
             //when
-            ResultActions res = mockMvc.perform(get("/v1/videos/{videoId}/likes", likeVideo.getId()));
+            ResultActions res = mockMvc.perform(get("/v1/videos/{videoId}/likes", video.getId()));
 
             //then
             res.andExpect(status().isOk())
-                    .andExpect(jsonPath("$.data.exist_like_video").value(false));
+                    .andExpect(jsonPath("$.data.exist_like_video").value(true))
+                    .andExpect(jsonPath("$.data.likes_id").value(likeVideo.getId()));
         }
     }
 
